@@ -1,21 +1,20 @@
-CC=clang
-CFLAGS=-g -O2 -I$(IDIR)
+CC=gcc
+CFLAGS=-g -O2 -I$(IDIR) $(DSIZE)
 IDIR=include
 LDIR=lib
 DEPS=include/revdedup.h include/queue.h include/datatable.h
-LIB=-lpthread -lcrypto -lm -lkyotocabinet
+LIB=-lpthread -lcrypto -lm -lkyotocabinet -lmicrohttpd -lcurl
 
 CHOBJ = chunking.o fingerprint.o rabin.o
 CDOBJ = bloom.o bucket.o compress.o image.o index.o convdedup.o minilzo.o
-RDOBJ = btree.o hashtable.o revdedup.o revmap.o revrbd.o revref.o minilzo.o
+RDOBJ = revdedup.o revmap.o revrbd.o revref.o minilzo.o
 RSOBJ = restore.o minilzo.o
 ROOBJ = restoreo.o minilzo.o
 DEOBJ = delete.o
+SVOBJ = server.o index.o image.o compress.o bucket.o minilzo.o
+CLOBJ = client.o
 
-all: chunking convdedup revdedup restore restoreo delete
-
-btree.o : btree.c btree.h
-	$(CC)  -c -o $@ $< $(CFLAGS)
+all: chunking convdedup revdedup restore restoreo delete server client
 	
 %.o : %.c $(DEPS)
 	$(CC)  -c -o $@ $< $(CFLAGS)
@@ -38,5 +37,11 @@ restoreo: $(ROOBJ)
 delete: $(DEOBJ)
 	$(CC) $(CFLAGS) -L$(LDIR) -o delete $^ $(LIB)
 
+server: $(SVOBJ)
+	$(CC) $(CFLAGS) -L$(LDIR) -o server $^ $(LIB)
+	
+client: $(CLOBJ)
+	$(CC) $(CFLAGS) -L$(LDIR) -o client $^ $(LIB)
+
 clean:
-	rm -rf chunking convdedup revdedup restore restoreo delete *.o
+	rm -rf chunking convdedup revdedup restore restoreo delete server client *.o

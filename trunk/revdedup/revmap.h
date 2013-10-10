@@ -11,7 +11,7 @@
 #include <revdedup.h>
 
 typedef struct {
-	pthread_t _tid[REV_TCNT];
+	pthread_t _tid[REV_CNT];
 	SMEntry * _sen;
 	CMEntry * _cen;
 	SegmentLog * _slog;

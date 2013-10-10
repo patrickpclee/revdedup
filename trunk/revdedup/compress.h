@@ -14,11 +14,11 @@
 typedef struct {
 	pthread_t _tid;
 	pthread_t _gid;
-	pthread_t _cid[COMP_CNT];
+	pthread_t _cid[CPS_CNT];
 	Queue * _iq;	// In-Queue
 	Queue * _oq;	// Out-Queue
-	Queue * _mq[COMP_CNT];
-	Queue * _dq[COMP_CNT];
+	Queue * _mq[CPS_CNT];
+	Queue * _dq[CPS_CNT];
 	int (*start)(Queue * iq, Queue * oq);
 	int (*stop)();
 } CompressService;

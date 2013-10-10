@@ -10,8 +10,6 @@
 #include <datatable.h>
 #include "minilzo.h"
 
-#define DECOMP_TCNT 16
-
 typedef struct {
 	pthread_t tid;
 	uint32_t inst;
@@ -23,37 +21,67 @@ typedef struct {
 } ImageData;
 
 typedef struct {
-	pthread_t tid;
 	uint32_t ver;
 	uint32_t lver;
 	volatile uint64_t end;
 	uint64_t chunks;
 	Indirect * id;
 	ImageData * idata;
-	Queue * pfq;
 } IndirectMap;
 
-off_t isize;
+typedef struct {
+	uint32_t ver;
+	int ofd;
+	volatile uint64_t cur;
+	pthread_spinlock_t lock;
+	IndirectMap * map;
+	Queue * pfq;
+} DataInfo;
 
 IMEntry * ien;
 SMEntry * sen;
 CMEntry * cen;
 BMEntry * ben;
 
+DataInfo dinfo;
+DataTable * dt;
+Queue * dq;
+
 void * prefetch(void * ptr) {
-	Queue * q = (Queue *)ptr;
-	uint64_t sid, lsid = 0;
+	Queue * q = (Queue *) ptr;
+	uint64_t sid, lsid = 0, bid = 0;
+	uint32_t pos, len;
 	char buf[128];
-	while ((sid = (uint64_t)Dequeue(q)) != 0) {
+	while ((sid = (uint64_t) Dequeue(q)) != 0) {
 		if (lsid == sid) {
 			continue;
 		}
-		sprintf(buf, DATA_DIR "bucket/%08lx", sen[sid].bucket);
-		int fd = open(buf, O_RDONLY);
-		posix_fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
-		close(fd);
 		lsid = sid;
+		if (bid == 0) {
+			bid = sen[sid].bucket;
+			pos = sen[sid].pos;
+			len = sen[sid].len;
+			continue;
+		}
+		if (sen[sid].bucket == bid && pos + len == sen[sid].pos) {
+			len += sen[sid].len;
+			continue;
+		}
+
+		sprintf(buf, DATA_DIR "bucket/%08lx", bid);
+		int fd = open(buf, O_RDONLY);
+		posix_fadvise(fd, pos, len, POSIX_FADV_WILLNEED);
+		close(fd);
+
+		bid = sen[sid].bucket;
+		pos = sen[sid].pos;
+		len = sen[sid].len;
 	}
+	sprintf(buf, DATA_DIR "bucket/%08lx", bid);
+	int fd = open(buf, O_RDONLY);
+	posix_fadvise(fd, pos, len, POSIX_FADV_WILLNEED);
+	close(fd);
+
 	return NULL;
 }
 
@@ -67,11 +95,11 @@ void * buildIndirect(void * ptr) {
 	assert(fd != -1);
 	idata->dsize = lseek(fd, 0, SEEK_END);
 	posix_fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
-	idata->d = mmap(0, idata->dsize, PROT_READ, MAP_SHARED, fd, 0);
+	idata->d = MMAP_FD_RO(fd, idata->dsize);
 	close(fd);
 
 	idata->idsize = idata->dsize / sizeof(Direct) * MAX_SEG_CHUNKS * sizeof(Indirect);
-	idata->id = mmap(0, idata->idsize, 0x3, 0x2 | MAP_ANONYMOUS, -1, 0);
+	idata->id = MMAP_MM(idata->idsize);
 
 	sprintf(buf, DATA_DIR "image/i%u-%u", idata->inst, idata->ver);
 	fd = open(buf, O_RDONLY);
@@ -85,11 +113,11 @@ void * buildIndirect(void * ptr) {
 			&& index < sen[idata->d[i].id].chunks) {
 		Indirect ien;
 		assert(read(fd, &ien, sizeof(ien)) == sizeof(ien));
-		for (j = 0; j < ien.count; j++) {
+		for (j = 0; j < ien.len; j++) {
 			uint64_t p = index + i * MAX_SEG_CHUNKS;
-			idata->id[p].ptr = ien.ptr & (NODEDUP - 1);
-			idata->id[p].offset = ien.offset + j;
-			idata->id[p].version = idata->ver + !(ien.ptr & NODEDUP);
+			idata->id[p].ptr = ien.ptr & (UNIQ - 1);
+			idata->id[p].pos = ien.pos + j;
+			idata->id[p].ver = idata->ver + !(ien.ptr & UNIQ);
 			index++;
 			if (index == sen[idata->d[i].id].chunks) {
 				i++;
@@ -102,10 +130,11 @@ void * buildIndirect(void * ptr) {
 }
 
 void * mergeIndirects(void * ptr) {
-	IndirectMap * map = (IndirectMap *) ptr;
+	IndirectMap * map = dinfo.map;
+	Queue * pfq = dinfo.pfq;
 	uint64_t i, j, k;
 	uint64_t sid;
-	uint8_t * lsids = malloc(((SegmentLog *)sen)->segID + 1);
+	uint32_t offset, len;
 	map->end = 0;
 
 	for (i = 0; i < map->idata[0].dsize / sizeof(Direct); i++) {
@@ -113,23 +142,28 @@ void * mergeIndirects(void * ptr) {
 			uint64_t p = map->end;
 			map->id[p] = map->idata[0].id[i * MAX_SEG_CHUNKS + j];
 			for (k = map->ver + 1; k < map->lver; k++) {
-				if (map->id[map->end].version < k) {
+				if (map->id[map->end].ver < k) {
 					break;
 				}
 				uint64_t q = map->id[p].ptr * MAX_SEG_CHUNKS
-						+ map->id[p].offset;
+						+ map->id[p].pos;
 				map->id[p] = map->idata[k - map->ver].id[q];
 			}
 			map->end++;
 
-			sid = map->idata[map->id[p].version - map->ver].d[map->id[p].ptr].id;
-			if (lsids[sid] != 1) {
-				Enqueue(map->pfq, (void *) sid);
-				lsids[sid] = 1;
+			/* Setup DataTable */
+			sid = map->idata[map->id[p].ver - map->ver].d[map->id[p].ptr].id;
+			if (cen[sen[sid].cid + map->id[p].pos].len == 0) {
+				continue;
+			}
+			if (++dt->en[sid].cnt == 1) {
+				pthread_spin_init(&dt->en[sid].lock, PTHREAD_PROCESS_SHARED);
+				pthread_mutex_lock(&dt->en[sid].mutex);
+				Enqueue(pfq, (void *)sid);
 			}
 		}
 	}
-	free(lsids);
+	Enqueue(pfq, NULL);
 	return NULL;
 }
 
@@ -138,88 +172,73 @@ Indirect * getIndirect(IndirectMap * map, uint64_t cur) {
 	return &map->id[cur];
 }
 
-
-typedef struct {
-	uint32_t ver;
-	int ofd;
-	volatile uint64_t w_ptr;
-	pthread_spinlock_t lock;
-	DataTable * dt;
-	IndirectMap * map;
-} DataBuffer;
-
 void * decompress(void * ptr) {
-	DataBuffer * db = (DataBuffer *) ptr;
-	DataTable * dt = db->dt;
-	IndirectMap * map = db->map;
-	uint8_t * data;
-	uint8_t * cdata = MMAP_MM(MAX_COMPRESSED_SIZE);
-	uint64_t w_ptr, size;
-	int32_t fd;
+	IndirectMap * map = dinfo.map;
+	uint8_t * cdata = MMAP_MM(MAX_SEG_SIZE);
+	SMEntry * en;
+	DataEntry * den;
+	uint64_t size, cur, seg;
+	uint32_t fd;
 	char buf[128];
+
+
 	while (1) {
-		pthread_spin_lock(&db->lock);
-		w_ptr = db->w_ptr++;
-		pthread_spin_unlock(&db->lock);
-		if (w_ptr >= map->chunks) {
+		pthread_spin_lock(&dinfo.lock);
+		cur = dinfo.cur++;
+		pthread_spin_unlock(&dinfo.lock);
+		if (unlikely(cur >= map->chunks)) {
 			break;
 		}
-		Indirect * en = getIndirect(db->map, w_ptr);
-		uint64_t seg = map->idata[en->version - db->ver].d[en->ptr].id;
-		pthread_mutex_lock(&dt->en[seg].mutex);
-		if (dt->en[seg].cnt == 0 && dt->en[seg].bldg == 0) {
-			dt->en[seg].bldg = 1;
-			pthread_mutex_unlock(&dt->en[seg].mutex);
-
-			sprintf(buf, DATA_DIR "bucket/%08lx", sen[seg].bucket);
-			fd = open(buf, O_RDONLY);
-			pread(fd, cdata, sen[seg].len, sen[seg].pos);
-			close(fd);
-			data = malloc(MAX_SEG_SIZE);
-			lzo1x_decompress(cdata, sen[seg].len, data, &size, NULL);
-			dt->en[seg].data = data;
-
-			pthread_mutex_lock(&dt->en[seg].mutex);
-			dt->en[seg].bldg = 0;
-			pthread_cond_signal(&dt->en[seg].cond);
+		Indirect * in = getIndirect(map, cur);
+		seg = map->idata[in->ver - dinfo.ver].d[in->ptr].id;
+		if (pthread_spin_trylock(&dt->en[seg].lock)) {
+			continue;
 		}
-		dt->en[seg].cnt++;
+		en = &sen[seg];
+		den = &dt->en[seg];
+		den->data = Dequeue(dq);
+		sprintf(buf, DATA_DIR "bucket/%08lx", en->bucket);
+		fd = open(buf, O_RDONLY);
+#ifdef DISABLE_COMPRESSION
+		assert(pread(fd, den->data, en->len, en->pos) == en->len);
+#else
+		if (sen->compressed) {
+			assert(pread(fd, cdata, en->len, en->pos) == en->len);
+			lzo1x_decompress(cdata, en->len, den->data, &size, NULL);
+			den->size = size;
+		} else {
+			assert(pread(fd, den->data, en->len, en->pos) == en->len);
+			den->size = en->len;
+		}
+#endif
+		close(fd);
 		pthread_mutex_unlock(&dt->en[seg].mutex);
 	}
-	munmap(cdata, MAX_COMPRESSED_SIZE);
+
+	munmap(cdata, MAX_SEG_SIZE);
 	return NULL;
 }
 
 void * send(void * ptr) {
-	DataBuffer * db = (DataBuffer *) ptr;
-	IndirectMap * map = db->map;
-	DataTable * dt = db->dt;
+	IndirectMap * map = dinfo.map;
 	void * zdata = MMAP_MM(ZERO_SIZE);
 	uint64_t i, j;
 
 	for (i = 0; i < map->chunks; i++) {
-		Indirect * en = getIndirect(db->map, i);
-		uint64_t seg = map->idata[en->version - db->ver].d[en->ptr].id;
-		uint32_t pos = cen[sen[seg].cid + en->offset].pos;
-		uint32_t len = cen[sen[seg].cid + en->offset].len;
+		Indirect * in = getIndirect(dinfo.map, i);
+		uint64_t seg = map->idata[in->ver - dinfo.ver].d[in->ptr].id;
+		uint32_t pos = cen[sen[seg].cid + in->pos].pos;
+		uint32_t len = cen[sen[seg].cid + in->pos].len;
 		if (len == 0) {
-			assert(write(db->ofd, zdata, ZERO_SIZE) == ZERO_SIZE);
-		} else {
-			// Optimize by removing useless lock and unlock
-			if (unlikely(dt->en[seg].cnt == 0 || dt->en[seg].bldg == 1)) {
-				pthread_mutex_lock(&dt->en[seg].mutex);
-				if (dt->en[seg].cnt == 0 || dt->en[seg].bldg == 1) {
-					pthread_cond_wait(&dt->en[seg].cond, &dt->en[seg].mutex);
-				}
-				pthread_mutex_unlock(&dt->en[seg].mutex);
-			}
-			assert(write(db->ofd, dt->en[seg].data + pos, len) == len);
+			assert(write(dinfo.ofd, zdata, ZERO_SIZE) == ZERO_SIZE);
+			continue;
 		}
 		pthread_mutex_lock(&dt->en[seg].mutex);
-		if (--dt->en[seg].cnt == 0) {
-			free(dt->en[seg].data);
-		}
 		pthread_mutex_unlock(&dt->en[seg].mutex);
+		assert(write(dinfo.ofd, dt->en[seg].data + pos, len) == len);
+		if (--dt->en[seg].cnt == 0) {
+			Enqueue(dq, dt->en[seg].data);
+		}
 	}
 	munmap(zdata, ZERO_SIZE);
 	return NULL;
@@ -231,7 +250,7 @@ int main(int argc, char * argv[]) {
 		return 0;
 	}
 	char buf[128];
-	int fd;
+	int32_t fd;
 	uint32_t inst = atoi(argv[1]);
 	uint32_t ver = atoi(argv[2]);
 
@@ -244,27 +263,21 @@ int main(int argc, char * argv[]) {
 	uint32_t lver = 0;
 	uint32_t i, j, k;
 
-	/* Setup Prefetch */
-	Queue * q = NewQueue();
-	pthread_t tid;
-	pthread_create(&tid, NULL, prefetch, q);
-
 	/* Retrieve Metadata */
 	fd = open(DATA_DIR "ilog", O_RDONLY);
-	isize = lseek(fd, 0, SEEK_END);
-	ien = mmap(0, isize, 0x1, 0x2, fd, 0);
+	ien = MMAP_FD_RO(fd, INST_MAX(sizeof(IMEntry)));
 	close(fd);
 
 	fd = open(DATA_DIR "slog", O_RDONLY);
-	sen = mmap(0, MAX_ENTRIES * sizeof(SMEntry), 0x1, 0x2, fd, 0);
+	sen = MMAP_FD_RO(fd, MAX_ENTRIES(sizeof(SMEntry)));
 	close(fd);
 
 	fd = open(DATA_DIR "clog", O_RDONLY);
-	cen = mmap(0, MAX_ENTRIES * sizeof(CMEntry), 0x1, 0x2, fd, 0);
+	cen = MMAP_FD_RO(fd, MAX_ENTRIES(sizeof(CMEntry)));
 	close(fd);
 
 	fd = open(DATA_DIR "blog", O_RDONLY);
-	ben = mmap(0, MAX_ENTRIES * sizeof(BMEntry), 0x1, 0x2, fd, 0);
+	ben = MMAP_FD_RO(fd, MAX_ENTRIES(sizeof(BMEntry)));
 	close(fd);
 
 	lver = ien[inst].versions - ien[inst].recent;
@@ -277,61 +290,74 @@ int main(int argc, char * argv[]) {
 		pthread_create(&idata[i].tid, NULL, buildIndirect, &idata[i]);
 	}
 
-	for (i = 0; i < lver - ver + 1; i++) {
-		pthread_join(idata[i].tid, NULL);
-	}
-
-
 	/* Merge Indirect maps to single map */
 	IndirectMap map;
+
 	map.ver = ver;
 	map.lver = lver;
 	map.end = 0;
 	map.chunks = 0;
 	map.idata = idata;
-	map.id = MMAP_MM(idata[0].idsize);
-	map.pfq = NewQueue();
+
+	/* Initialize DataInfo */
+	dinfo.ver = ver;
+	dinfo.ofd = creat(argv[3], 0644);
+	dinfo.cur = 0;
+	dinfo.map = &map;
+	pthread_spin_init(&dinfo.lock, PTHREAD_PROCESS_SHARED);
+
+	dt = NewDataTable(((SegmentLog *)sen)->segID + 1);
+
+	void * data = MMAP_MM(LONGQUEUE_LENGTH * MAX_SEG_SIZE);
+	dq = LongQueue();
+	for (i = 0; i < LONGQUEUE_LENGTH; i++) {
+		Enqueue(dq, data + i * MAX_SEG_SIZE);
+	}
+
+	for (i = 0; i < lver - ver + 1; i++) {
+		pthread_join(idata[i].tid, NULL);
+	}
 
 	/* Setup Prefetch */
+	dinfo.pfq = SuperQueue();
 	pthread_t pft;
-	pthread_create(&pft, NULL, prefetch, map.pfq);
+	pthread_create(&pft, NULL, prefetch, dinfo.pfq);
 
+	map.id = MMAP_MM(idata[0].idsize);
 	for (i = 0; i < idata[0].dsize / sizeof(Direct); i++) {
 		map.chunks += sen[idata[0].d[i].id].chunks;
 	}
-	pthread_create(&map.tid, NULL, mergeIndirects, &map);
 
-	/* Initialize DataBuffer */
-	DataBuffer db;
-	db.ver = ver;
-	db.ofd = open(argv[3], O_RDWR | O_CREAT | O_TRUNC, 0644);
-	db.w_ptr = 0;
-	pthread_spin_init(&db.lock, PTHREAD_PROCESS_SHARED);
-	db.dt = dt_create(((SegmentLog *)sen)->segID + 1);
-	db.map = &map;
+	pthread_t mgt;
+	pthread_create(&mgt, NULL, mergeIndirects, NULL);
+	pthread_join(mgt, NULL);
 
-	/* Setup Decompress */
-	pthread_t did[DECOMP_TCNT];
-	for (i = 0; i < DECOMP_TCNT; i++) {
-		pthread_create(did + i, NULL, decompress, &db);
+	/** setup decompress and send */
+	pthread_t dct[DPS_CNT];
+	pthread_t sdt;
+	for (i = 0; i < DPS_CNT; i++) {
+		pthread_create(dct + i, NULL, decompress, &dinfo);
 	}
+	pthread_create(&sdt, NULL, send, &dinfo);
 
-	/* Setup Send */
-	pthread_t sendt;
-	pthread_create(&sendt, NULL, send, &db);
-
-	for (i = 0; i < DECOMP_TCNT; i++) {
-		pthread_join(did[i], NULL);
+	/** wait for the outstanding threads */
+	for (i = 0; i < DPS_CNT; i++) {
+		pthread_join(dct[i], NULL);
 	}
-
-	pthread_join(sendt, NULL);
-	pthread_join(map.tid, NULL);
+	pthread_join(sdt, NULL);
 	pthread_cancel(pft);
 
-	munmap(ien, isize);
-	munmap(sen, MAX_ENTRIES * sizeof(SMEntry));
-	munmap(cen, MAX_ENTRIES * sizeof(CMEntry));
-	munmap(ben, MAX_ENTRIES * sizeof(BMEntry));
+	DelQueue(dinfo.pfq);
+	DelQueue(dq);
+	munmap(data, LONGQUEUE_LENGTH * MAX_SEG_SIZE);
 
+	DelDataTable(dt);
+
+	munmap(ien, INST_MAX(sizeof(IMEntry)));
+	munmap(sen, MAX_ENTRIES(sizeof(SMEntry)));
+	munmap(cen, MAX_ENTRIES(sizeof(CMEntry)));
+	munmap(ben, MAX_ENTRIES(sizeof(BMEntry)));
+
+	close(dinfo.ofd);
 	return 0;
 }

@@ -26,7 +26,7 @@ void * end(void * ptr) {
 
 int main(int argc, char * argv[]) {
 	if (argc != 4) {
-		fprintf(stderr, "Usage : %s filename out instanceID\n", argv[0]);
+		fprintf(stderr, "Usage : %s  file metafile instanceID\n", argv[0]);
 		return 0;
 	}
 	uint64_t i;
@@ -44,9 +44,9 @@ int main(int argc, char * argv[]) {
 	Segment * base_seg = MMAP_FD_PV(ofd, osize);
 
 	mmq = LongQueue();
-	void * cdata = MMAP_MM(MAX_COMPRESSED_SIZE * LONGQUEUE_LENGTH);
+	void * cdata = MMAP_MM(MAX_SEG_SIZE * LONGQUEUE_LENGTH);
 	for (i = 0; i < LONGQUEUE_LENGTH; i++) {
-		Enqueue(mmq, cdata + i * MAX_COMPRESSED_SIZE);
+		Enqueue(mmq, cdata + i * MAX_SEG_SIZE);
 	}
 
 	IndexService * is = GetIndexService();
@@ -96,7 +96,7 @@ int main(int argc, char * argv[]) {
 
 	munmap(data, isize);
 	munmap(base_seg, osize);
-	munmap(cdata, MAX_COMPRESSED_SIZE * LONGQUEUE_LENGTH);
+	munmap(cdata, MAX_SEG_SIZE * LONGQUEUE_LENGTH);
 	free(mmq);
 	close(ifd);
 	close(ofd);

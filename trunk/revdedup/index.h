@@ -25,7 +25,8 @@ typedef struct {
 	Bloom _bl;
 	int (*start)(Queue * iq, Queue * oq);
 	int (*stop)();
-	int (*setSegment)(Segment * seg, uint64_t bucket);
+	int (*putSegment)(Segment * seg, uint64_t bucket);
+	int (*getSegment)(Segment * seg);
 } IndexService;
 
 IndexService* GetIndexService();

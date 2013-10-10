@@ -21,7 +21,7 @@ static Bucket * NewBucket(uint64_t sid) {
 	b->size = 0;
 
 	sprintf(buf, DATA_DIR "bucket/%08lx", b->id);
-	b->fd = open(buf, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	b->fd = creat(buf, 0644);
 	assert(b->fd != -1);
 	return b;
 }
@@ -51,7 +51,7 @@ static Bucket * BucketInsert(Bucket * b, Segment * seg) {
 	}
 
 	seg->pos = b->size;
-	GetIndexService()->setSegment(seg, b->id);
+	GetIndexService()->putSegment(seg, b->id);
 	assert(write(b->fd, seg->cdata, seg->clen) == seg->clen);
 	b->segs++;
 	b->size += seg->clen;
@@ -83,14 +83,12 @@ static int start(Queue * iq, Queue * oq) {
 
 	/* Load Bucket Log */
 	fd = open(DATA_DIR "blog", O_RDWR | O_CREAT, 0644);
-	assert(!ftruncate(fd, MAX_ENTRIES * sizeof(BMEntry)));
-	service._en = MMAP_FD(fd, MAX_ENTRIES * sizeof(BMEntry));
+	assert(!ftruncate(fd, MAX_ENTRIES(sizeof(BMEntry))));
+	service._en = MMAP_FD(fd, MAX_ENTRIES(sizeof(BMEntry)));
 	service._log = (BucketLog *) service._en;
 	close(fd);
 
 	memset(service._padding, 0, BLOCK_SIZE);
-	service._inst = GetImageService()->_ins;
-	service._ver = GetImageService()->_ver;
 	ret = pthread_create(&service._tid, NULL, process, NULL);
 	return ret;
 }
@@ -98,7 +96,7 @@ static int start(Queue * iq, Queue * oq) {
 static int stop() {
 	int ret, i;
 	ret = pthread_join(service._tid, NULL);
-	munmap(service._en, MAX_ENTRIES * sizeof(BMEntry));
+	munmap(service._en, MAX_ENTRIES(sizeof(BMEntry)));
 	return ret;
 }
 

@@ -12,7 +12,7 @@
 
 typedef struct {
 	SMEntry * sen;
-	uint8_t data[MAX_COMPRESSED_SIZE];
+	uint8_t data[MAX_SEG_SIZE << 1];
 } SimpleSegment;
 
 typedef struct {
@@ -72,7 +72,7 @@ static Bucket * BucketInsert(Bucket * b, SimpleSegment * sseg) {
 static void * saveSegment(void * ptr) {
 	SimpleSegment * sseg;
 	Bucket * b = NULL;
-	int i = REV_TCNT;
+	int i = REV_CNT;
 	while (i) {
 		sseg = (SimpleSegment *) Dequeue(service._nbq);
 		if (sseg == NULL) {
@@ -89,32 +89,52 @@ static void * saveSegment(void * ptr) {
 }
 
 static void * rebuildSegments(void * ptr) {
+	uint8_t buf[LZO1X_MEM_COMPRESS];
 	SimpleSegment * sseg;
-	uint8_t * databuf = malloc(MAX_SEG_SIZE);
-	uint8_t * cbuf = malloc(LZO1X_MEM_COMPRESS);
+	uint8_t * temp = MMAP_MM(MAX_SEG_SIZE);
 	uint64_t i;
 	while ((sseg = (SimpleSegment *) Dequeue(service._rsq)) != NULL ) {
 		SMEntry * sen = sseg->sen;
 		uint64_t pos = 0, len;
-		lzo1x_decompress(sseg->data, sen->len, databuf, &len, NULL);
+#ifdef DISABLE_COMPRESSION
+		memcpy(temp, sseg->data, sen->len);
+
+#else
+		if (sen->compressed) {
+			lzo1x_decompress(sseg->data, sen->len, temp, &pos, NULL);
+		} else {
+			memcpy(temp, sseg->data, sen->len);
+		}
+#endif
 		for (i = sen->cid; i < sen->cid + sen->chunks; i++) {
 			CMEntry * cen = &service._cen[i];
 			if (cen->ref == 0) {
 				cen->pos = pos;
 				cen->len = 0;
 			} else {
-				memmove(databuf + pos, databuf + cen->pos, cen->len);
+				memmove(temp + pos, temp + cen->pos, cen->len);
 				cen->pos = pos;
 				pos += cen->len;
 			}
 		}
-		lzo1x_1_compress(databuf, pos, sseg->data, &len, cbuf);
-		sen->len = len;
+#ifdef DISABLE_COMPRESSION
+		memcpy(sseg->data, temp, pos);
+		sen->len = pos;
+#else
+		lzo1x_1_compress(temp, pos, sseg->data, &len, buf);
+		if (len >= pos) {
+			memcpy(sseg->data, temp, pos);
+			sen->len = pos;
+			sen->compressed = 0;
+		} else {
+			sen->len = len;
+			sen->compressed = 1;
+		}
+#endif
 		Enqueue(service._nbq, sseg);
 	}
 	Enqueue(service._nbq, NULL);
-	free(cbuf);
-	free(databuf);
+	munmap(temp, MAX_SEG_SIZE);
 	return NULL ;
 }
 
@@ -227,14 +247,14 @@ static void * processBuckets(void * ptr) {
 					assert(pread(fd, sseg->data, sen->len, sen->pos) == sen->len);
 					Enqueue(service._rsq, sseg);
 				} else {
-					end = sen->pos / 4096 * 4096;
+					end = sen->pos / BLOCK_SIZE * BLOCK_SIZE;
 					if (end > pos) {
 						fallocate(fd, 0x03, pos, end - pos);
 					}
-					pos = (sen->pos + sen->len + 4095) / 4096 * 4096;
+					pos = (sen->pos + sen->len + BLOCK_SIZE - 1) / BLOCK_SIZE * BLOCK_SIZE;
 				}
 			}
-			end = ben->size / 4096 * 4096;
+			end = ben->size / BLOCK_SIZE * BLOCK_SIZE;
 			if (end > pos) {
 				fallocate(fd, 0x03, pos, end - pos);
 			}
@@ -243,7 +263,7 @@ static void * processBuckets(void * ptr) {
 		close(fd);
 	}
 	Enqueue(service._rbq, NULL);
-	for (i = 0; i < REV_TCNT; i++) {
+	for (i = 0; i < REV_CNT; i++) {
 		Enqueue(service._rsq, NULL);
 	}
 	return NULL ;
@@ -303,13 +323,14 @@ static int start(SMEntry * sen, CMEntry * cen, BMEntry * ben, uint32_t ver) {
 	service._ver = ver;
 
 	service.__db = kcdbnew();
-	kcdbopen(service.__db, DATA_DIR "meta/index.kch", KCOWRITER);
+	kcdbopen(service.__db, "-", KCOWRITER | KCOCREATE);
+	kcdbloadsnap(service.__db, DATA_DIR "index");
 
 	memset(service._padding, 0, BLOCK_SIZE);
 
 	ret = pthread_create(&service._tid, NULL, process, NULL);
 	ret = pthread_create(&service._pbid, NULL, processBuckets, NULL);
-	for (i = 0; i < REV_TCNT; i++) {
+	for (i = 0; i < REV_CNT; i++) {
 		ret = pthread_create(&service._rsid[i], NULL, rebuildSegments, NULL);
 	}
 	ret = pthread_create(&service._ssid, NULL, saveSegment, NULL);
@@ -322,14 +343,14 @@ static int stop() {
 	int ret = 0, i;
 	pthread_join(service._tid, NULL );
 	pthread_join(service._pbid, NULL );
-	for (i = 0; i < REV_TCNT; i++) {
+	for (i = 0; i < REV_CNT; i++) {
 		pthread_join(service._rsid[i], NULL );
 	}
 	pthread_join(service._ssid, NULL );
 	pthread_join(service._pfid, NULL );
 	pthread_join(service._rbid, NULL );
 
-	kcdbclose(service.__db);
+	kcdbdumpsnap(service.__db, DATA_DIR "index");
 	kcdbdel(service.__db);
 
 	free(service._bq);

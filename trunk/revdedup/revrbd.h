@@ -15,7 +15,7 @@
 typedef struct {
 	pthread_t _tid;
 	pthread_t _pbid;
-	pthread_t _rsid[REV_TCNT];
+	pthread_t _rsid[REV_CNT];
 	pthread_t _ssid;
 	pthread_t _pfid;
 	pthread_t _rbid;

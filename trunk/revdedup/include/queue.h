@@ -11,10 +11,12 @@
 #include <pthread.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <math.h>
+#include "revdedup.h"
 
-#define QUEUE_LENGTH 128
-#define LONGQUEUE_LENGTH 512
-#define SUPERQUEUE_LENGTH 65536
+#define QUEUE_LENGTH ((1024ULL << 20) / MAX_SEG_SIZE)
+#define LONGQUEUE_LENGTH ((4096ULL << 20) / MAX_SEG_SIZE)
+#define SUPERQUEUE_LENGTH ((16384ULL << 20) / MAX_SEG_SIZE)
 
 typedef struct {
 	volatile uint32_t r_ptr;
@@ -93,6 +95,10 @@ static inline Queue * SuperQueue() {
 	pthread_cond_init(&q->cond_r, NULL);
 	pthread_cond_init(&q->cond_w, NULL);
 	return q;
+}
+
+static inline void DelQueue(Queue * q) {
+	free(q);
 }
 
 #endif /* QUEUE_H_ */

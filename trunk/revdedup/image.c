@@ -22,7 +22,7 @@ static void * process(void * ptr) {
 
 		service._cspace += seg->unique ? seg->clen : 0;
 
-		write(service._fd, seg, 16);
+		assert(write(service._fd, seg, 16) == 16);
 
 		Enqueue(service._oq, seg);
 	}
@@ -38,8 +38,8 @@ static int start(Queue * iq, Queue * oq, uint32_t instanceID) {
 	service._oq = oq;
 
 	fd = open(DATA_DIR "ilog", O_RDWR | O_CREAT, 0644);
-	assert(!ftruncate(fd, INST_MAX * sizeof(IMEntry)));
-	service._en = MMAP_FD(fd, INST_MAX * sizeof(IMEntry));
+	assert(!ftruncate(fd, INST_MAX(sizeof(IMEntry))));
+	service._en = MMAP_FD(fd, INST_MAX(sizeof(IMEntry)));
 	close(fd);
 
 	service._ins = instanceID;
@@ -57,8 +57,7 @@ static int start(Queue * iq, Queue * oq, uint32_t instanceID) {
 static int stop() {
 	int ret = pthread_join(service._tid, NULL);
 	close(service._fd);
-
-	munmap(service._en, INST_MAX * sizeof(SMEntry));
+	munmap(service._en, INST_MAX(sizeof(IMEntry)));
 	return ret;
 }
 

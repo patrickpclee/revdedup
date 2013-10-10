@@ -12,10 +12,9 @@
 
 typedef struct {
 	void * data;
+	uint64_t cnt;
 	pthread_mutex_t mutex;
-	pthread_cond_t cond;
-	volatile uint32_t bldg: 2;
-	volatile uint32_t cnt: 30;
+	pthread_spinlock_t lock;
 	uint32_t size;
 } DataEntry;
 
@@ -24,7 +23,7 @@ typedef struct {
 	DataEntry * en;
 } DataTable;
 
-static inline DataTable * dt_create(uint64_t dsize) {
+static inline DataTable * NewDataTable(uint64_t dsize) {
 	DataTable * dt = malloc(sizeof(DataTable));
 	dt->dsize = dsize;
 	dt->en = MMAP_MM(dt->dsize * sizeof(DataEntry));
@@ -32,7 +31,7 @@ static inline DataTable * dt_create(uint64_t dsize) {
 	return dt;
 }
 
-static inline void dt_destroy(DataTable * dt) {
+static inline void DelDataTable(DataTable * dt) {
 	munmap(dt->en, dt->dsize * sizeof(DataEntry));
 	free(dt);
 }

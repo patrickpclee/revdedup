@@ -21,7 +21,7 @@ int main(int argc, char * argv[]) {
 	uint64_t fsize = 0;
 
 	fd = open(DATA_DIR "blog", O_RDWR);
-	BMEntry * ben = MMAP_FD(fd, MAX_ENTRIES * sizeof(BMEntry));
+	BMEntry * ben = MMAP_FD(fd, MAX_ENTRIES(sizeof(BMEntry)));
 	BucketLog * blog = (BucketLog *) ben;
 	close(fd);
 
@@ -53,6 +53,6 @@ int main(int argc, char * argv[]) {
 	sync();
 
 	munmap(ien, isize);
-	munmap(ben, MAX_ENTRIES * sizeof(BMEntry));
+	munmap(ben, MAX_ENTRIES(sizeof(BMEntry)));
 	return 0;
 }
