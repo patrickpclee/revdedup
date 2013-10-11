@@ -1,0 +1,86 @@
+\hypertarget{structSegment}{\section{\-Segment \-Struct \-Reference}
+\label{structSegment}\index{\-Segment@{\-Segment}}
+}
+
+
+{\ttfamily \#include $<$revdedup.\-h$>$}
+
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+uint64\-\_\-t \hyperlink{structSegment_a22561ad92e73f5ed788d9da666db78d2}{offset}
+\item 
+uint64\-\_\-t \hyperlink{structSegment_ab4221d4fc32571e537286e0b99ee7c71}{id}
+\item 
+uint32\-\_\-t \hyperlink{structSegment_afcfb83f8948563d50c22c80577ff765d}{pos}
+\item 
+uint32\-\_\-t \hyperlink{structSegment_aabdacebc169cc6edc842093f74ca2ad4}{len}
+\item 
+uint64\-\_\-t \hyperlink{structSegment_ace61c04c2a87687951bdf781ec0c2a6d}{cid}
+\item 
+uint16\-\_\-t \hyperlink{structSegment_a1a091314931404d17994b3c0e5e6952c}{chunks}
+\item 
+uint8\-\_\-t \hyperlink{structSegment_a1fcdfe7f7de73dbcc6078302e6e932a3}{unique}
+\item 
+uint8\-\_\-t \hyperlink{structSegment_a04120222445f6286ab7ff9441a6283ff}{compressed}
+\item 
+uint8\-\_\-t \hyperlink{structSegment_ad1974f1d77fe441042034a92977879df}{fp} \mbox{[}\hyperlink{revdedup_8h_a5147a30bb976e44355fd0559f9d10abe}{\-F\-P\-\_\-\-S\-I\-Z\-E}\mbox{]}
+\item 
+uint64\-\_\-t \hyperlink{structSegment_a9347d30011ac2acb00e4f023b19a614d}{clen}
+\item 
+uint8\-\_\-t $\ast$ \hyperlink{structSegment_a40329b70e2e70cc9b8140c7ac4e60169}{data}
+\item 
+uint8\-\_\-t $\ast$ \hyperlink{structSegment_a414dd5e3ff8b23b3b85354a2e070a1db}{cdata}
+\item 
+\hyperlink{structCMEntry}{\-C\-M\-Entry} \hyperlink{structSegment_a29a46e833355572e9929320f144cfc77}{en} \mbox{[}\-M\-A\-X\-\_\-\-S\-E\-G\-\_\-\-C\-H\-U\-N\-K\-S\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\hyperlink{structSegment}{\-Segment} metadata in memory 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structSegment_a414dd5e3ff8b23b3b85354a2e070a1db}{\index{\-Segment@{\-Segment}!cdata@{cdata}}
+\index{cdata@{cdata}!Segment@{\-Segment}}
+\subsubsection[{cdata}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t$\ast$ {\bf \-Segment\-::cdata}}}\label{structSegment_a414dd5e3ff8b23b3b85354a2e070a1db}
+\-Pointer to compressed data \hypertarget{structSegment_a1a091314931404d17994b3c0e5e6952c}{\index{\-Segment@{\-Segment}!chunks@{chunks}}
+\index{chunks@{chunks}!Segment@{\-Segment}}
+\subsubsection[{chunks}]{\setlength{\rightskip}{0pt plus 5cm}uint16\-\_\-t {\bf \-Segment\-::chunks}}}\label{structSegment_a1a091314931404d17994b3c0e5e6952c}
+\-Number of chunks in segment \hypertarget{structSegment_ace61c04c2a87687951bdf781ec0c2a6d}{\index{\-Segment@{\-Segment}!cid@{cid}}
+\index{cid@{cid}!Segment@{\-Segment}}
+\subsubsection[{cid}]{\setlength{\rightskip}{0pt plus 5cm}uint64\-\_\-t {\bf \-Segment\-::cid}}}\label{structSegment_ace61c04c2a87687951bdf781ec0c2a6d}
+\-Respective starting chunk \-I\-D \hypertarget{structSegment_a9347d30011ac2acb00e4f023b19a614d}{\index{\-Segment@{\-Segment}!clen@{clen}}
+\index{clen@{clen}!Segment@{\-Segment}}
+\subsubsection[{clen}]{\setlength{\rightskip}{0pt plus 5cm}uint64\-\_\-t {\bf \-Segment\-::clen}}}\label{structSegment_a9347d30011ac2acb00e4f023b19a614d}
+\-Length of chunk (after compression) \hypertarget{structSegment_a04120222445f6286ab7ff9441a6283ff}{\index{\-Segment@{\-Segment}!compressed@{compressed}}
+\index{compressed@{compressed}!Segment@{\-Segment}}
+\subsubsection[{compressed}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t {\bf \-Segment\-::compressed}}}\label{structSegment_a04120222445f6286ab7ff9441a6283ff}
+\-Bit indicating if this chunk is compressed \hypertarget{structSegment_a40329b70e2e70cc9b8140c7ac4e60169}{\index{\-Segment@{\-Segment}!data@{data}}
+\index{data@{data}!Segment@{\-Segment}}
+\subsubsection[{data}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t$\ast$ {\bf \-Segment\-::data}}}\label{structSegment_a40329b70e2e70cc9b8140c7ac4e60169}
+\-Pointer to data \hypertarget{structSegment_a29a46e833355572e9929320f144cfc77}{\index{\-Segment@{\-Segment}!en@{en}}
+\index{en@{en}!Segment@{\-Segment}}
+\subsubsection[{en}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-C\-M\-Entry} {\bf \-Segment\-::en}\mbox{[}\-M\-A\-X\-\_\-\-S\-E\-G\-\_\-\-C\-H\-U\-N\-K\-S\mbox{]}}}\label{structSegment_a29a46e833355572e9929320f144cfc77}
+\-Respective chunk entries \hypertarget{structSegment_ad1974f1d77fe441042034a92977879df}{\index{\-Segment@{\-Segment}!fp@{fp}}
+\index{fp@{fp}!Segment@{\-Segment}}
+\subsubsection[{fp}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t {\bf \-Segment\-::fp}\mbox{[}{\bf \-F\-P\-\_\-\-S\-I\-Z\-E}\mbox{]}}}\label{structSegment_ad1974f1d77fe441042034a92977879df}
+\-Fingerprint of the segment \hypertarget{structSegment_ab4221d4fc32571e537286e0b99ee7c71}{\index{\-Segment@{\-Segment}!id@{id}}
+\index{id@{id}!Segment@{\-Segment}}
+\subsubsection[{id}]{\setlength{\rightskip}{0pt plus 5cm}uint64\-\_\-t {\bf \-Segment\-::id}}}\label{structSegment_ab4221d4fc32571e537286e0b99ee7c71}
+\-Global segment \-I\-D \hypertarget{structSegment_aabdacebc169cc6edc842093f74ca2ad4}{\index{\-Segment@{\-Segment}!len@{len}}
+\index{len@{len}!Segment@{\-Segment}}
+\subsubsection[{len}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-Segment\-::len}}}\label{structSegment_aabdacebc169cc6edc842093f74ca2ad4}
+\-Length of chunk (before compression) \hypertarget{structSegment_a22561ad92e73f5ed788d9da666db78d2}{\index{\-Segment@{\-Segment}!offset@{offset}}
+\index{offset@{offset}!Segment@{\-Segment}}
+\subsubsection[{offset}]{\setlength{\rightskip}{0pt plus 5cm}uint64\-\_\-t {\bf \-Segment\-::offset}}}\label{structSegment_a22561ad92e73f5ed788d9da666db78d2}
+\-Offset in image \hypertarget{structSegment_afcfb83f8948563d50c22c80577ff765d}{\index{\-Segment@{\-Segment}!pos@{pos}}
+\index{pos@{pos}!Segment@{\-Segment}}
+\subsubsection[{pos}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-Segment\-::pos}}}\label{structSegment_afcfb83f8948563d50c22c80577ff765d}
+\-Position in \hyperlink{structBucket}{\-Bucket} \hypertarget{structSegment_a1fcdfe7f7de73dbcc6078302e6e932a3}{\index{\-Segment@{\-Segment}!unique@{unique}}
+\index{unique@{unique}!Segment@{\-Segment}}
+\subsubsection[{unique}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t {\bf \-Segment\-::unique}}}\label{structSegment_a1fcdfe7f7de73dbcc6078302e6e932a3}
+\-Bit indicating if this chunk is unique 
+
+\-The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{revdedup_8h}{revdedup.\-h}\end{DoxyCompactItemize}

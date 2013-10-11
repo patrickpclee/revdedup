@@ -1,0 +1,71 @@
+\hypertarget{structRevRefService}{\section{\-Rev\-Ref\-Service \-Struct \-Reference}
+\label{structRevRefService}\index{\-Rev\-Ref\-Service@{\-Rev\-Ref\-Service}}
+}
+
+
+{\ttfamily \#include $<$revref.\-h$>$}
+
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+pthread\-\_\-t \hyperlink{structRevRefService_ae928af1a7099ab639bd37c36d7c2db38}{\-\_\-tid}
+\item 
+\hyperlink{structSMEntry}{\-S\-M\-Entry} $\ast$ \hyperlink{structRevRefService_a2f7fa7cd6def136f29d3b67a2374571c}{\-\_\-sen}
+\item 
+\hyperlink{structSegmentLog}{\-Segment\-Log} $\ast$ \hyperlink{structRevRefService_a80a2769c8d61455fa523cdbfd30632d1}{\-\_\-slog}
+\item 
+uint32\-\_\-t \hyperlink{structRevRefService_ac5640d7d1bdd4c98d81df91bb5acca1a}{\-\_\-ins}
+\item 
+uint32\-\_\-t \hyperlink{structRevRefService_a2ce0178a00f065768e68e0e45be7c044}{\-\_\-ver}
+\item 
+int($\ast$ \hyperlink{structRevRefService_afaa96302ed365ae54c9315bf393edb05}{start} )(\hyperlink{structSMEntry}{\-S\-M\-Entry} $\ast$sen, uint32\-\_\-t images, uint32\-\_\-t version)
+\item 
+int($\ast$ \hyperlink{structRevRefService_ac736cb6c2a9ef3d5e4d3e7977c6c2f4f}{stop} )()
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Reverse deduplication reference service control 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structRevRefService_ac5640d7d1bdd4c98d81df91bb5acca1a}{\index{\-Rev\-Ref\-Service@{\-Rev\-Ref\-Service}!\-\_\-ins@{\-\_\-ins}}
+\index{\-\_\-ins@{\-\_\-ins}!RevRefService@{\-Rev\-Ref\-Service}}
+\subsubsection[{\-\_\-ins}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-Rev\-Ref\-Service\-::\-\_\-ins}}}\label{structRevRefService_ac5640d7d1bdd4c98d81df91bb5acca1a}
+\-Total images in revdedup \hypertarget{structRevRefService_a2f7fa7cd6def136f29d3b67a2374571c}{\index{\-Rev\-Ref\-Service@{\-Rev\-Ref\-Service}!\-\_\-sen@{\-\_\-sen}}
+\index{\-\_\-sen@{\-\_\-sen}!RevRefService@{\-Rev\-Ref\-Service}}
+\subsubsection[{\-\_\-sen}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-S\-M\-Entry}$\ast$ {\bf \-Rev\-Ref\-Service\-::\-\_\-sen}}}\label{structRevRefService_a2f7fa7cd6def136f29d3b67a2374571c}
+\hyperlink{structSegment}{\-Segment} entries \hypertarget{structRevRefService_a80a2769c8d61455fa523cdbfd30632d1}{\index{\-Rev\-Ref\-Service@{\-Rev\-Ref\-Service}!\-\_\-slog@{\-\_\-slog}}
+\index{\-\_\-slog@{\-\_\-slog}!RevRefService@{\-Rev\-Ref\-Service}}
+\subsubsection[{\-\_\-slog}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Segment\-Log}$\ast$ {\bf \-Rev\-Ref\-Service\-::\-\_\-slog}}}\label{structRevRefService_a80a2769c8d61455fa523cdbfd30632d1}
+\-Pointer to global segment log \hypertarget{structRevRefService_ae928af1a7099ab639bd37c36d7c2db38}{\index{\-Rev\-Ref\-Service@{\-Rev\-Ref\-Service}!\-\_\-tid@{\-\_\-tid}}
+\index{\-\_\-tid@{\-\_\-tid}!RevRefService@{\-Rev\-Ref\-Service}}
+\subsubsection[{\-\_\-tid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Rev\-Ref\-Service\-::\-\_\-tid}}}\label{structRevRefService_ae928af1a7099ab639bd37c36d7c2db38}
+\-Thread \-I\-D for processing segments \hypertarget{structRevRefService_a2ce0178a00f065768e68e0e45be7c044}{\index{\-Rev\-Ref\-Service@{\-Rev\-Ref\-Service}!\-\_\-ver@{\-\_\-ver}}
+\index{\-\_\-ver@{\-\_\-ver}!RevRefService@{\-Rev\-Ref\-Service}}
+\subsubsection[{\-\_\-ver}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-Rev\-Ref\-Service\-::\-\_\-ver}}}\label{structRevRefService_a2ce0178a00f065768e68e0e45be7c044}
+\-Version for reverse deduplication \hypertarget{structRevRefService_afaa96302ed365ae54c9315bf393edb05}{\index{\-Rev\-Ref\-Service@{\-Rev\-Ref\-Service}!start@{start}}
+\index{start@{start}!RevRefService@{\-Rev\-Ref\-Service}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Rev\-Ref\-Service\-::start})({\bf \-S\-M\-Entry} $\ast$sen, uint32\-\_\-t images, uint32\-\_\-t version)}}\label{structRevRefService_afaa96302ed365ae54c9315bf393edb05}
+\-Starts the reference count service 
+\begin{DoxyParams}{\-Parameters}
+{\em sen} & \hyperlink{structSegment}{\-Segment} entries \\
+\hline
+{\em images} & \-Total images in revdedup \\
+\hline
+{\em version} & \-Version for reverse deduplication \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+\hypertarget{structRevRefService_ac736cb6c2a9ef3d5e4d3e7977c6c2f4f}{\index{\-Rev\-Ref\-Service@{\-Rev\-Ref\-Service}!stop@{stop}}
+\index{stop@{stop}!RevRefService@{\-Rev\-Ref\-Service}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Rev\-Ref\-Service\-::stop})()}}\label{structRevRefService_ac736cb6c2a9ef3d5e4d3e7977c6c2f4f}
+\-Stops the reference count service \begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+
+
+\-The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{revref_8h}{revref.\-h}\end{DoxyCompactItemize}

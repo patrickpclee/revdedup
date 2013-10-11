@@ -1,0 +1,119 @@
+\hypertarget{index_8c}{\section{index.\-c \-File \-Reference}
+\label{index_8c}\index{index.\-c@{index.\-c}}
+}
+
+
+\-Index \-Service \-Implementation.  
+
+
+{\ttfamily \#include \char`\"{}index.\-h\char`\"{}}\*
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{index_8c_a125fd398aeec2d6ac8529e48a3093426}{set\-Database} (\hyperlink{structSegment}{\-Segment} $\ast$seg)
+\item 
+static void $\ast$ \hyperlink{index_8c_a75f4c029c2eb631c3c9b3c78c6cf7d90}{process} (void $\ast$ptr)
+\item 
+static int \hyperlink{index_8c_affa842a436c4cded9758cecdeb445aaf}{start} (\hyperlink{structQueue}{\-Queue} $\ast$iq, \hyperlink{structQueue}{\-Queue} $\ast$oq)
+\item 
+static int \hyperlink{index_8c_af5bef4db921e44f9e7feeb0169f4bcd2}{stop} ()
+\item 
+static int \hyperlink{index_8c_a1a44377f3ab5977422f38f2ed55db4e8}{put\-Segment} (\hyperlink{structSegment}{\-Segment} $\ast$seg, uint64\-\_\-t bucket)
+\item 
+static int \hyperlink{index_8c_a64bc85f800754423dd2c976dd93d9e82}{get\-Segment} (\hyperlink{structSegment}{\-Segment} $\ast$seg)
+\item 
+\hyperlink{structIndexService}{\-Index\-Service} $\ast$ \hyperlink{index_8c_a26fad6d0b127b1649819be4bd0bd4698}{\-Get\-Index\-Service} ()
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{structIndexService}{\-Index\-Service} {\bfseries service}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Index \-Service \-Implementation. \begin{DoxyAuthor}{\-Author}
+\-Ng \-Chun \-Ho 
+\end{DoxyAuthor}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{index_8c_a26fad6d0b127b1649819be4bd0bd4698}{\index{index.\-c@{index.\-c}!\-Get\-Index\-Service@{\-Get\-Index\-Service}}
+\index{\-Get\-Index\-Service@{\-Get\-Index\-Service}!index.c@{index.\-c}}
+\subsubsection[{\-Get\-Index\-Service}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Index\-Service}$\ast$ {\bf \-Get\-Index\-Service} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{index_8c_a26fad6d0b127b1649819be4bd0bd4698}
+\-Gets the control of index service \begin{DoxyReturn}{\-Returns}
+\-The index service 
+\end{DoxyReturn}
+\hypertarget{index_8c_a64bc85f800754423dd2c976dd93d9e82}{\index{index.\-c@{index.\-c}!get\-Segment@{get\-Segment}}
+\index{get\-Segment@{get\-Segment}!index.c@{index.\-c}}
+\subsubsection[{get\-Segment}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf get\-Segment} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Segment} $\ast$}]{seg}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{index_8c_a64bc85f800754423dd2c976dd93d9e82}
+\-Implements \-Index\-Service-\/$>$\hyperlink{index_8c_a64bc85f800754423dd2c976dd93d9e82}{get\-Segment()} \hypertarget{index_8c_a75f4c029c2eb631c3c9b3c78c6cf7d90}{\index{index.\-c@{index.\-c}!process@{process}}
+\index{process@{process}!index.c@{index.\-c}}
+\subsubsection[{process}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf process} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{index_8c_a75f4c029c2eb631c3c9b3c78c6cf7d90}
+\-Main loop for processing segments 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{index_8c_a1a44377f3ab5977422f38f2ed55db4e8}{\index{index.\-c@{index.\-c}!put\-Segment@{put\-Segment}}
+\index{put\-Segment@{put\-Segment}!index.c@{index.\-c}}
+\subsubsection[{put\-Segment}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf put\-Segment} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Segment} $\ast$}]{seg, }
+\item[{uint64\-\_\-t}]{bucket}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{index_8c_a1a44377f3ab5977422f38f2ed55db4e8}
+\-Implements \-Index\-Service-\/$>$\hyperlink{index_8c_a1a44377f3ab5977422f38f2ed55db4e8}{put\-Segment()} \hypertarget{index_8c_a125fd398aeec2d6ac8529e48a3093426}{\index{index.\-c@{index.\-c}!set\-Database@{set\-Database}}
+\index{set\-Database@{set\-Database}!index.c@{index.\-c}}
+\subsubsection[{set\-Database}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf set\-Database} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Segment} $\ast$}]{seg}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{index_8c_a125fd398aeec2d6ac8529e48a3093426}
+\-Distribute \hyperlink{structSegment}{\-Segment} and \-Chunk \-I\-D, also sets database entry 
+\begin{DoxyParams}{\-Parameters}
+{\em seg} & \hyperlink{structSegment}{\-Segment} to process \\
+\hline
+\end{DoxyParams}
+\hypertarget{index_8c_affa842a436c4cded9758cecdeb445aaf}{\index{index.\-c@{index.\-c}!start@{start}}
+\index{start@{start}!index.c@{index.\-c}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf start} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Queue} $\ast$}]{iq, }
+\item[{{\bf \-Queue} $\ast$}]{oq}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{index_8c_affa842a436c4cded9758cecdeb445aaf}
+\-Implements \-Bucket\-Service-\/$>$\hyperlink{bucket_8c_affa842a436c4cded9758cecdeb445aaf}{start()} \hypertarget{index_8c_af5bef4db921e44f9e7feeb0169f4bcd2}{\index{index.\-c@{index.\-c}!stop@{stop}}
+\index{stop@{stop}!index.c@{index.\-c}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf stop} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{index_8c_af5bef4db921e44f9e7feeb0169f4bcd2}
+\-Implements \-Bucket\-Service-\/$>$\hyperlink{bucket_8c_af5bef4db921e44f9e7feeb0169f4bcd2}{stop()} 
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{index_8c_aac0ea3690c7b8392917e86960e7a6064}{\index{index.\-c@{index.\-c}!service@{service}}
+\index{service@{service}!index.c@{index.\-c}}
+\subsubsection[{service}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf \-Index\-Service} service\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{index_8c_aac0ea3690c7b8392917e86960e7a6064}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+ {
+                .start = start,
+                .stop = stop,
+                .putSegment = putSegment,
+                .getSegment = getSegment,
+}
+\end{DoxyCode}

@@ -1,0 +1,59 @@
+\hypertarget{structFpService}{\section{\-Fp\-Service \-Struct \-Reference}
+\label{structFpService}\index{\-Fp\-Service@{\-Fp\-Service}}
+}
+
+
+{\ttfamily \#include $<$fingerprint.\-h$>$}
+
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+pthread\-\_\-t \hyperlink{structFpService_a94191c2fd018c83395922a6a6d490f5d}{\-\_\-tid}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structFpService_a0da51b062ecfa7d09074af07f6258581}{\-\_\-iq}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structFpService_a78ba06235033bd5d83a7f425ef49fc49}{\-\_\-oq}
+\item 
+int($\ast$ \hyperlink{structFpService_a8dc45a1cac37860a976a44674e4ddc70}{start} )(\hyperlink{structQueue}{\-Queue} $\ast$iq, \hyperlink{structQueue}{\-Queue} $\ast$oq)
+\item 
+int($\ast$ \hyperlink{structFpService_a62ef18396745d1ea3de0efab1a90f1fb}{stop} )()
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Fingerprint service control 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structFpService_a0da51b062ecfa7d09074af07f6258581}{\index{\-Fp\-Service@{\-Fp\-Service}!\-\_\-iq@{\-\_\-iq}}
+\index{\-\_\-iq@{\-\_\-iq}!FpService@{\-Fp\-Service}}
+\subsubsection[{\-\_\-iq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Fp\-Service\-::\-\_\-iq}}}\label{structFpService_a0da51b062ecfa7d09074af07f6258581}
+\hyperlink{structQueue}{\-Queue} for incoming segments \hypertarget{structFpService_a78ba06235033bd5d83a7f425ef49fc49}{\index{\-Fp\-Service@{\-Fp\-Service}!\-\_\-oq@{\-\_\-oq}}
+\index{\-\_\-oq@{\-\_\-oq}!FpService@{\-Fp\-Service}}
+\subsubsection[{\-\_\-oq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Fp\-Service\-::\-\_\-oq}}}\label{structFpService_a78ba06235033bd5d83a7f425ef49fc49}
+\hyperlink{structQueue}{\-Queue} for outgoing segments \hypertarget{structFpService_a94191c2fd018c83395922a6a6d490f5d}{\index{\-Fp\-Service@{\-Fp\-Service}!\-\_\-tid@{\-\_\-tid}}
+\index{\-\_\-tid@{\-\_\-tid}!FpService@{\-Fp\-Service}}
+\subsubsection[{\-\_\-tid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Fp\-Service\-::\-\_\-tid}}}\label{structFpService_a94191c2fd018c83395922a6a6d490f5d}
+\-Thread \-I\-D for processing segments \hypertarget{structFpService_a8dc45a1cac37860a976a44674e4ddc70}{\index{\-Fp\-Service@{\-Fp\-Service}!start@{start}}
+\index{start@{start}!FpService@{\-Fp\-Service}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Fp\-Service\-::start})({\bf \-Queue} $\ast$iq, {\bf \-Queue} $\ast$oq)}}\label{structFpService_a8dc45a1cac37860a976a44674e4ddc70}
+\-Starts the fingerprint service 
+\begin{DoxyParams}{\-Parameters}
+{\em iq} & \hyperlink{structQueue}{\-Queue} for incoming segments \\
+\hline
+{\em oq} & \hyperlink{structQueue}{\-Queue} for outgoing segments \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+\hypertarget{structFpService_a62ef18396745d1ea3de0efab1a90f1fb}{\index{\-Fp\-Service@{\-Fp\-Service}!stop@{stop}}
+\index{stop@{stop}!FpService@{\-Fp\-Service}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Fp\-Service\-::stop})()}}\label{structFpService_a62ef18396745d1ea3de0efab1a90f1fb}
+\-Stops the fingerprint service \begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+
+
+\-The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{fingerprint_8h}{fingerprint.\-h}\end{DoxyCompactItemize}

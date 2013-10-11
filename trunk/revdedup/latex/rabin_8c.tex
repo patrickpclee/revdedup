@@ -1,0 +1,153 @@
+\hypertarget{rabin_8c}{\section{rabin.\-c \-File \-Reference}
+\label{rabin_8c}\index{rabin.\-c@{rabin.\-c}}
+}
+
+
+\-Rabin \-Chunking \-Service \-Implementation.  
+
+
+{\ttfamily \#include \char`\"{}rabin.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}fingerprint.\-h\char`\"{}}\*
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{rabin_8c_a16e5ddd3aad890289e7350347085af5c}{\#define {\bfseries \-L\-Q}(x)~(x \& (lq -\/ 1))}\label{rabin_8c_a16e5ddd3aad890289e7350347085af5c}
+
+\item 
+\hypertarget{rabin_8c_a474529669dabbeb160bc167e94cc9019}{\#define {\bfseries \-U\-Q}(x)~(x \& (uq -\/ 1))}\label{rabin_8c_a474529669dabbeb160bc167e94cc9019}
+
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{structSegment}{\-Segment} $\ast$ \hyperlink{rabin_8c_a52777da4b0838fa59f314b2d1cc1159f}{new\-Segment} (uint64\-\_\-t offset, uint8\-\_\-t $\ast$ptr)
+\item 
+static void \hyperlink{rabin_8c_a443198d3e61d0333db2a3a60437438b5}{insert\-Chunk} (\hyperlink{structSegment}{\-Segment} $\ast$seg, uint32\-\_\-t pos, uint32\-\_\-t len)
+\item 
+void $\ast$ \hyperlink{rabin_8c_ae51ded9f727508cea59b322b4faff8e1}{process} (void $\ast$ptr)
+\item 
+int \hyperlink{rabin_8c_a7ab090004f036bb2be6a54fde2061900}{start} (uint8\-\_\-t $\ast$data, uint64\-\_\-t size, \hyperlink{structQueue}{\-Queue} $\ast$oq)
+\item 
+int \hyperlink{rabin_8c_ae51416af540512a3ba419ad44754360e}{stop} ()
+\item 
+\hyperlink{structRabinService}{\-Rabin\-Service} $\ast$ \hyperlink{rabin_8c_a127dfe9e85d35c38eb6397b4b424327f}{\-Get\-Rabin\-Service} ()
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{rabin_8c_a3a1d389a63a7afc0ab7d6a7308369d2f}{static const uint64\-\_\-t {\bfseries d} = 587}\label{rabin_8c_a3a1d389a63a7afc0ab7d6a7308369d2f}
+
+\item 
+\hypertarget{rabin_8c_a759f4e7bd2905821450e1a79719a3060}{static const uint64\-\_\-t {\bfseries m} = 32}\label{rabin_8c_a759f4e7bd2905821450e1a79719a3060}
+
+\item 
+\hypertarget{rabin_8c_ab51d7c69cc5a2a07922566babdbf5d20}{static const uint64\-\_\-t {\bfseries mv} = 0x87}\label{rabin_8c_ab51d7c69cc5a2a07922566babdbf5d20}
+
+\item 
+\hypertarget{rabin_8c_aba9f45a92098b89a155d8fc97e7e15ca}{static const uint64\-\_\-t {\bfseries lq} = \hyperlink{revdedup_8h_a6ce22f85901d1950f88a4bd877de7f8e}{\-A\-V\-G\-\_\-\-C\-H\-U\-N\-K\-\_\-\-S\-I\-Z\-E}}\label{rabin_8c_aba9f45a92098b89a155d8fc97e7e15ca}
+
+\item 
+\hypertarget{rabin_8c_acdeefe20c07d5800364d6e64b04c65a8}{static const uint64\-\_\-t {\bfseries uq} = \-A\-V\-G\-\_\-\-S\-E\-G\-\_\-\-S\-I\-Z\-E}\label{rabin_8c_acdeefe20c07d5800364d6e64b04c65a8}
+
+\item 
+\hypertarget{rabin_8c_a968d7aa36d2a0fa145ffc3ce148d687d}{static uint64\-\_\-t {\bfseries \-\_\-t} \mbox{[}256\mbox{]}}\label{rabin_8c_a968d7aa36d2a0fa145ffc3ce148d687d}
+
+\item 
+\hyperlink{structRabinService}{\-Rabin\-Service} {\bfseries service}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Rabin \-Chunking \-Service \-Implementation. \begin{DoxyAuthor}{\-Author}
+\-Ng \-Chun \-Ho 
+\end{DoxyAuthor}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{rabin_8c_a127dfe9e85d35c38eb6397b4b424327f}{\index{rabin.\-c@{rabin.\-c}!\-Get\-Rabin\-Service@{\-Get\-Rabin\-Service}}
+\index{\-Get\-Rabin\-Service@{\-Get\-Rabin\-Service}!rabin.c@{rabin.\-c}}
+\subsubsection[{\-Get\-Rabin\-Service}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Rabin\-Service}$\ast$ {\bf \-Get\-Rabin\-Service} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{rabin_8c_a127dfe9e85d35c38eb6397b4b424327f}
+\-Gets the control of \-Rabin \-Chunking service \begin{DoxyReturn}{\-Returns}
+\-The \-Rabin \-Chunking service 
+\end{DoxyReturn}
+\hypertarget{rabin_8c_a443198d3e61d0333db2a3a60437438b5}{\index{rabin.\-c@{rabin.\-c}!insert\-Chunk@{insert\-Chunk}}
+\index{insert\-Chunk@{insert\-Chunk}!rabin.c@{rabin.\-c}}
+\subsubsection[{insert\-Chunk}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf insert\-Chunk} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Segment} $\ast$}]{seg, }
+\item[{uint32\-\_\-t}]{pos, }
+\item[{uint32\-\_\-t}]{len}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{rabin_8c_a443198d3e61d0333db2a3a60437438b5}
+\-Insert a chunk into segment 
+\begin{DoxyParams}{\-Parameters}
+{\em seg} & \hyperlink{structSegment}{\-Segment} for insertion \\
+\hline
+{\em pos} & \-Starting position of chunk in the segment \\
+\hline
+{\em len} & \-Length of the chunk \\
+\hline
+\end{DoxyParams}
+\hypertarget{rabin_8c_a52777da4b0838fa59f314b2d1cc1159f}{\index{rabin.\-c@{rabin.\-c}!new\-Segment@{new\-Segment}}
+\index{new\-Segment@{new\-Segment}!rabin.c@{rabin.\-c}}
+\subsubsection[{new\-Segment}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf \-Segment}$\ast$ {\bf new\-Segment} (
+\begin{DoxyParamCaption}
+\item[{uint64\-\_\-t}]{offset, }
+\item[{uint8\-\_\-t $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{rabin_8c_a52777da4b0838fa59f314b2d1cc1159f}
+\-Creates a new segment 
+\begin{DoxyParams}{\-Parameters}
+{\em offset} & \-Offset in the image processed \\
+\hline
+{\em ptr} & \-Pointer to data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\-Created segment 
+\end{DoxyReturn}
+\hypertarget{rabin_8c_ae51ded9f727508cea59b322b4faff8e1}{\index{rabin.\-c@{rabin.\-c}!process@{process}}
+\index{process@{process}!rabin.c@{rabin.\-c}}
+\subsubsection[{process}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ {\bf process} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)}}\label{rabin_8c_ae51ded9f727508cea59b322b4faff8e1}
+\-Main loop for chunking segments 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{rabin_8c_a7ab090004f036bb2be6a54fde2061900}{\index{rabin.\-c@{rabin.\-c}!start@{start}}
+\index{start@{start}!rabin.c@{rabin.\-c}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf start} (
+\begin{DoxyParamCaption}
+\item[{uint8\-\_\-t $\ast$}]{data, }
+\item[{uint64\-\_\-t}]{size, }
+\item[{{\bf \-Queue} $\ast$}]{oq}
+\end{DoxyParamCaption}
+)}}\label{rabin_8c_a7ab090004f036bb2be6a54fde2061900}
+\-Implements \-Rabin\-Service-\/$>$\hyperlink{rabin_8c_a7ab090004f036bb2be6a54fde2061900}{start()} \hypertarget{rabin_8c_ae51416af540512a3ba419ad44754360e}{\index{rabin.\-c@{rabin.\-c}!stop@{stop}}
+\index{stop@{stop}!rabin.c@{rabin.\-c}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf stop} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{rabin_8c_ae51416af540512a3ba419ad44754360e}
+\-Implements \-Rabin\-Service-\/$>$\hyperlink{rabin_8c_ae51416af540512a3ba419ad44754360e}{stop()} 
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{rabin_8c_abe3c0e0f7bb16b3fa457846d4e0f302a}{\index{rabin.\-c@{rabin.\-c}!service@{service}}
+\index{service@{service}!rabin.c@{rabin.\-c}}
+\subsubsection[{service}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf \-Rev\-Ref\-Service} service}}\label{rabin_8c_abe3c0e0f7bb16b3fa457846d4e0f302a}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+ {
+                .start = start,
+                .stop = stop,
+}
+\end{DoxyCode}

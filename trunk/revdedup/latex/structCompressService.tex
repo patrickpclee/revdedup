@@ -1,0 +1,79 @@
+\hypertarget{structCompressService}{\section{\-Compress\-Service \-Struct \-Reference}
+\label{structCompressService}\index{\-Compress\-Service@{\-Compress\-Service}}
+}
+
+
+{\ttfamily \#include $<$compress.\-h$>$}
+
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+pthread\-\_\-t \hyperlink{structCompressService_ac4bdc8605d790886af89c35f63b3cf30}{\-\_\-tid}
+\item 
+pthread\-\_\-t \hyperlink{structCompressService_a71c80458913f442d0572d9dc6ecc01a2}{\-\_\-gid}
+\item 
+pthread\-\_\-t \hyperlink{structCompressService_ac1792be4297e02ba1aed8a71f29e2b5a}{\-\_\-cid} \mbox{[}\hyperlink{revdedup_8h_a9ca444fac49736b7a8321329b3c9d819}{\-C\-P\-S\-\_\-\-C\-N\-T}\mbox{]}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structCompressService_ada5072ad1b06d04d69ce7e379250c5c5}{\-\_\-iq}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structCompressService_a776fb7eb7b634352f27e24cd621d5667}{\-\_\-oq}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structCompressService_a3153dd0416c747d474480d83d23d3d76}{\-\_\-mq} \mbox{[}\hyperlink{revdedup_8h_a9ca444fac49736b7a8321329b3c9d819}{\-C\-P\-S\-\_\-\-C\-N\-T}\mbox{]}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structCompressService_a8f225d532b28a32fb4de849ba6a54def}{\-\_\-dq} \mbox{[}\hyperlink{revdedup_8h_a9ca444fac49736b7a8321329b3c9d819}{\-C\-P\-S\-\_\-\-C\-N\-T}\mbox{]}
+\item 
+int($\ast$ \hyperlink{structCompressService_adfdf8ef15576011f859f36a69f77ace5}{start} )(\hyperlink{structQueue}{\-Queue} $\ast$iq, \hyperlink{structQueue}{\-Queue} $\ast$oq)
+\item 
+int($\ast$ \hyperlink{structCompressService_a14b29cd7fd8ed18555749fbbeda609b9}{stop} )()
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Compression service control 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structCompressService_ac1792be4297e02ba1aed8a71f29e2b5a}{\index{\-Compress\-Service@{\-Compress\-Service}!\-\_\-cid@{\-\_\-cid}}
+\index{\-\_\-cid@{\-\_\-cid}!CompressService@{\-Compress\-Service}}
+\subsubsection[{\-\_\-cid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Compress\-Service\-::\-\_\-cid}\mbox{[}{\bf \-C\-P\-S\-\_\-\-C\-N\-T}\mbox{]}}}\label{structCompressService_ac1792be4297e02ba1aed8a71f29e2b5a}
+\-Thread \-I\-Ds for processing segments \hypertarget{structCompressService_a8f225d532b28a32fb4de849ba6a54def}{\index{\-Compress\-Service@{\-Compress\-Service}!\-\_\-dq@{\-\_\-dq}}
+\index{\-\_\-dq@{\-\_\-dq}!CompressService@{\-Compress\-Service}}
+\subsubsection[{\-\_\-dq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Compress\-Service\-::\-\_\-dq}\mbox{[}{\bf \-C\-P\-S\-\_\-\-C\-N\-T}\mbox{]}}}\label{structCompressService_a8f225d532b28a32fb4de849ba6a54def}
+\-Distributed queue containing outgoing segments for each thread \hypertarget{structCompressService_a71c80458913f442d0572d9dc6ecc01a2}{\index{\-Compress\-Service@{\-Compress\-Service}!\-\_\-gid@{\-\_\-gid}}
+\index{\-\_\-gid@{\-\_\-gid}!CompressService@{\-Compress\-Service}}
+\subsubsection[{\-\_\-gid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Compress\-Service\-::\-\_\-gid}}}\label{structCompressService_a71c80458913f442d0572d9dc6ecc01a2}
+\-Thread \-I\-D for gathering segments \hypertarget{structCompressService_ada5072ad1b06d04d69ce7e379250c5c5}{\index{\-Compress\-Service@{\-Compress\-Service}!\-\_\-iq@{\-\_\-iq}}
+\index{\-\_\-iq@{\-\_\-iq}!CompressService@{\-Compress\-Service}}
+\subsubsection[{\-\_\-iq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Compress\-Service\-::\-\_\-iq}}}\label{structCompressService_ada5072ad1b06d04d69ce7e379250c5c5}
+\hyperlink{structQueue}{\-Queue} for incoming segments \hypertarget{structCompressService_a3153dd0416c747d474480d83d23d3d76}{\index{\-Compress\-Service@{\-Compress\-Service}!\-\_\-mq@{\-\_\-mq}}
+\index{\-\_\-mq@{\-\_\-mq}!CompressService@{\-Compress\-Service}}
+\subsubsection[{\-\_\-mq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Compress\-Service\-::\-\_\-mq}\mbox{[}{\bf \-C\-P\-S\-\_\-\-C\-N\-T}\mbox{]}}}\label{structCompressService_a3153dd0416c747d474480d83d23d3d76}
+\-Distributed queue containing incoming segments for each thread \hypertarget{structCompressService_a776fb7eb7b634352f27e24cd621d5667}{\index{\-Compress\-Service@{\-Compress\-Service}!\-\_\-oq@{\-\_\-oq}}
+\index{\-\_\-oq@{\-\_\-oq}!CompressService@{\-Compress\-Service}}
+\subsubsection[{\-\_\-oq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Compress\-Service\-::\-\_\-oq}}}\label{structCompressService_a776fb7eb7b634352f27e24cd621d5667}
+\hyperlink{structQueue}{\-Queue} for outgoing segments \hypertarget{structCompressService_ac4bdc8605d790886af89c35f63b3cf30}{\index{\-Compress\-Service@{\-Compress\-Service}!\-\_\-tid@{\-\_\-tid}}
+\index{\-\_\-tid@{\-\_\-tid}!CompressService@{\-Compress\-Service}}
+\subsubsection[{\-\_\-tid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Compress\-Service\-::\-\_\-tid}}}\label{structCompressService_ac4bdc8605d790886af89c35f63b3cf30}
+\-Thread \-I\-D for distributing segments \hypertarget{structCompressService_adfdf8ef15576011f859f36a69f77ace5}{\index{\-Compress\-Service@{\-Compress\-Service}!start@{start}}
+\index{start@{start}!CompressService@{\-Compress\-Service}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Compress\-Service\-::start})({\bf \-Queue} $\ast$iq, {\bf \-Queue} $\ast$oq)}}\label{structCompressService_adfdf8ef15576011f859f36a69f77ace5}
+\-Starts the compression service 
+\begin{DoxyParams}{\-Parameters}
+{\em iq} & \hyperlink{structQueue}{\-Queue} for incoming segments \\
+\hline
+{\em oq} & \hyperlink{structQueue}{\-Queue} for outgoing segments \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+\hypertarget{structCompressService_a14b29cd7fd8ed18555749fbbeda609b9}{\index{\-Compress\-Service@{\-Compress\-Service}!stop@{stop}}
+\index{stop@{stop}!CompressService@{\-Compress\-Service}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Compress\-Service\-::stop})()}}\label{structCompressService_a14b29cd7fd8ed18555749fbbeda609b9}
+\-Stops the compression service \begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+
+
+\-The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{compress_8h}{compress.\-h}\end{DoxyCompactItemize}

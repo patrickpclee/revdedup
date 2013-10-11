@@ -1,0 +1,117 @@
+\hypertarget{structIndexService}{\section{\-Index\-Service \-Struct \-Reference}
+\label{structIndexService}\index{\-Index\-Service@{\-Index\-Service}}
+}
+
+
+{\ttfamily \#include $<$index.\-h$>$}
+
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+pthread\-\_\-t \hyperlink{structIndexService_a141d6cafddb2e4b95a4b1f0b23309acd}{\-\_\-tid}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structIndexService_a181bd6964cfc8697acdceec1479114d3}{\-\_\-iq}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structIndexService_aeff079244075907b6867b69f5f9084e3}{\-\_\-oq}
+\item 
+\hyperlink{structSMEntry}{\-S\-M\-Entry} $\ast$ \hyperlink{structIndexService_a08a917690484534f5624b01dc12dcbe7}{\-\_\-sen}
+\item 
+\hyperlink{structCMEntry}{\-C\-M\-Entry} $\ast$ \hyperlink{structIndexService_aa6e028a46d131cb5861f25ef2584cb22}{\-\_\-cen}
+\item 
+\hyperlink{structSegmentLog}{\-Segment\-Log} $\ast$ \hyperlink{structIndexService_a0e09e9c7eb8e8118ae76097df7cb3f01}{\-\_\-slog}
+\item 
+\hyperlink{structChunkLog}{\-Chunk\-Log} $\ast$ \hyperlink{structIndexService_ad0e9843f1aefc56211b9f363d8d25f28}{\-\_\-clog}
+\item 
+\hyperlink{structKCDB}{\-K\-C\-D\-B} $\ast$ \hyperlink{structIndexService_a125e1109c0aa6005fe475e1c13f66fa3}{\-\_\-db}
+\item 
+\hyperlink{bloom_8h_a01fef9dc4348cef76e54814e416ab818}{\-Bloom} \hyperlink{structIndexService_adc8c1659c9d847b57fac8b834a31915a}{\-\_\-bl}
+\item 
+int($\ast$ \hyperlink{structIndexService_ad8d158bb13eeacdec8f716c65dfa78bc}{start} )(\hyperlink{structQueue}{\-Queue} $\ast$iq, \hyperlink{structQueue}{\-Queue} $\ast$oq)
+\item 
+int($\ast$ \hyperlink{structIndexService_a7225479bd31c555bd4a4c9d2698dff52}{stop} )()
+\item 
+int($\ast$ \hyperlink{structIndexService_a20dc255b29cc383c1fe7b3a547afa7e8}{put\-Segment} )(\hyperlink{structSegment}{\-Segment} $\ast$seg, uint64\-\_\-t bucket)
+\item 
+int($\ast$ \hyperlink{structIndexService_a7fb12b4cc7c9eae4c2fab7ba2ae3d42e}{get\-Segment} )(\hyperlink{structSegment}{\-Segment} $\ast$seg)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Index service control 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structIndexService_adc8c1659c9d847b57fac8b834a31915a}{\index{\-Index\-Service@{\-Index\-Service}!\-\_\-bl@{\-\_\-bl}}
+\index{\-\_\-bl@{\-\_\-bl}!IndexService@{\-Index\-Service}}
+\subsubsection[{\-\_\-bl}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Bloom} {\bf \-Index\-Service\-::\-\_\-bl}}}\label{structIndexService_adc8c1659c9d847b57fac8b834a31915a}
+\-Bloom filter for segment fingerprint \hypertarget{structIndexService_aa6e028a46d131cb5861f25ef2584cb22}{\index{\-Index\-Service@{\-Index\-Service}!\-\_\-cen@{\-\_\-cen}}
+\index{\-\_\-cen@{\-\_\-cen}!IndexService@{\-Index\-Service}}
+\subsubsection[{\-\_\-cen}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-C\-M\-Entry}$\ast$ {\bf \-Index\-Service\-::\-\_\-cen}}}\label{structIndexService_aa6e028a46d131cb5861f25ef2584cb22}
+\-Chunk entries \hypertarget{structIndexService_ad0e9843f1aefc56211b9f363d8d25f28}{\index{\-Index\-Service@{\-Index\-Service}!\-\_\-clog@{\-\_\-clog}}
+\index{\-\_\-clog@{\-\_\-clog}!IndexService@{\-Index\-Service}}
+\subsubsection[{\-\_\-clog}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Chunk\-Log}$\ast$ {\bf \-Index\-Service\-::\-\_\-clog}}}\label{structIndexService_ad0e9843f1aefc56211b9f363d8d25f28}
+\-Pointer to global chunk log \hypertarget{structIndexService_a125e1109c0aa6005fe475e1c13f66fa3}{\index{\-Index\-Service@{\-Index\-Service}!\-\_\-db@{\-\_\-db}}
+\index{\-\_\-db@{\-\_\-db}!IndexService@{\-Index\-Service}}
+\subsubsection[{\-\_\-db}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-K\-C\-D\-B}$\ast$ {\bf \-Index\-Service\-::\-\_\-db}}}\label{structIndexService_a125e1109c0aa6005fe475e1c13f66fa3}
+\-Fingerprint -\/$>$ \hyperlink{structSegment}{\-Segment} \-I\-D database \hypertarget{structIndexService_a181bd6964cfc8697acdceec1479114d3}{\index{\-Index\-Service@{\-Index\-Service}!\-\_\-iq@{\-\_\-iq}}
+\index{\-\_\-iq@{\-\_\-iq}!IndexService@{\-Index\-Service}}
+\subsubsection[{\-\_\-iq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Index\-Service\-::\-\_\-iq}}}\label{structIndexService_a181bd6964cfc8697acdceec1479114d3}
+\hyperlink{structQueue}{\-Queue} for incoming segments \hypertarget{structIndexService_aeff079244075907b6867b69f5f9084e3}{\index{\-Index\-Service@{\-Index\-Service}!\-\_\-oq@{\-\_\-oq}}
+\index{\-\_\-oq@{\-\_\-oq}!IndexService@{\-Index\-Service}}
+\subsubsection[{\-\_\-oq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Index\-Service\-::\-\_\-oq}}}\label{structIndexService_aeff079244075907b6867b69f5f9084e3}
+\hyperlink{structQueue}{\-Queue} for outgoing segments \hypertarget{structIndexService_a08a917690484534f5624b01dc12dcbe7}{\index{\-Index\-Service@{\-Index\-Service}!\-\_\-sen@{\-\_\-sen}}
+\index{\-\_\-sen@{\-\_\-sen}!IndexService@{\-Index\-Service}}
+\subsubsection[{\-\_\-sen}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-S\-M\-Entry}$\ast$ {\bf \-Index\-Service\-::\-\_\-sen}}}\label{structIndexService_a08a917690484534f5624b01dc12dcbe7}
+\hyperlink{structSegment}{\-Segment} entries \hypertarget{structIndexService_a0e09e9c7eb8e8118ae76097df7cb3f01}{\index{\-Index\-Service@{\-Index\-Service}!\-\_\-slog@{\-\_\-slog}}
+\index{\-\_\-slog@{\-\_\-slog}!IndexService@{\-Index\-Service}}
+\subsubsection[{\-\_\-slog}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Segment\-Log}$\ast$ {\bf \-Index\-Service\-::\-\_\-slog}}}\label{structIndexService_a0e09e9c7eb8e8118ae76097df7cb3f01}
+\-Pointer to global segment log \hypertarget{structIndexService_a141d6cafddb2e4b95a4b1f0b23309acd}{\index{\-Index\-Service@{\-Index\-Service}!\-\_\-tid@{\-\_\-tid}}
+\index{\-\_\-tid@{\-\_\-tid}!IndexService@{\-Index\-Service}}
+\subsubsection[{\-\_\-tid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Index\-Service\-::\-\_\-tid}}}\label{structIndexService_a141d6cafddb2e4b95a4b1f0b23309acd}
+\-Thread \-I\-D for processing segments \hypertarget{structIndexService_a7fb12b4cc7c9eae4c2fab7ba2ae3d42e}{\index{\-Index\-Service@{\-Index\-Service}!get\-Segment@{get\-Segment}}
+\index{get\-Segment@{get\-Segment}!IndexService@{\-Index\-Service}}
+\subsubsection[{get\-Segment}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Index\-Service\-::get\-Segment})({\bf \-Segment} $\ast$seg)}}\label{structIndexService_a7fb12b4cc7c9eae4c2fab7ba2ae3d42e}
+\-Read segment metadata to memory from the disk 
+\begin{DoxyParams}{\-Parameters}
+{\em seg} & \hyperlink{structSegment}{\-Segment} to read \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+\hypertarget{structIndexService_a20dc255b29cc383c1fe7b3a547afa7e8}{\index{\-Index\-Service@{\-Index\-Service}!put\-Segment@{put\-Segment}}
+\index{put\-Segment@{put\-Segment}!IndexService@{\-Index\-Service}}
+\subsubsection[{put\-Segment}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Index\-Service\-::put\-Segment})({\bf \-Segment} $\ast$seg, uint64\-\_\-t bucket)}}\label{structIndexService_a20dc255b29cc383c1fe7b3a547afa7e8}
+\-Write segment metadata in memory to the disk 
+\begin{DoxyParams}{\-Parameters}
+{\em seg} & \hyperlink{structSegment}{\-Segment} to write \\
+\hline
+{\em bucket} & \hyperlink{structBucket}{\-Bucket} \-I\-D containing the segment \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+\hypertarget{structIndexService_ad8d158bb13eeacdec8f716c65dfa78bc}{\index{\-Index\-Service@{\-Index\-Service}!start@{start}}
+\index{start@{start}!IndexService@{\-Index\-Service}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Index\-Service\-::start})({\bf \-Queue} $\ast$iq, {\bf \-Queue} $\ast$oq)}}\label{structIndexService_ad8d158bb13eeacdec8f716c65dfa78bc}
+\-Starts the index service 
+\begin{DoxyParams}{\-Parameters}
+{\em iq} & \hyperlink{structQueue}{\-Queue} for incoming segments \\
+\hline
+{\em oq} & \hyperlink{structQueue}{\-Queue} for outgoing segments \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+\hypertarget{structIndexService_a7225479bd31c555bd4a4c9d2698dff52}{\index{\-Index\-Service@{\-Index\-Service}!stop@{stop}}
+\index{stop@{stop}!IndexService@{\-Index\-Service}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Index\-Service\-::stop})()}}\label{structIndexService_a7225479bd31c555bd4a4c9d2698dff52}
+\-Stops the index service \begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+
+
+\-The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{index_8h}{index.\-h}\end{DoxyCompactItemize}

@@ -1,0 +1,70 @@
+\hypertarget{structDataInfo}{\section{\-Data\-Info \-Struct \-Reference}
+\label{structDataInfo}\index{\-Data\-Info@{\-Data\-Info}}
+}
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{structDataInfo_a80e6980a10d0cda89031447bccbc9fbe}{ifd}
+\item 
+int \hyperlink{structDataInfo_a7a0722c3de92180f73c4e06611132ed1}{ofd}
+\item 
+\hyperlink{structDirect}{\-Direct} $\ast$ \hyperlink{structDataInfo_a9197ff2b89a692f1ed9faca47d5e6e41}{dir}
+\item 
+uint64\-\_\-t \hyperlink{structDataInfo_a48e1e104444c91f1ed5a8c5063123da2}{size}
+\item 
+uint64\-\_\-t \hyperlink{structDataInfo_ad390a39f9b2b1bf9cb97b080f145e4cc}{cnt}
+\item 
+volatile uint64\-\_\-t \hyperlink{structDataInfo_af568214ced191e48f92e5373c5273282}{cur}
+\item 
+pthread\-\_\-spinlock\-\_\-t \hyperlink{structDataInfo_ab26e1a2ea30711ab136449d3c8341c59}{lock}
+\item 
+uint32\-\_\-t \hyperlink{structDataInfo_a1da1223452f43d4d819c1f1206c4df0f}{ver}
+\item 
+\hyperlink{structMIRecipe}{\-M\-I\-Recipe} $\ast$ \hyperlink{structDataInfo_a13fc7eb1fc2e6d166632515151a15edc}{mir}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structDataInfo_ad99e6efd3299160bbc4e305d4af52264}{pfq}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Definition of data info for all threads 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structDataInfo_ad390a39f9b2b1bf9cb97b080f145e4cc}{\index{\-Data\-Info@{\-Data\-Info}!cnt@{cnt}}
+\index{cnt@{cnt}!DataInfo@{\-Data\-Info}}
+\subsubsection[{cnt}]{\setlength{\rightskip}{0pt plus 5cm}uint64\-\_\-t {\bf \-Data\-Info\-::cnt}}}\label{structDataInfo_ad390a39f9b2b1bf9cb97b080f145e4cc}
+\-Number of direct recipe entries \hypertarget{structDataInfo_af568214ced191e48f92e5373c5273282}{\index{\-Data\-Info@{\-Data\-Info}!cur@{cur}}
+\index{cur@{cur}!DataInfo@{\-Data\-Info}}
+\subsubsection[{cur}]{\setlength{\rightskip}{0pt plus 5cm}volatile uint64\-\_\-t {\bf \-Data\-Info\-::cur}}}\label{structDataInfo_af568214ced191e48f92e5373c5273282}
+\hyperlink{structDirect}{\-Direct} entry currently processed
+
+\-Segments currently processing \hypertarget{structDataInfo_a9197ff2b89a692f1ed9faca47d5e6e41}{\index{\-Data\-Info@{\-Data\-Info}!dir@{dir}}
+\index{dir@{dir}!DataInfo@{\-Data\-Info}}
+\subsubsection[{dir}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Direct}$\ast$ {\bf \-Data\-Info\-::dir}}}\label{structDataInfo_a9197ff2b89a692f1ed9faca47d5e6e41}
+\hyperlink{structDirect}{\-Direct} recipe entries \hypertarget{structDataInfo_a80e6980a10d0cda89031447bccbc9fbe}{\index{\-Data\-Info@{\-Data\-Info}!ifd@{ifd}}
+\index{ifd@{ifd}!DataInfo@{\-Data\-Info}}
+\subsubsection[{ifd}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-Data\-Info\-::ifd}}}\label{structDataInfo_a80e6980a10d0cda89031447bccbc9fbe}
+\hyperlink{structDirect}{\-Direct} recipe file descriptor \hypertarget{structDataInfo_ab26e1a2ea30711ab136449d3c8341c59}{\index{\-Data\-Info@{\-Data\-Info}!lock@{lock}}
+\index{lock@{lock}!DataInfo@{\-Data\-Info}}
+\subsubsection[{lock}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-spinlock\-\_\-t {\bf \-Data\-Info\-::lock}}}\label{structDataInfo_ab26e1a2ea30711ab136449d3c8341c59}
+\-Lock for modifying cur \hypertarget{structDataInfo_a13fc7eb1fc2e6d166632515151a15edc}{\index{\-Data\-Info@{\-Data\-Info}!mir@{mir}}
+\index{mir@{mir}!DataInfo@{\-Data\-Info}}
+\subsubsection[{mir}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-M\-I\-Recipe}$\ast$ {\bf \-Data\-Info\-::mir}}}\label{structDataInfo_a13fc7eb1fc2e6d166632515151a15edc}
+\-Pointer to merged indirect recipe \hypertarget{structDataInfo_a7a0722c3de92180f73c4e06611132ed1}{\index{\-Data\-Info@{\-Data\-Info}!ofd@{ofd}}
+\index{ofd@{ofd}!DataInfo@{\-Data\-Info}}
+\subsubsection[{ofd}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-Data\-Info\-::ofd}}}\label{structDataInfo_a7a0722c3de92180f73c4e06611132ed1}
+\-File descriptor for sending image data \hypertarget{structDataInfo_ad99e6efd3299160bbc4e305d4af52264}{\index{\-Data\-Info@{\-Data\-Info}!pfq@{pfq}}
+\index{pfq@{pfq}!DataInfo@{\-Data\-Info}}
+\subsubsection[{pfq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Data\-Info\-::pfq}}}\label{structDataInfo_ad99e6efd3299160bbc4e305d4af52264}
+\-Prefetch queue \hypertarget{structDataInfo_a48e1e104444c91f1ed5a8c5063123da2}{\index{\-Data\-Info@{\-Data\-Info}!size@{size}}
+\index{size@{size}!DataInfo@{\-Data\-Info}}
+\subsubsection[{size}]{\setlength{\rightskip}{0pt plus 5cm}uint64\-\_\-t {\bf \-Data\-Info\-::size}}}\label{structDataInfo_a48e1e104444c91f1ed5a8c5063123da2}
+\-Size of direct recipe \hypertarget{structDataInfo_a1da1223452f43d4d819c1f1206c4df0f}{\index{\-Data\-Info@{\-Data\-Info}!ver@{ver}}
+\index{ver@{ver}!DataInfo@{\-Data\-Info}}
+\subsubsection[{ver}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-Data\-Info\-::ver}}}\label{structDataInfo_a1da1223452f43d4d819c1f1206c4df0f}
+\-Version for restoration 
+
+\-The documentation for this struct was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{restore_8c}{restore.\-c}\item 
+restoreo.\-c\end{DoxyCompactItemize}

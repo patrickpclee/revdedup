@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['cdata',['cdata',['../structSegment.html#a414dd5e3ff8b23b3b85354a2e070a1db',1,'Segment']]],
+  ['chunkid',['chunkID',['../structChunkLog.html#a616ced22ecd39d04d6d4fec80ca88f01',1,'ChunkLog']]],
+  ['chunks',['chunks',['../structSMEntry.html#af3eac3fc8f226023f2f0cbe376ce181f',1,'SMEntry::chunks()'],['../structSegment.html#a1a091314931404d17994b3c0e5e6952c',1,'Segment::chunks()'],['../structMIRecipe.html#a63a2515abe1efe6c2aa210929f70cd7d',1,'MIRecipe::chunks()']]],
+  ['cid',['cid',['../structSMEntry.html#ac7c9d44ce3264841482906e372b42986',1,'SMEntry::cid()'],['../structSegment.html#ace61c04c2a87687951bdf781ec0c2a6d',1,'Segment::cid()']]],
+  ['cipher_5falgorithm',['cipher_algorithm',['../unionMHD__ConnectionInfo.html#a0728c9f1a9c48cc61811e45b019999b1',1,'MHD_ConnectionInfo']]],
+  ['clen',['clen',['../structSegment.html#a9347d30011ac2acb00e4f023b19a614d',1,'Segment']]],
+  ['client_5faddr',['client_addr',['../unionMHD__ConnectionInfo.html#ac169bc869c7d5d14d78946360309192d',1,'MHD_ConnectionInfo']]],
+  ['client_5fcert',['client_cert',['../unionMHD__ConnectionInfo.html#a82eb5004c18287649f22a520482d3eb3',1,'MHD_ConnectionInfo']]],
+  ['cnt',['cnt',['../structDataEntry.html#ac370f0b6417e245082350869d6b539c5',1,'DataEntry::cnt()'],['../structDataInfo.html#ad390a39f9b2b1bf9cb97b080f145e4cc',1,'DataInfo::cnt()']]],
+  ['compressed',['compressed',['../structSMEntry.html#ad3fc577e518cee72b47bd09dc2b58530',1,'SMEntry::compressed()'],['../structSegment.html#a04120222445f6286ab7ff9441a6283ff',1,'Segment::compressed()']]],
+  ['cond_5fr',['cond_r',['../structQueue.html#a8c115b4b7573549b7d62fa6751e51782',1,'Queue']]],
+  ['cond_5fw',['cond_w',['../structQueue.html#abb0db2d1ba4873469a2cd8c96421bbfe',1,'Queue']]],
+  ['connect_5ffd',['connect_fd',['../unionMHD__ConnectionInfo.html#a4bf6e893d4c039ab6d3a5809576af01d',1,'MHD_ConnectionInfo']]],
+  ['csize',['csize',['../structIMEntry.html#a26e479602ebff2d35dde9675b955109e',1,'IMEntry']]],
+  ['cspace',['cspace',['../structIMEntry.html#ae9b6648d5d7b3202d5eb238274d13045',1,'IMEntry']]],
+  ['cur',['cur',['../structKCCUR.html#a521b6ac64c18efec3e4b989a41bbe282',1,'KCCUR::cur()'],['../structDataInfo.html#af568214ced191e48f92e5373c5273282',1,'DataInfo::cur()']]],
+  ['cur_5flen',['cur_len',['../structQueue.html#a7ad73de52bfdf66f2d56c0bce6fe4946',1,'Queue']]]
+];

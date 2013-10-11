@@ -1,0 +1,204 @@
+\hypertarget{group__event}{\section{event-\/loop control}
+\label{group__event}\index{event-\/loop control@{event-\/loop control}}
+}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+struct \-M\-H\-D\-\_\-\-Daemon $\ast$ \hyperlink{group__event_gae52e025a2bed7eacd487fe31dadb6c57}{\-M\-H\-D\-\_\-start\-\_\-daemon\-\_\-va} (unsigned int flags, uint16\-\_\-t port, \hyperlink{microhttpd_8h_aeb5663e00846f6a4df836e730381a9f2}{\-M\-H\-D\-\_\-\-Accept\-Policy\-Callback} apc, void $\ast$apc\-\_\-cls, \hyperlink{microhttpd_8h_a7d207efa3873993c6d3a72beb9367f75}{\-M\-H\-D\-\_\-\-Access\-Handler\-Callback} dh, void $\ast$dh\-\_\-cls, va\-\_\-list ap)
+\item 
+struct \-M\-H\-D\-\_\-\-Daemon $\ast$ \hyperlink{group__event_ga2630f8fc0c01fefe0abe1d2476b0388d}{\-M\-H\-D\-\_\-start\-\_\-daemon} (unsigned int flags, uint16\-\_\-t port, \hyperlink{microhttpd_8h_aeb5663e00846f6a4df836e730381a9f2}{\-M\-H\-D\-\_\-\-Accept\-Policy\-Callback} apc, void $\ast$apc\-\_\-cls, \hyperlink{microhttpd_8h_a7d207efa3873993c6d3a72beb9367f75}{\-M\-H\-D\-\_\-\-Access\-Handler\-Callback} dh, void $\ast$dh\-\_\-cls,...)
+\item 
+void \hyperlink{group__event_ga30c557319e35be05fceb99ce568e1242}{\-M\-H\-D\-\_\-stop\-\_\-daemon} (struct \-M\-H\-D\-\_\-\-Daemon $\ast$daemon)
+\item 
+int \hyperlink{group__event_gad3adac36bc7520280fe2b82fcc254801}{\-M\-H\-D\-\_\-get\-\_\-fdset} (struct \-M\-H\-D\-\_\-\-Daemon $\ast$daemon, fd\-\_\-set $\ast$read\-\_\-fd\-\_\-set, fd\-\_\-set $\ast$write\-\_\-fd\-\_\-set, fd\-\_\-set $\ast$except\-\_\-fd\-\_\-set, int $\ast$max\-\_\-fd)
+\item 
+int \hyperlink{group__event_gacda7636c2538a14f817befe91d7a2f21}{\-M\-H\-D\-\_\-get\-\_\-timeout} (struct \-M\-H\-D\-\_\-\-Daemon $\ast$daemon, \-M\-H\-D\-\_\-\-U\-N\-S\-I\-G\-N\-E\-D\-\_\-\-L\-O\-N\-G\-\_\-\-L\-O\-N\-G $\ast$timeout)
+\item 
+int \hyperlink{group__event_ga2cf4c3d03048b8ad410868998fc303ff}{\-M\-H\-D\-\_\-run} (struct \-M\-H\-D\-\_\-\-Daemon $\ast$daemon)
+\item 
+int \hyperlink{group__event_gab28b356fc218622c8e7e5aefb8ac5d52}{\-M\-H\-D\-\_\-run\-\_\-from\-\_\-select} (struct \-M\-H\-D\-\_\-\-Daemon $\ast$daemon, const fd\-\_\-set $\ast$read\-\_\-fd\-\_\-set, const fd\-\_\-set $\ast$write\-\_\-fd\-\_\-set, const fd\-\_\-set $\ast$except\-\_\-fd\-\_\-set)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-M\-H\-D \-A\-P\-I to start and stop the \-H\-T\-T\-P server and manage the event loop. 
+
+\subsection{\-Function \-Documentation}
+\hypertarget{group__event_gad3adac36bc7520280fe2b82fcc254801}{\index{event-\/loop control@{event-\/loop control}!\-M\-H\-D\-\_\-get\-\_\-fdset@{\-M\-H\-D\-\_\-get\-\_\-fdset}}
+\index{\-M\-H\-D\-\_\-get\-\_\-fdset@{\-M\-H\-D\-\_\-get\-\_\-fdset}!event-loop control@{event-\/loop control}}
+\subsubsection[{\-M\-H\-D\-\_\-get\-\_\-fdset}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-M\-H\-D\-\_\-get\-\_\-fdset} (
+\begin{DoxyParamCaption}
+\item[{struct \-M\-H\-D\-\_\-\-Daemon $\ast$}]{daemon, }
+\item[{fd\-\_\-set $\ast$}]{read\-\_\-fd\-\_\-set, }
+\item[{fd\-\_\-set $\ast$}]{write\-\_\-fd\-\_\-set, }
+\item[{fd\-\_\-set $\ast$}]{except\-\_\-fd\-\_\-set, }
+\item[{int $\ast$}]{max\-\_\-fd}
+\end{DoxyParamCaption}
+)}}\label{group__event_gad3adac36bc7520280fe2b82fcc254801}
+\-Obtain the `select()` sets for this daemon.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em daemon} & daemon to get sets from \\
+\hline
+{\em read\-\_\-fd\-\_\-set} & read set \\
+\hline
+{\em write\-\_\-fd\-\_\-set} & write set \\
+\hline
+{\em except\-\_\-fd\-\_\-set} & except set \\
+\hline
+{\em max\-\_\-fd} & increased to largest \-F\-D added (if larger than existing value); can be \-N\-U\-L\-L \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\hyperlink{microhttpd_8h_a802c6784232db3736734807f2fb54e5c}{\-M\-H\-D\-\_\-\-Y\-E\-S} on success, \hyperlink{microhttpd_8h_a741a3f020f0a97d89f4566d27e606d5f}{\-M\-H\-D\-\_\-\-N\-O} if this daemon was not started with the right options for this call. 
+\end{DoxyReturn}
+\hypertarget{group__event_gacda7636c2538a14f817befe91d7a2f21}{\index{event-\/loop control@{event-\/loop control}!\-M\-H\-D\-\_\-get\-\_\-timeout@{\-M\-H\-D\-\_\-get\-\_\-timeout}}
+\index{\-M\-H\-D\-\_\-get\-\_\-timeout@{\-M\-H\-D\-\_\-get\-\_\-timeout}!event-loop control@{event-\/loop control}}
+\subsubsection[{\-M\-H\-D\-\_\-get\-\_\-timeout}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-M\-H\-D\-\_\-get\-\_\-timeout} (
+\begin{DoxyParamCaption}
+\item[{struct \-M\-H\-D\-\_\-\-Daemon $\ast$}]{daemon, }
+\item[{\-M\-H\-D\-\_\-\-U\-N\-S\-I\-G\-N\-E\-D\-\_\-\-L\-O\-N\-G\-\_\-\-L\-O\-N\-G $\ast$}]{timeout}
+\end{DoxyParamCaption}
+)}}\label{group__event_gacda7636c2538a14f817befe91d7a2f21}
+\-Obtain timeout value for `select()` for this daemon (only needed if connection timeout is used). \-The returned value is how long `select()` or `poll()` should at most block, not the timeout value set for connections. \-This function \-M\-U\-S\-T \-N\-O\-T be called if \-M\-H\-D is running with \hyperlink{microhttpd_8h_ad9eefc60a853c1ee287ba96572a32a22a0c566cbc5f8b02ac645b20e0d6cfc5bf}{\-M\-H\-D\-\_\-\-U\-S\-E\-\_\-\-T\-H\-R\-E\-A\-D\-\_\-\-P\-E\-R\-\_\-\-C\-O\-N\-N\-E\-C\-T\-I\-O\-N}.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em daemon} & daemon to query for timeout \\
+\hline
+{\em timeout} & set to the timeout (in milliseconds) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\hyperlink{microhttpd_8h_a802c6784232db3736734807f2fb54e5c}{\-M\-H\-D\-\_\-\-Y\-E\-S} on success, \hyperlink{microhttpd_8h_a741a3f020f0a97d89f4566d27e606d5f}{\-M\-H\-D\-\_\-\-N\-O} if timeouts are not used (or no connections exist that would necessiate the use of a timeout right now). 
+\end{DoxyReturn}
+\hypertarget{group__event_ga2cf4c3d03048b8ad410868998fc303ff}{\index{event-\/loop control@{event-\/loop control}!\-M\-H\-D\-\_\-run@{\-M\-H\-D\-\_\-run}}
+\index{\-M\-H\-D\-\_\-run@{\-M\-H\-D\-\_\-run}!event-loop control@{event-\/loop control}}
+\subsubsection[{\-M\-H\-D\-\_\-run}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-M\-H\-D\-\_\-run} (
+\begin{DoxyParamCaption}
+\item[{struct \-M\-H\-D\-\_\-\-Daemon $\ast$}]{daemon}
+\end{DoxyParamCaption}
+)}}\label{group__event_ga2cf4c3d03048b8ad410868998fc303ff}
+\-Run webserver operations (without blocking unless in client callbacks). \-This method should be called by clients in combination with \hyperlink{group__event_gad3adac36bc7520280fe2b82fcc254801}{\-M\-H\-D\-\_\-get\-\_\-fdset} if the client-\/controlled select method is used.
+
+\-This function is a convenience method, which is useful if the fd\-\_\-sets from \hyperlink{group__event_gad3adac36bc7520280fe2b82fcc254801}{\-M\-H\-D\-\_\-get\-\_\-fdset} were not directly passed to `select()`; with this function, \-M\-H\-D will internally do the appropriate `select()` call itself again. \-While it is always safe to call \hyperlink{group__event_ga2cf4c3d03048b8ad410868998fc303ff}{\-M\-H\-D\-\_\-run} (in external select mode), you should call \hyperlink{group__event_gab28b356fc218622c8e7e5aefb8ac5d52}{\-M\-H\-D\-\_\-run\-\_\-from\-\_\-select} if performance is important (as it saves an expensive call to `select()`).
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em daemon} & daemon to run \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\hyperlink{microhttpd_8h_a802c6784232db3736734807f2fb54e5c}{\-M\-H\-D\-\_\-\-Y\-E\-S} on success, \hyperlink{microhttpd_8h_a741a3f020f0a97d89f4566d27e606d5f}{\-M\-H\-D\-\_\-\-N\-O} if this daemon was not started with the right options for this call. 
+\end{DoxyReturn}
+\hypertarget{group__event_gab28b356fc218622c8e7e5aefb8ac5d52}{\index{event-\/loop control@{event-\/loop control}!\-M\-H\-D\-\_\-run\-\_\-from\-\_\-select@{\-M\-H\-D\-\_\-run\-\_\-from\-\_\-select}}
+\index{\-M\-H\-D\-\_\-run\-\_\-from\-\_\-select@{\-M\-H\-D\-\_\-run\-\_\-from\-\_\-select}!event-loop control@{event-\/loop control}}
+\subsubsection[{\-M\-H\-D\-\_\-run\-\_\-from\-\_\-select}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-M\-H\-D\-\_\-run\-\_\-from\-\_\-select} (
+\begin{DoxyParamCaption}
+\item[{struct \-M\-H\-D\-\_\-\-Daemon $\ast$}]{daemon, }
+\item[{const fd\-\_\-set $\ast$}]{read\-\_\-fd\-\_\-set, }
+\item[{const fd\-\_\-set $\ast$}]{write\-\_\-fd\-\_\-set, }
+\item[{const fd\-\_\-set $\ast$}]{except\-\_\-fd\-\_\-set}
+\end{DoxyParamCaption}
+)}}\label{group__event_gab28b356fc218622c8e7e5aefb8ac5d52}
+\-Run webserver operations. \-This method should be called by clients in combination with \hyperlink{group__event_gad3adac36bc7520280fe2b82fcc254801}{\-M\-H\-D\-\_\-get\-\_\-fdset} if the client-\/controlled select method is used.
+
+\-You can use this function instead of \hyperlink{group__event_ga2cf4c3d03048b8ad410868998fc303ff}{\-M\-H\-D\-\_\-run} if you called `select()` on the result from \hyperlink{group__event_gad3adac36bc7520280fe2b82fcc254801}{\-M\-H\-D\-\_\-get\-\_\-fdset}. \-File descriptors in the sets that are not controlled by \-M\-H\-D will be ignored. \-Calling this function instead of \hyperlink{group__event_ga2cf4c3d03048b8ad410868998fc303ff}{\-M\-H\-D\-\_\-run} is more efficient as \-M\-H\-D will not have to call `select()` again to determine which operations are ready.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em daemon} & daemon to run select loop for \\
+\hline
+{\em read\-\_\-fd\-\_\-set} & read set \\
+\hline
+{\em write\-\_\-fd\-\_\-set} & write set \\
+\hline
+{\em except\-\_\-fd\-\_\-set} & except set (not used, can be \-N\-U\-L\-L) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\hyperlink{microhttpd_8h_a741a3f020f0a97d89f4566d27e606d5f}{\-M\-H\-D\-\_\-\-N\-O} on serious errors, \hyperlink{microhttpd_8h_a802c6784232db3736734807f2fb54e5c}{\-M\-H\-D\-\_\-\-Y\-E\-S} on success 
+\end{DoxyReturn}
+\hypertarget{group__event_ga2630f8fc0c01fefe0abe1d2476b0388d}{\index{event-\/loop control@{event-\/loop control}!\-M\-H\-D\-\_\-start\-\_\-daemon@{\-M\-H\-D\-\_\-start\-\_\-daemon}}
+\index{\-M\-H\-D\-\_\-start\-\_\-daemon@{\-M\-H\-D\-\_\-start\-\_\-daemon}!event-loop control@{event-\/loop control}}
+\subsubsection[{\-M\-H\-D\-\_\-start\-\_\-daemon}]{\setlength{\rightskip}{0pt plus 5cm}struct \-M\-H\-D\-\_\-\-Daemon$\ast$ {\bf \-M\-H\-D\-\_\-start\-\_\-daemon} (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{flags, }
+\item[{uint16\-\_\-t}]{port, }
+\item[{{\bf \-M\-H\-D\-\_\-\-Accept\-Policy\-Callback}}]{apc, }
+\item[{void $\ast$}]{apc\-\_\-cls, }
+\item[{{\bf \-M\-H\-D\-\_\-\-Access\-Handler\-Callback}}]{dh, }
+\item[{void $\ast$}]{dh\-\_\-cls, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}read\mbox{]}}}}\label{group__event_ga2630f8fc0c01fefe0abe1d2476b0388d}
+\-Start a webserver on the given port. \-Variadic version of \hyperlink{group__event_gae52e025a2bed7eacd487fe31dadb6c57}{\-M\-H\-D\-\_\-start\-\_\-daemon\-\_\-va}.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em flags} & combination of `enum \-M\-H\-D\-\_\-\-F\-L\-A\-G` values \\
+\hline
+{\em port} & port to bind to \\
+\hline
+{\em apc} & callback to call to check which clients will be allowed to connect; you can pass \-N\-U\-L\-L in which case connections from any \-I\-P will be accepted \\
+\hline
+{\em apc\-\_\-cls} & extra argument to apc \\
+\hline
+{\em dh} & handler called for all requests (repeatedly) \\
+\hline
+{\em dh\-\_\-cls} & extra argument to {\itshape dh\/} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\-N\-U\-L\-L on error, handle to daemon on success 
+\end{DoxyReturn}
+\hypertarget{group__event_gae52e025a2bed7eacd487fe31dadb6c57}{\index{event-\/loop control@{event-\/loop control}!\-M\-H\-D\-\_\-start\-\_\-daemon\-\_\-va@{\-M\-H\-D\-\_\-start\-\_\-daemon\-\_\-va}}
+\index{\-M\-H\-D\-\_\-start\-\_\-daemon\-\_\-va@{\-M\-H\-D\-\_\-start\-\_\-daemon\-\_\-va}!event-loop control@{event-\/loop control}}
+\subsubsection[{\-M\-H\-D\-\_\-start\-\_\-daemon\-\_\-va}]{\setlength{\rightskip}{0pt plus 5cm}struct \-M\-H\-D\-\_\-\-Daemon$\ast$ {\bf \-M\-H\-D\-\_\-start\-\_\-daemon\-\_\-va} (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{flags, }
+\item[{uint16\-\_\-t}]{port, }
+\item[{{\bf \-M\-H\-D\-\_\-\-Accept\-Policy\-Callback}}]{apc, }
+\item[{void $\ast$}]{apc\-\_\-cls, }
+\item[{{\bf \-M\-H\-D\-\_\-\-Access\-Handler\-Callback}}]{dh, }
+\item[{void $\ast$}]{dh\-\_\-cls, }
+\item[{va\-\_\-list}]{ap}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}read\mbox{]}}}}\label{group__event_gae52e025a2bed7eacd487fe31dadb6c57}
+\-Start a webserver on the given port.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em flags} & combination of `enum \-M\-H\-D\-\_\-\-F\-L\-A\-G` values \\
+\hline
+{\em port} & port to bind to (in host byte order) \\
+\hline
+{\em apc} & callback to call to check which clients will be allowed to connect; you can pass \-N\-U\-L\-L in which case connections from any \-I\-P will be accepted \\
+\hline
+{\em apc\-\_\-cls} & extra argument to apc \\
+\hline
+{\em dh} & handler called for all requests (repeatedly) \\
+\hline
+{\em dh\-\_\-cls} & extra argument to {\itshape dh\/} \\
+\hline
+{\em ap} & list of options (type-\/value pairs, terminated with \hyperlink{microhttpd_8h_a159aba015765dbe1096c8726a18ff250af1faf6e266f8fe51c87919635febb96d}{\-M\-H\-D\-\_\-\-O\-P\-T\-I\-O\-N\-\_\-\-E\-N\-D}). \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\-N\-U\-L\-L on error, handle to daemon on success 
+\end{DoxyReturn}
+\hypertarget{group__event_ga30c557319e35be05fceb99ce568e1242}{\index{event-\/loop control@{event-\/loop control}!\-M\-H\-D\-\_\-stop\-\_\-daemon@{\-M\-H\-D\-\_\-stop\-\_\-daemon}}
+\index{\-M\-H\-D\-\_\-stop\-\_\-daemon@{\-M\-H\-D\-\_\-stop\-\_\-daemon}!event-loop control@{event-\/loop control}}
+\subsubsection[{\-M\-H\-D\-\_\-stop\-\_\-daemon}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-M\-H\-D\-\_\-stop\-\_\-daemon} (
+\begin{DoxyParamCaption}
+\item[{struct \-M\-H\-D\-\_\-\-Daemon $\ast$}]{daemon}
+\end{DoxyParamCaption}
+)}}\label{group__event_ga30c557319e35be05fceb99ce568e1242}
+\-Shutdown an \-H\-T\-T\-P daemon.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em daemon} & daemon to stop \\
+\hline
+\end{DoxyParams}

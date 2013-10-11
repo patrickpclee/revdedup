@@ -1,0 +1,73 @@
+\hypertarget{group__logging}{\section{logging}
+\label{group__logging}\index{logging@{logging}}
+}
+\subsection*{\-Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{group__logging_gaff0dcaf7b7ec48a5889ca30654f900dd}{\-M\-H\-D\-\_\-\-Log\-Callback} )(void $\ast$cls, const char $\ast$fm, va\-\_\-list ap)
+\item 
+typedef void($\ast$ \hyperlink{group__logging_gaf4ede9ce6b9eba25cb76ae1375cdd6ff}{\-M\-H\-D\-\_\-\-Panic\-Callback} )(void $\ast$cls, const char $\ast$file, unsigned int line, const char $\ast$reason)
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{group__logging_gaeaf2bb82c7b18758b7b912048ea34f23}{\-M\-H\-D\-\_\-set\-\_\-panic\-\_\-func} (\hyperlink{group__logging_gaf4ede9ce6b9eba25cb76ae1375cdd6ff}{\-M\-H\-D\-\_\-\-Panic\-Callback} cb, void $\ast$cls)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-M\-H\-D \-A\-P\-I to mange logging and error handling 
+
+\subsection{\-Typedef \-Documentation}
+\hypertarget{group__logging_gaff0dcaf7b7ec48a5889ca30654f900dd}{\index{logging@{logging}!\-M\-H\-D\-\_\-\-Log\-Callback@{\-M\-H\-D\-\_\-\-Log\-Callback}}
+\index{\-M\-H\-D\-\_\-\-Log\-Callback@{\-M\-H\-D\-\_\-\-Log\-Callback}!logging@{logging}}
+\subsubsection[{\-M\-H\-D\-\_\-\-Log\-Callback}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ {\bf \-M\-H\-D\-\_\-\-Log\-Callback})(void $\ast$cls, const char $\ast$fm, va\-\_\-list ap)}}\label{group__logging_gaff0dcaf7b7ec48a5889ca30654f900dd}
+\-Type of a callback function used for logging by \-M\-H\-D.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em cls} & closure \\
+\hline
+{\em fm} & format string (`printf()`-\/style) \\
+\hline
+{\em ap} & arguments to {\itshape fm\/} \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__logging_gaf4ede9ce6b9eba25cb76ae1375cdd6ff}{\index{logging@{logging}!\-M\-H\-D\-\_\-\-Panic\-Callback@{\-M\-H\-D\-\_\-\-Panic\-Callback}}
+\index{\-M\-H\-D\-\_\-\-Panic\-Callback@{\-M\-H\-D\-\_\-\-Panic\-Callback}!logging@{logging}}
+\subsubsection[{\-M\-H\-D\-\_\-\-Panic\-Callback}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ {\bf \-M\-H\-D\-\_\-\-Panic\-Callback})(void $\ast$cls, const char $\ast$file, unsigned int line, const char $\ast$reason)}}\label{group__logging_gaf4ede9ce6b9eba25cb76ae1375cdd6ff}
+\-Callback for serious error condition. \-The default action is to print an error message and `abort()`.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em cls} & user specified value \\
+\hline
+{\em file} & where the error occured \\
+\hline
+{\em line} & where the error occured \\
+\hline
+{\em reason} & error detail, may be \-N\-U\-L\-L \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{group__logging_gaeaf2bb82c7b18758b7b912048ea34f23}{\index{logging@{logging}!\-M\-H\-D\-\_\-set\-\_\-panic\-\_\-func@{\-M\-H\-D\-\_\-set\-\_\-panic\-\_\-func}}
+\index{\-M\-H\-D\-\_\-set\-\_\-panic\-\_\-func@{\-M\-H\-D\-\_\-set\-\_\-panic\-\_\-func}!logging@{logging}}
+\subsubsection[{\-M\-H\-D\-\_\-set\-\_\-panic\-\_\-func}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-M\-H\-D\-\_\-set\-\_\-panic\-\_\-func} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-M\-H\-D\-\_\-\-Panic\-Callback}}]{cb, }
+\item[{void $\ast$}]{cls}
+\end{DoxyParamCaption}
+)}}\label{group__logging_gaeaf2bb82c7b18758b7b912048ea34f23}
+\-Sets the global error handler to a different implementation. {\itshape cb\/} will only be called in the case of typically fatal, serious internal consistency issues. \-These issues should only arise in the case of serious memory corruption or similar problems with the architecture. \-While {\itshape cb\/} is allowed to return and \-M\-H\-D will then try to continue, this is never safe.
+
+\-The default implementation that is used if no panic function is set simply prints an error message and calls `abort()`. \-Alternative implementations might call `exit()` or other similar functions.
+
+
+\begin{DoxyParams}{\-Parameters}
+{\em cb} & new error handler \\
+\hline
+{\em cls} & passed to {\itshape cb\/} \\
+\hline
+\end{DoxyParams}

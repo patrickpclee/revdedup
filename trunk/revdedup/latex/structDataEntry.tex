@@ -1,0 +1,46 @@
+\hypertarget{structDataEntry}{\section{\-Data\-Entry \-Struct \-Reference}
+\label{structDataEntry}\index{\-Data\-Entry@{\-Data\-Entry}}
+}
+
+
+{\ttfamily \#include $<$datatable.\-h$>$}
+
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+void $\ast$ \hyperlink{structDataEntry_a0260676fd4fea77dee47c1c13cf58368}{data}
+\item 
+uint64\-\_\-t \hyperlink{structDataEntry_ac370f0b6417e245082350869d6b539c5}{cnt}
+\item 
+pthread\-\_\-mutex\-\_\-t \hyperlink{structDataEntry_ae7bbcaa15d9472be5ea1dad131d0831c}{mutex}
+\item 
+pthread\-\_\-spinlock\-\_\-t \hyperlink{structDataEntry_a5206ede459648d4ad842f373f7585427}{lock}
+\item 
+uint32\-\_\-t \hyperlink{structDataEntry_a4020c081bf0b0928ee81b15896b31b8b}{size}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Data entry definition 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structDataEntry_ac370f0b6417e245082350869d6b539c5}{\index{\-Data\-Entry@{\-Data\-Entry}!cnt@{cnt}}
+\index{cnt@{cnt}!DataEntry@{\-Data\-Entry}}
+\subsubsection[{cnt}]{\setlength{\rightskip}{0pt plus 5cm}uint64\-\_\-t {\bf \-Data\-Entry\-::cnt}}}\label{structDataEntry_ac370f0b6417e245082350869d6b539c5}
+\-Reference count of segment in the image being restored \hypertarget{structDataEntry_a0260676fd4fea77dee47c1c13cf58368}{\index{\-Data\-Entry@{\-Data\-Entry}!data@{data}}
+\index{data@{data}!DataEntry@{\-Data\-Entry}}
+\subsubsection[{data}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ {\bf \-Data\-Entry\-::data}}}\label{structDataEntry_a0260676fd4fea77dee47c1c13cf58368}
+\-Pointer to segment data \hypertarget{structDataEntry_a5206ede459648d4ad842f373f7585427}{\index{\-Data\-Entry@{\-Data\-Entry}!lock@{lock}}
+\index{lock@{lock}!DataEntry@{\-Data\-Entry}}
+\subsubsection[{lock}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-spinlock\-\_\-t {\bf \-Data\-Entry\-::lock}}}\label{structDataEntry_a5206ede459648d4ad842f373f7585427}
+\-Allow only one thread to load and decompress the segment data \hypertarget{structDataEntry_ae7bbcaa15d9472be5ea1dad131d0831c}{\index{\-Data\-Entry@{\-Data\-Entry}!mutex@{mutex}}
+\index{mutex@{mutex}!DataEntry@{\-Data\-Entry}}
+\subsubsection[{mutex}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-mutex\-\_\-t {\bf \-Data\-Entry\-::mutex}}}\label{structDataEntry_ae7bbcaa15d9472be5ea1dad131d0831c}
+\-Avoid sending out data before it is loaded and decompressed \hypertarget{structDataEntry_a4020c081bf0b0928ee81b15896b31b8b}{\index{\-Data\-Entry@{\-Data\-Entry}!size@{size}}
+\index{size@{size}!DataEntry@{\-Data\-Entry}}
+\subsubsection[{size}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-Data\-Entry\-::size}}}\label{structDataEntry_a4020c081bf0b0928ee81b15896b31b8b}
+\-Uncompressed segment size 
+
+\-The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+include/\hyperlink{datatable_8h}{datatable.\-h}\end{DoxyCompactItemize}

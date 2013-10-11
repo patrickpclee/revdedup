@@ -1,0 +1,148 @@
+\hypertarget{structRevRbdService}{\section{\-Rev\-Rbd\-Service \-Struct \-Reference}
+\label{structRevRbdService}\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}}
+}
+
+
+{\ttfamily \#include $<$revrbd.\-h$>$}
+
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+pthread\-\_\-t \hyperlink{structRevRbdService_a13d86de95b0170261f8f2b71e834cb33}{\-\_\-tid}
+\item 
+pthread\-\_\-t \hyperlink{structRevRbdService_ab34a1bcdcea1dac8a7fceaf6d811df7b}{\-\_\-pbid}
+\item 
+pthread\-\_\-t \hyperlink{structRevRbdService_af488d651610680160d538fb9a1e65d11}{\-\_\-rsid} \mbox{[}\hyperlink{revdedup_8h_a7c4a19f561ae530b98cd1cf1794c6988}{\-R\-E\-V\-\_\-\-C\-N\-T}\mbox{]}
+\item 
+pthread\-\_\-t \hyperlink{structRevRbdService_a12f3281b79e0f571c9487a3bd6b5e5a1}{\-\_\-ssid}
+\item 
+pthread\-\_\-t \hyperlink{structRevRbdService_abba6684c1168e9eaaa4d53d6e547ccbc}{\-\_\-pfid}
+\item 
+pthread\-\_\-t \hyperlink{structRevRbdService_a427dc474e0daee01da054c009ef6b9ac}{\-\_\-cbid}
+\item 
+uint32\-\_\-t \hyperlink{structRevRbdService_a5f44c03ae393a24c1bf680fea3106e1c}{\-\_\-ver}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structRevRbdService_a2b03ba1799bc5b0749633860e265d9b6}{\-\_\-pbq}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structRevRbdService_ad51b5fc844ba1061968692a4eb141d8f}{\-\_\-rsq}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structRevRbdService_a292a68eff77497c9fbc1db43d1833354}{\-\_\-ssq}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structRevRbdService_ad55d2145589178ad0e49d6484a4b0b85}{\-\_\-pfq}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structRevRbdService_a01ff6e2738fc213742c7f82af459c7fe}{\-\_\-cbq}
+\item 
+\hyperlink{structSMEntry}{\-S\-M\-Entry} $\ast$ \hyperlink{structRevRbdService_a87df01a0edb89ffa2c5c4687c06cf1c4}{\-\_\-sen}
+\item 
+\hyperlink{structSegmentLog}{\-Segment\-Log} $\ast$ \hyperlink{structRevRbdService_a9f791b31a7c3d79b24a18fde43073021}{\-\_\-slog}
+\item 
+\hyperlink{structCMEntry}{\-C\-M\-Entry} $\ast$ \hyperlink{structRevRbdService_a0c9cd164272c0bbda1ff1927a431c669}{\-\_\-cen}
+\item 
+\hyperlink{structChunkLog}{\-Chunk\-Log} $\ast$ \hyperlink{structRevRbdService_a561761326f6c87f2cc091a9ecf7cc791}{\-\_\-clog}
+\item 
+\hyperlink{structBMEntry}{\-B\-M\-Entry} $\ast$ \hyperlink{structRevRbdService_ab7bd304aa0624565ed60190a286c8669}{\-\_\-ben}
+\item 
+\hyperlink{structBucketLog}{\-Bucket\-Log} $\ast$ \hyperlink{structRevRbdService_a1528c84cc4d8ad6bcfc43d26e6231168}{\-\_\-blog}
+\item 
+\hyperlink{structKCDB}{\-K\-C\-D\-B} $\ast$ \hyperlink{structRevRbdService_a59cc8867465a33e67d00056131dc6978}{\-\_\-db}
+\item 
+uint8\-\_\-t \hyperlink{structRevRbdService_ab230216146da706c857f624be7a73230}{\-\_\-padding} \mbox{[}\hyperlink{revdedup_8h_ad51ded0bbd705f02f73fc60c0b721ced}{\-B\-L\-O\-C\-K\-\_\-\-S\-I\-Z\-E}\mbox{]}
+\item 
+int($\ast$ \hyperlink{structRevRbdService_a3cdfc8be89e3616f779de9aff0aed142}{start} )(\hyperlink{structSMEntry}{\-S\-M\-Entry} $\ast$sen, \hyperlink{structCMEntry}{\-C\-M\-Entry} $\ast$cen, \hyperlink{structBMEntry}{\-B\-M\-Entry} $\ast$ben, uint32\-\_\-t ver)
+\item 
+int($\ast$ \hyperlink{structRevRbdService_a362fe31c290a6fcedd4a0af6b6e2425c}{stop} )()
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Reverse deduplication reconstruction service control 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structRevRbdService_ab7bd304aa0624565ed60190a286c8669}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-ben@{\-\_\-ben}}
+\index{\-\_\-ben@{\-\_\-ben}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-ben}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-B\-M\-Entry}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-ben}}}\label{structRevRbdService_ab7bd304aa0624565ed60190a286c8669}
+\hyperlink{structBucket}{\-Bucket} entries \hypertarget{structRevRbdService_a1528c84cc4d8ad6bcfc43d26e6231168}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-blog@{\-\_\-blog}}
+\index{\-\_\-blog@{\-\_\-blog}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-blog}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Bucket\-Log}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-blog}}}\label{structRevRbdService_a1528c84cc4d8ad6bcfc43d26e6231168}
+\-Pointer to global bucket log \hypertarget{structRevRbdService_a427dc474e0daee01da054c009ef6b9ac}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-cbid@{\-\_\-cbid}}
+\index{\-\_\-cbid@{\-\_\-cbid}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-cbid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Rev\-Rbd\-Service\-::\-\_\-cbid}}}\label{structRevRbdService_a427dc474e0daee01da054c009ef6b9ac}
+\-Thread \-I\-D for combining buckets \hypertarget{structRevRbdService_a01ff6e2738fc213742c7f82af459c7fe}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-cbq@{\-\_\-cbq}}
+\index{\-\_\-cbq@{\-\_\-cbq}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-cbq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-cbq}}}\label{structRevRbdService_a01ff6e2738fc213742c7f82af459c7fe}
+\-Thread \-I\-D for combining buckets \hypertarget{structRevRbdService_a0c9cd164272c0bbda1ff1927a431c669}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-cen@{\-\_\-cen}}
+\index{\-\_\-cen@{\-\_\-cen}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-cen}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-C\-M\-Entry}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-cen}}}\label{structRevRbdService_a0c9cd164272c0bbda1ff1927a431c669}
+\-Chunk entries \hypertarget{structRevRbdService_a561761326f6c87f2cc091a9ecf7cc791}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-clog@{\-\_\-clog}}
+\index{\-\_\-clog@{\-\_\-clog}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-clog}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Chunk\-Log}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-clog}}}\label{structRevRbdService_a561761326f6c87f2cc091a9ecf7cc791}
+\-Pointer to global chunk log \hypertarget{structRevRbdService_a59cc8867465a33e67d00056131dc6978}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-db@{\-\_\-db}}
+\index{\-\_\-db@{\-\_\-db}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-db}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-K\-C\-D\-B}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-db}}}\label{structRevRbdService_a59cc8867465a33e67d00056131dc6978}
+\-Fingerprint -\/$>$ \hyperlink{structSegment}{\-Segment} \-I\-D database \hypertarget{structRevRbdService_ab230216146da706c857f624be7a73230}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-padding@{\-\_\-padding}}
+\index{\-\_\-padding@{\-\_\-padding}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-padding}]{\setlength{\rightskip}{0pt plus 5cm}uint8\-\_\-t {\bf \-Rev\-Rbd\-Service\-::\-\_\-padding}\mbox{[}{\bf \-B\-L\-O\-C\-K\-\_\-\-S\-I\-Z\-E}\mbox{]}}}\label{structRevRbdService_ab230216146da706c857f624be7a73230}
+\-Padding for \-R\-A\-I\-D-\/5 or 6 systems \hypertarget{structRevRbdService_ab34a1bcdcea1dac8a7fceaf6d811df7b}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-pbid@{\-\_\-pbid}}
+\index{\-\_\-pbid@{\-\_\-pbid}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-pbid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Rev\-Rbd\-Service\-::\-\_\-pbid}}}\label{structRevRbdService_ab34a1bcdcea1dac8a7fceaf6d811df7b}
+\-Thread \-I\-D for packing buckets \hypertarget{structRevRbdService_a2b03ba1799bc5b0749633860e265d9b6}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-pbq@{\-\_\-pbq}}
+\index{\-\_\-pbq@{\-\_\-pbq}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-pbq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-pbq}}}\label{structRevRbdService_a2b03ba1799bc5b0749633860e265d9b6}
+\-Incoming \hyperlink{structQueue}{\-Queue} for packing buckets \hypertarget{structRevRbdService_abba6684c1168e9eaaa4d53d6e547ccbc}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-pfid@{\-\_\-pfid}}
+\index{\-\_\-pfid@{\-\_\-pfid}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-pfid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Rev\-Rbd\-Service\-::\-\_\-pfid}}}\label{structRevRbdService_abba6684c1168e9eaaa4d53d6e547ccbc}
+\-Thread \-I\-D for prefetching buckets \hypertarget{structRevRbdService_ad55d2145589178ad0e49d6484a4b0b85}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-pfq@{\-\_\-pfq}}
+\index{\-\_\-pfq@{\-\_\-pfq}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-pfq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-pfq}}}\label{structRevRbdService_ad55d2145589178ad0e49d6484a4b0b85}
+\-Incoming \hyperlink{structQueue}{\-Queue} for prefetching buckets \hypertarget{structRevRbdService_af488d651610680160d538fb9a1e65d11}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-rsid@{\-\_\-rsid}}
+\index{\-\_\-rsid@{\-\_\-rsid}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-rsid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Rev\-Rbd\-Service\-::\-\_\-rsid}\mbox{[}{\bf \-R\-E\-V\-\_\-\-C\-N\-T}\mbox{]}}}\label{structRevRbdService_af488d651610680160d538fb9a1e65d11}
+\-Thread \-I\-Ds for segment reconstruction \hypertarget{structRevRbdService_ad51b5fc844ba1061968692a4eb141d8f}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-rsq@{\-\_\-rsq}}
+\index{\-\_\-rsq@{\-\_\-rsq}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-rsq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-rsq}}}\label{structRevRbdService_ad51b5fc844ba1061968692a4eb141d8f}
+\-Incoming \hyperlink{structQueue}{\-Queue} for reconstructing segments \hypertarget{structRevRbdService_a87df01a0edb89ffa2c5c4687c06cf1c4}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-sen@{\-\_\-sen}}
+\index{\-\_\-sen@{\-\_\-sen}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-sen}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-S\-M\-Entry}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-sen}}}\label{structRevRbdService_a87df01a0edb89ffa2c5c4687c06cf1c4}
+\hyperlink{structSegment}{\-Segment} entries \hypertarget{structRevRbdService_a9f791b31a7c3d79b24a18fde43073021}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-slog@{\-\_\-slog}}
+\index{\-\_\-slog@{\-\_\-slog}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-slog}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Segment\-Log}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-slog}}}\label{structRevRbdService_a9f791b31a7c3d79b24a18fde43073021}
+\-Pointer to global segment log \hypertarget{structRevRbdService_a12f3281b79e0f571c9487a3bd6b5e5a1}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-ssid@{\-\_\-ssid}}
+\index{\-\_\-ssid@{\-\_\-ssid}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-ssid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Rev\-Rbd\-Service\-::\-\_\-ssid}}}\label{structRevRbdService_a12f3281b79e0f571c9487a3bd6b5e5a1}
+\-Thread \-I\-D for storing reconstructed segments \hypertarget{structRevRbdService_a292a68eff77497c9fbc1db43d1833354}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-ssq@{\-\_\-ssq}}
+\index{\-\_\-ssq@{\-\_\-ssq}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-ssq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Rev\-Rbd\-Service\-::\-\_\-ssq}}}\label{structRevRbdService_a292a68eff77497c9fbc1db43d1833354}
+\-Incoming \hyperlink{structQueue}{\-Queue} for storing reconstructed segments \hypertarget{structRevRbdService_a13d86de95b0170261f8f2b71e834cb33}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-tid@{\-\_\-tid}}
+\index{\-\_\-tid@{\-\_\-tid}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-tid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Rev\-Rbd\-Service\-::\-\_\-tid}}}\label{structRevRbdService_a13d86de95b0170261f8f2b71e834cb33}
+\-Thread \-I\-D for filtering untouched buckets \hypertarget{structRevRbdService_a5f44c03ae393a24c1bf680fea3106e1c}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!\-\_\-ver@{\-\_\-ver}}
+\index{\-\_\-ver@{\-\_\-ver}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{\-\_\-ver}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-Rev\-Rbd\-Service\-::\-\_\-ver}}}\label{structRevRbdService_a5f44c03ae393a24c1bf680fea3106e1c}
+\-Tags the bucket with version for subsequent delete \hypertarget{structRevRbdService_a3cdfc8be89e3616f779de9aff0aed142}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!start@{start}}
+\index{start@{start}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Rev\-Rbd\-Service\-::start})({\bf \-S\-M\-Entry} $\ast$sen, {\bf \-C\-M\-Entry} $\ast$cen, {\bf \-B\-M\-Entry} $\ast$ben, uint32\-\_\-t ver)}}\label{structRevRbdService_a3cdfc8be89e3616f779de9aff0aed142}
+\-Starts the reconstruction service 
+\begin{DoxyParams}{\-Parameters}
+{\em sen} & \hyperlink{structSegment}{\-Segment} entries \\
+\hline
+{\em cen} & \-Chunk entries \\
+\hline
+{\em ben} & \hyperlink{structBucket}{\-Bucket} entries \\
+\hline
+{\em ver} & \-Tags the bucket with version for subsequent delete \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+\hypertarget{structRevRbdService_a362fe31c290a6fcedd4a0af6b6e2425c}{\index{\-Rev\-Rbd\-Service@{\-Rev\-Rbd\-Service}!stop@{stop}}
+\index{stop@{stop}!RevRbdService@{\-Rev\-Rbd\-Service}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Rev\-Rbd\-Service\-::stop})()}}\label{structRevRbdService_a362fe31c290a6fcedd4a0af6b6e2425c}
+\-Stops the reconstruction service \begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+
+
+\-The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{revrbd_8h}{revrbd.\-h}\end{DoxyCompactItemize}

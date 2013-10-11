@@ -1,0 +1,47 @@
+\hypertarget{structMIRecipe}{\section{\-M\-I\-Recipe \-Struct \-Reference}
+\label{structMIRecipe}\index{\-M\-I\-Recipe@{\-M\-I\-Recipe}}
+}
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+uint32\-\_\-t \hyperlink{structMIRecipe_abcf9aa1e0106d8594ed734412df447b1}{ver}
+\item 
+uint32\-\_\-t \hyperlink{structMIRecipe_a1bce899fd90f5b324e5dfa3f18039c1f}{lver}
+\item 
+volatile uint64\-\_\-t \hyperlink{structMIRecipe_ad3dfe2624c87fd6211cc777c064f4b94}{end}
+\item 
+uint64\-\_\-t \hyperlink{structMIRecipe_a63a2515abe1efe6c2aa210929f70cd7d}{chunks}
+\item 
+\hyperlink{structIndirect}{\-Indirect} $\ast$ \hyperlink{structMIRecipe_afe805781e4f337606cc355cdf8caf98d}{id}
+\item 
+\hyperlink{structImageInfo}{\-Image\-Info} $\ast$ \hyperlink{structMIRecipe_a57c566e7e9c4b3e0f4001712a57ef280}{idata}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Definition of \hyperlink{structIndirect}{\-Indirect} map for merging multiple indirect recipes 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structMIRecipe_a63a2515abe1efe6c2aa210929f70cd7d}{\index{\-M\-I\-Recipe@{\-M\-I\-Recipe}!chunks@{chunks}}
+\index{chunks@{chunks}!MIRecipe@{\-M\-I\-Recipe}}
+\subsubsection[{chunks}]{\setlength{\rightskip}{0pt plus 5cm}uint64\-\_\-t {\bf \-M\-I\-Recipe\-::chunks}}}\label{structMIRecipe_a63a2515abe1efe6c2aa210929f70cd7d}
+\-Number of chunks in the merged indirect recipe \hypertarget{structMIRecipe_ad3dfe2624c87fd6211cc777c064f4b94}{\index{\-M\-I\-Recipe@{\-M\-I\-Recipe}!end@{end}}
+\index{end@{end}!MIRecipe@{\-M\-I\-Recipe}}
+\subsubsection[{end}]{\setlength{\rightskip}{0pt plus 5cm}volatile uint64\-\_\-t {\bf \-M\-I\-Recipe\-::end}}}\label{structMIRecipe_ad3dfe2624c87fd6211cc777c064f4b94}
+\-Last indirect entry processed \hypertarget{structMIRecipe_afe805781e4f337606cc355cdf8caf98d}{\index{\-M\-I\-Recipe@{\-M\-I\-Recipe}!id@{id}}
+\index{id@{id}!MIRecipe@{\-M\-I\-Recipe}}
+\subsubsection[{id}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Indirect}$\ast$ {\bf \-M\-I\-Recipe\-::id}}}\label{structMIRecipe_afe805781e4f337606cc355cdf8caf98d}
+\-Merged indirect recipe \hypertarget{structMIRecipe_a57c566e7e9c4b3e0f4001712a57ef280}{\index{\-M\-I\-Recipe@{\-M\-I\-Recipe}!idata@{idata}}
+\index{idata@{idata}!MIRecipe@{\-M\-I\-Recipe}}
+\subsubsection[{idata}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Image\-Info}$\ast$ {\bf \-M\-I\-Recipe\-::idata}}}\label{structMIRecipe_a57c566e7e9c4b3e0f4001712a57ef280}
+\-Pointer to \hyperlink{structImageInfo}{\-Image\-Info} \hypertarget{structMIRecipe_a1bce899fd90f5b324e5dfa3f18039c1f}{\index{\-M\-I\-Recipe@{\-M\-I\-Recipe}!lver@{lver}}
+\index{lver@{lver}!MIRecipe@{\-M\-I\-Recipe}}
+\subsubsection[{lver}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-M\-I\-Recipe\-::lver}}}\label{structMIRecipe_a1bce899fd90f5b324e5dfa3f18039c1f}
+\-Latest version (just not reversely deduplicated \hypertarget{structMIRecipe_abcf9aa1e0106d8594ed734412df447b1}{\index{\-M\-I\-Recipe@{\-M\-I\-Recipe}!ver@{ver}}
+\index{ver@{ver}!MIRecipe@{\-M\-I\-Recipe}}
+\subsubsection[{ver}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-M\-I\-Recipe\-::ver}}}\label{structMIRecipe_abcf9aa1e0106d8594ed734412df447b1}
+\-Version for restoration 
+
+\-The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+restoreo.\-c\end{DoxyCompactItemize}

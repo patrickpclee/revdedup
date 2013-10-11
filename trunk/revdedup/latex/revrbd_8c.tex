@@ -1,0 +1,217 @@
+\hypertarget{revrbd_8c}{\section{revrbd.\-c \-File \-Reference}
+\label{revrbd_8c}\index{revrbd.\-c@{revrbd.\-c}}
+}
+
+
+\-Reverse \-Deduplication \-Reconstruction \-Service \-Implementation.  
+
+
+{\ttfamily \#include \char`\"{}revrbd.\-h\char`\"{}}\*
+{\ttfamily \#include $<$linux/falloc.\-h$>$}\*
+{\ttfamily \#include $<$sys/sendfile.\-h$>$}\*
+{\ttfamily \#include \char`\"{}minilzo.\-h\char`\"{}}\*
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structSimpleSegment}{\-Simple\-Segment}
+\item 
+struct \hyperlink{structSimpleBucket}{\-Simple\-Bucket}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{structBucket}{\-Bucket} $\ast$ \hyperlink{revrbd_8c_abe4ac6fc7de5ce94e81f41b8e8441896}{\-New\-Bucket} (uint64\-\_\-t sid)
+\item 
+static void \hyperlink{revrbd_8c_af0899e4dd22c1fd81697558bc38d3bf8}{\-Save\-Bucket} (\hyperlink{structBucket}{\-Bucket} $\ast$b)
+\item 
+static \hyperlink{structBucket}{\-Bucket} $\ast$ \hyperlink{revrbd_8c_a74fcc5d4e43d8c454f367b29539e4543}{\-Bucket\-Insert} (\hyperlink{structBucket}{\-Bucket} $\ast$b, \hyperlink{structSimpleSegment}{\-Simple\-Segment} $\ast$sseg)
+\item 
+static void $\ast$ \hyperlink{revrbd_8c_ae3a46bdc8e2518c878d75441ad784eb9}{save\-Segment} (void $\ast$ptr)
+\item 
+static void $\ast$ \hyperlink{revrbd_8c_af3631524d3950ea5667a86d109aac057}{rebuild\-Segments} (void $\ast$ptr)
+\item 
+static void $\ast$ \hyperlink{revrbd_8c_a08672b1a76a36ea6b406e488a40b04cf}{combine\-Buckets} (void $\ast$ptr)
+\item 
+static void $\ast$ \hyperlink{revrbd_8c_a50fe7ab29dabb8de716b062e4bbadeac}{prefetch} (void $\ast$ptr)
+\item 
+static void $\ast$ \hyperlink{revrbd_8c_ae4f69fd5a3eafb1d7b2ae2fb788e4de1}{pack\-Buckets} (void $\ast$ptr)
+\item 
+static void $\ast$ \hyperlink{revrbd_8c_a75f4c029c2eb631c3c9b3c78c6cf7d90}{process} (void $\ast$ptr)
+\item 
+static int \hyperlink{revrbd_8c_a95a36bf4164bdd41db7fc4a65b65acb0}{start} (\hyperlink{structSMEntry}{\-S\-M\-Entry} $\ast$sen, \hyperlink{structCMEntry}{\-C\-M\-Entry} $\ast$cen, \hyperlink{structBMEntry}{\-B\-M\-Entry} $\ast$ben, uint32\-\_\-t ver)
+\item 
+static int \hyperlink{revrbd_8c_af5bef4db921e44f9e7feeb0169f4bcd2}{stop} ()
+\item 
+\hyperlink{structRevRbdService}{\-Rev\-Rbd\-Service} $\ast$ \hyperlink{revrbd_8c_aa6a7c998958fcc16e60839d8dee16bd7}{\-Get\-Rev\-Rbd\-Service} ()
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{structRevRbdService}{\-Rev\-Rbd\-Service} {\bfseries service}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Reverse \-Deduplication \-Reconstruction \-Service \-Implementation. \begin{DoxyAuthor}{\-Author}
+\-Ng \-Chun \-Ho 
+\end{DoxyAuthor}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{revrbd_8c_a74fcc5d4e43d8c454f367b29539e4543}{\index{revrbd.\-c@{revrbd.\-c}!\-Bucket\-Insert@{\-Bucket\-Insert}}
+\index{\-Bucket\-Insert@{\-Bucket\-Insert}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{\-Bucket\-Insert}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf \-Bucket}$\ast$ {\bf \-Bucket\-Insert} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Bucket} $\ast$}]{b, }
+\item[{{\bf \-Simple\-Segment} $\ast$}]{sseg}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_a74fcc5d4e43d8c454f367b29539e4543}
+\-Insert a segment into buckets 
+\begin{DoxyParams}{\-Parameters}
+{\em b} & \hyperlink{structBucket}{\-Bucket} to insert \\
+\hline
+{\em sseg} & \hyperlink{structSegment}{\-Segment} to write \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\hyperlink{structBucket}{\-Bucket} for subsequent insertion 
+\end{DoxyReturn}
+\hypertarget{revrbd_8c_a08672b1a76a36ea6b406e488a40b04cf}{\index{revrbd.\-c@{revrbd.\-c}!combine\-Buckets@{combine\-Buckets}}
+\index{combine\-Buckets@{combine\-Buckets}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{combine\-Buckets}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf combine\-Buckets} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_a08672b1a76a36ea6b406e488a40b04cf}
+\-Combines small buckets into a larger one 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{revrbd_8c_aa6a7c998958fcc16e60839d8dee16bd7}{\index{revrbd.\-c@{revrbd.\-c}!\-Get\-Rev\-Rbd\-Service@{\-Get\-Rev\-Rbd\-Service}}
+\index{\-Get\-Rev\-Rbd\-Service@{\-Get\-Rev\-Rbd\-Service}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{\-Get\-Rev\-Rbd\-Service}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Rev\-Rbd\-Service}$\ast$ {\bf \-Get\-Rev\-Rbd\-Service} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{revrbd_8c_aa6a7c998958fcc16e60839d8dee16bd7}
+\-Gets the control of reconstruction service \begin{DoxyReturn}{\-Returns}
+\-The reference count service 
+\end{DoxyReturn}
+\hypertarget{revrbd_8c_abe4ac6fc7de5ce94e81f41b8e8441896}{\index{revrbd.\-c@{revrbd.\-c}!\-New\-Bucket@{\-New\-Bucket}}
+\index{\-New\-Bucket@{\-New\-Bucket}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{\-New\-Bucket}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf \-Bucket}$\ast$ {\bf \-New\-Bucket} (
+\begin{DoxyParamCaption}
+\item[{uint64\-\_\-t}]{sid}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_abe4ac6fc7de5ce94e81f41b8e8441896}
+\-Create a new bucket in memory 
+\begin{DoxyParams}{\-Parameters}
+{\em sid} & \-Starting segment \-I\-D \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\-Created bucket 
+\end{DoxyReturn}
+\hypertarget{revrbd_8c_ae4f69fd5a3eafb1d7b2ae2fb788e4de1}{\index{revrbd.\-c@{revrbd.\-c}!pack\-Buckets@{pack\-Buckets}}
+\index{pack\-Buckets@{pack\-Buckets}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{pack\-Buckets}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf pack\-Buckets} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_ae4f69fd5a3eafb1d7b2ae2fb788e4de1}
+\-Packs buckets by removing segment with 0 reference count 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{revrbd_8c_a50fe7ab29dabb8de716b062e4bbadeac}{\index{revrbd.\-c@{revrbd.\-c}!prefetch@{prefetch}}
+\index{prefetch@{prefetch}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{prefetch}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf prefetch} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_a50fe7ab29dabb8de716b062e4bbadeac}
+\hyperlink{structBucket}{\-Bucket} prefetching routine 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{revrbd_8c_a75f4c029c2eb631c3c9b3c78c6cf7d90}{\index{revrbd.\-c@{revrbd.\-c}!process@{process}}
+\index{process@{process}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{process}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf process} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_a75f4c029c2eb631c3c9b3c78c6cf7d90}
+\-Main loop to scan buckets that contains segments for reconstruction 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{revrbd_8c_af3631524d3950ea5667a86d109aac057}{\index{revrbd.\-c@{revrbd.\-c}!rebuild\-Segments@{rebuild\-Segments}}
+\index{rebuild\-Segments@{rebuild\-Segments}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{rebuild\-Segments}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf rebuild\-Segments} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_af3631524d3950ea5667a86d109aac057}
+\-Removes unreferenced chunks in the segments 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{revrbd_8c_af0899e4dd22c1fd81697558bc38d3bf8}{\index{revrbd.\-c@{revrbd.\-c}!\-Save\-Bucket@{\-Save\-Bucket}}
+\index{\-Save\-Bucket@{\-Save\-Bucket}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{\-Save\-Bucket}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-Save\-Bucket} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Bucket} $\ast$}]{b}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_af0899e4dd22c1fd81697558bc38d3bf8}
+\-Seal the bucket on disk 
+\begin{DoxyParams}{\-Parameters}
+{\em b} & \hyperlink{structBucket}{\-Bucket} to seal \\
+\hline
+\end{DoxyParams}
+\hypertarget{revrbd_8c_ae3a46bdc8e2518c878d75441ad784eb9}{\index{revrbd.\-c@{revrbd.\-c}!save\-Segment@{save\-Segment}}
+\index{save\-Segment@{save\-Segment}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{save\-Segment}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf save\-Segment} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_ae3a46bdc8e2518c878d75441ad784eb9}
+\-Gather reconstructed segments and writes them to buckets 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{revrbd_8c_a95a36bf4164bdd41db7fc4a65b65acb0}{\index{revrbd.\-c@{revrbd.\-c}!start@{start}}
+\index{start@{start}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf start} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-S\-M\-Entry} $\ast$}]{sen, }
+\item[{{\bf \-C\-M\-Entry} $\ast$}]{cen, }
+\item[{{\bf \-B\-M\-Entry} $\ast$}]{ben, }
+\item[{uint32\-\_\-t}]{ver}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_a95a36bf4164bdd41db7fc4a65b65acb0}
+\-Implements \-Rev\-Rbd\-Service-\/$>$\hyperlink{bucket_8c_affa842a436c4cded9758cecdeb445aaf}{start()} \hypertarget{revrbd_8c_af5bef4db921e44f9e7feeb0169f4bcd2}{\index{revrbd.\-c@{revrbd.\-c}!stop@{stop}}
+\index{stop@{stop}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf stop} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_af5bef4db921e44f9e7feeb0169f4bcd2}
+\-Implements \-Rev\-Rbd\-Service-\/$>$\hyperlink{bucket_8c_af5bef4db921e44f9e7feeb0169f4bcd2}{stop()} 
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{revrbd_8c_aad3270fbf63cb5aff0a3f0b857bb58dd}{\index{revrbd.\-c@{revrbd.\-c}!service@{service}}
+\index{service@{service}!revrbd.c@{revrbd.\-c}}
+\subsubsection[{service}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Rev\-Rbd\-Service} service\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{revrbd_8c_aad3270fbf63cb5aff0a3f0b857bb58dd}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+ {
+                .start = start,
+                .stop = stop,
+}
+\end{DoxyCode}

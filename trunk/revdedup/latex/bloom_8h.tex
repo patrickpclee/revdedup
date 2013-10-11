@@ -1,0 +1,110 @@
+\hypertarget{bloom_8h}{\section{bloom.\-h \-File \-Reference}
+\label{bloom_8h}\index{bloom.\-h@{bloom.\-h}}
+}
+
+
+\-Bloom filter implementation.  
+
+
+{\ttfamily \#include $<$stdint.\-h$>$}\*
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structbloom}{bloom}
+\end{DoxyCompactItemize}
+\subsection*{\-Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structbloom}{bloom} \hyperlink{bloom_8h_a01fef9dc4348cef76e54814e416ab818}{\-Bloom}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{bloom_8h_a4200639cd22be5866672454c059efaae}{bloom\-\_\-init} (struct \hyperlink{structbloom}{bloom} $\ast$\hyperlink{structbloom}{bloom}, int entries, double error)
+\item 
+int \hyperlink{bloom_8h_ae1a730d418d9ddc521c4a07de158b2f6}{bloom\-\_\-check} (struct \hyperlink{structbloom}{bloom} $\ast$\hyperlink{structbloom}{bloom}, const void $\ast$buffer, int len)
+\item 
+int \hyperlink{bloom_8h_a6730faa452d1adb2b367fba6693682d8}{bloom\-\_\-add} (struct \hyperlink{structbloom}{bloom} $\ast$\hyperlink{structbloom}{bloom}, const void $\ast$buffer, int len)
+\item 
+void \hyperlink{bloom_8h_a3c05b808b2f48c94dcc18efd87f02669}{bloom\-\_\-print} (struct \hyperlink{structbloom}{bloom} $\ast$\hyperlink{structbloom}{bloom})
+\item 
+void \hyperlink{bloom_8h_a4751dfb3085d35ebb5028df0b9b867b4}{bloom\-\_\-free} (struct \hyperlink{structbloom}{bloom} $\ast$\hyperlink{structbloom}{bloom})
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Bloom filter implementation. 
+
+\subsection{\-Typedef \-Documentation}
+\hypertarget{bloom_8h_a01fef9dc4348cef76e54814e416ab818}{\index{bloom.\-h@{bloom.\-h}!\-Bloom@{\-Bloom}}
+\index{\-Bloom@{\-Bloom}!bloom.h@{bloom.\-h}}
+\subsubsection[{\-Bloom}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf bloom}  {\bf \-Bloom}}}\label{bloom_8h_a01fef9dc4348cef76e54814e416ab818}
+$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$ \-Structure to keep track of one bloom filter. \-Caller needs to allocate this and pass it to the functions below. \-First call for every struct must be to \hyperlink{bloom_8h_a4200639cd22be5866672454c059efaae}{bloom\-\_\-init()}. 
+
+\subsection{\-Function \-Documentation}
+\hypertarget{bloom_8h_a6730faa452d1adb2b367fba6693682d8}{\index{bloom.\-h@{bloom.\-h}!bloom\-\_\-add@{bloom\-\_\-add}}
+\index{bloom\-\_\-add@{bloom\-\_\-add}!bloom.h@{bloom.\-h}}
+\subsubsection[{bloom\-\_\-add}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf bloom\-\_\-add} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf bloom} $\ast$}]{bloom, }
+\item[{const void $\ast$}]{buffer, }
+\item[{int}]{len}
+\end{DoxyParamCaption}
+)}}\label{bloom_8h_a6730faa452d1adb2b367fba6693682d8}
+$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$ \-Add the given element to the bloom filter. \-The return code indicates if the element (or a collision) was already in, so for the common check+add use case, no need to call check separately.
+
+\-Parameters\-: -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/ bloom -\/ \-Pointer to an allocated struct bloom (see above). buffer -\/ \-Pointer to buffer containing element to add. len -\/ \-Size of 'buffer'.
+
+\-Return\-: -\/-\/-\/-\/-\/-\/-\/ 0 -\/ element was not present and was added 1 -\/ element (or a collision) had already been added previously -\/1 -\/ bloom not initialized \hypertarget{bloom_8h_ae1a730d418d9ddc521c4a07de158b2f6}{\index{bloom.\-h@{bloom.\-h}!bloom\-\_\-check@{bloom\-\_\-check}}
+\index{bloom\-\_\-check@{bloom\-\_\-check}!bloom.h@{bloom.\-h}}
+\subsubsection[{bloom\-\_\-check}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf bloom\-\_\-check} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf bloom} $\ast$}]{bloom, }
+\item[{const void $\ast$}]{buffer, }
+\item[{int}]{len}
+\end{DoxyParamCaption}
+)}}\label{bloom_8h_ae1a730d418d9ddc521c4a07de158b2f6}
+$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$ \-Check if the given element is in the bloom filter. \-Remember this may return false positive if a collision occured.
+
+\-Parameters\-: -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/ bloom -\/ \-Pointer to an allocated struct bloom (see above). buffer -\/ \-Pointer to buffer containing element to check. len -\/ \-Size of 'buffer'.
+
+\-Return\-: -\/-\/-\/-\/-\/-\/-\/ 0 -\/ element is not present 1 -\/ element is present (or false positive due to collision) -\/1 -\/ bloom not initialized \hypertarget{bloom_8h_a4751dfb3085d35ebb5028df0b9b867b4}{\index{bloom.\-h@{bloom.\-h}!bloom\-\_\-free@{bloom\-\_\-free}}
+\index{bloom\-\_\-free@{bloom\-\_\-free}!bloom.h@{bloom.\-h}}
+\subsubsection[{bloom\-\_\-free}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf bloom\-\_\-free} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf bloom} $\ast$}]{bloom}
+\end{DoxyParamCaption}
+)}}\label{bloom_8h_a4751dfb3085d35ebb5028df0b9b867b4}
+$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$ \-Deallocate internal storage.
+
+\-Upon return, the bloom struct is no longer usable. \-You may call bloom\-\_\-init again on the same struct to reinitialize it again.
+
+\-Parameters\-: -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/ bloom -\/ \-Pointer to an allocated struct bloom (see above).
+
+\-Return\-: none \hypertarget{bloom_8h_a4200639cd22be5866672454c059efaae}{\index{bloom.\-h@{bloom.\-h}!bloom\-\_\-init@{bloom\-\_\-init}}
+\index{bloom\-\_\-init@{bloom\-\_\-init}!bloom.h@{bloom.\-h}}
+\subsubsection[{bloom\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf bloom\-\_\-init} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf bloom} $\ast$}]{bloom, }
+\item[{int}]{entries, }
+\item[{double}]{error}
+\end{DoxyParamCaption}
+)}}\label{bloom_8h_a4200639cd22be5866672454c059efaae}
+$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$ \-Initialize the bloom filter for use.
+
+\-The filter is initialized with a bit field and number of hash functions according to the computations from the wikipedia entry\-: \href{http://en.wikipedia.org/wiki/Bloom_filter}{\tt http\-://en.\-wikipedia.\-org/wiki/\-Bloom\-\_\-filter}
+
+\-Optimal number of bits is\-: bits = (entries $\ast$ ln(error)) / ln(2)$^\wedge$2
+
+\-Optimal number of hash functions is\-: hashes = bpe $\ast$ ln(2)
+
+\-Parameters\-: -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/ bloom -\/ \-Pointer to an allocated struct bloom (see above). entries -\/ \-The expected number of entries which will be inserted. error -\/ \-Probability of collision (as long as entries are not exceeded).
+
+\-Return\-: -\/-\/-\/-\/-\/-\/-\/ 0 -\/ on success 1 -\/ on failure \hypertarget{bloom_8h_a3c05b808b2f48c94dcc18efd87f02669}{\index{bloom.\-h@{bloom.\-h}!bloom\-\_\-print@{bloom\-\_\-print}}
+\index{bloom\-\_\-print@{bloom\-\_\-print}!bloom.h@{bloom.\-h}}
+\subsubsection[{bloom\-\_\-print}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf bloom\-\_\-print} (
+\begin{DoxyParamCaption}
+\item[{struct {\bf bloom} $\ast$}]{bloom}
+\end{DoxyParamCaption}
+)}}\label{bloom_8h_a3c05b808b2f48c94dcc18efd87f02669}
+$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$ \-Print (to stdout) info about this bloom filter. \-Debugging aid. 

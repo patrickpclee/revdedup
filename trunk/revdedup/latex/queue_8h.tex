@@ -1,0 +1,132 @@
+\hypertarget{queue_8h}{\section{include/queue.h \-File \-Reference}
+\label{queue_8h}\index{include/queue.\-h@{include/queue.\-h}}
+}
+
+
+\-Implementation of a blocking queue with pre-\/defined length.  
+
+
+{\ttfamily \#include $<$pthread.\-h$>$}\*
+{\ttfamily \#include $<$stdint.\-h$>$}\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\*
+{\ttfamily \#include $<$math.\-h$>$}\*
+{\ttfamily \#include \char`\"{}revdedup.\-h\char`\"{}}\*
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structQueue}{\-Queue}
+\end{DoxyCompactItemize}
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{queue_8h_a055729a37bf543876e2ce9d57b95ab7b}{\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}~((1024\-U\-L\-L $<$$<$ 20) / M\-A\-X\-\_\-\-S\-E\-G\-\_\-\-S\-I\-Z\-E)
+\item 
+\#define \hyperlink{queue_8h_a0a9f69e8ecd8de50a8fb634e5bc2f848}{\-L\-O\-N\-G\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}~((4096\-U\-L\-L $<$$<$ 20) / M\-A\-X\-\_\-\-S\-E\-G\-\_\-\-S\-I\-Z\-E)
+\item 
+\#define \hyperlink{queue_8h_aab84e0eb025e6efa2a1393459a56275e}{\-S\-U\-P\-E\-R\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}~((16384\-U\-L\-L $<$$<$ 20) / M\-A\-X\-\_\-\-S\-E\-G\-\_\-\-S\-I\-Z\-E)
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{queue_8h_ae4672103f6dcae22a523a15fa0de32c4}{\-Enqueue} (\hyperlink{structQueue}{\-Queue} $\ast$q, void $\ast$ptr)
+\item 
+static void $\ast$ \hyperlink{queue_8h_aea1cf30d68d12ecb1e927a6373f94cb1}{\-Dequeue} (\hyperlink{structQueue}{\-Queue} $\ast$q)
+\item 
+static \hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{queue_8h_abd03a15046a94e5baa5e0022b10a0bba}{\-New\-Queue} ()
+\item 
+static \hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{queue_8h_a1d0b00e1329198f1107079776895b4fa}{\-Long\-Queue} ()
+\item 
+static \hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{queue_8h_ad72e95a03c3f4f68cdc10708af10354c}{\-Super\-Queue} ()
+\item 
+static void \hyperlink{queue_8h_afb62b385faf1a866271d3b175424da8e}{\-Del\-Queue} (\hyperlink{structQueue}{\-Queue} $\ast$q)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Implementation of a blocking queue with pre-\/defined length. \begin{DoxyAuthor}{\-Author}
+\-Ng \-Chun \-Ho 
+\end{DoxyAuthor}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{queue_8h_a0a9f69e8ecd8de50a8fb634e5bc2f848}{\index{queue.\-h@{queue.\-h}!\-L\-O\-N\-G\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H@{\-L\-O\-N\-G\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}}
+\index{\-L\-O\-N\-G\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H@{\-L\-O\-N\-G\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}!queue.h@{queue.\-h}}
+\subsubsection[{\-L\-O\-N\-G\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-L\-O\-N\-G\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}~((4096\-U\-L\-L $<$$<$ 20) / M\-A\-X\-\_\-\-S\-E\-G\-\_\-\-S\-I\-Z\-E)}}\label{queue_8h_a0a9f69e8ecd8de50a8fb634e5bc2f848}
+\-Length of a long queue \hypertarget{queue_8h_a055729a37bf543876e2ce9d57b95ab7b}{\index{queue.\-h@{queue.\-h}!\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H@{\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}}
+\index{\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H@{\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}!queue.h@{queue.\-h}}
+\subsubsection[{\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}~((1024\-U\-L\-L $<$$<$ 20) / M\-A\-X\-\_\-\-S\-E\-G\-\_\-\-S\-I\-Z\-E)}}\label{queue_8h_a055729a37bf543876e2ce9d57b95ab7b}
+\-Length of a normal queue \hypertarget{queue_8h_aab84e0eb025e6efa2a1393459a56275e}{\index{queue.\-h@{queue.\-h}!\-S\-U\-P\-E\-R\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H@{\-S\-U\-P\-E\-R\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}}
+\index{\-S\-U\-P\-E\-R\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H@{\-S\-U\-P\-E\-R\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}!queue.h@{queue.\-h}}
+\subsubsection[{\-S\-U\-P\-E\-R\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-U\-P\-E\-R\-Q\-U\-E\-U\-E\-\_\-\-L\-E\-N\-G\-T\-H}~((16384\-U\-L\-L $<$$<$ 20) / M\-A\-X\-\_\-\-S\-E\-G\-\_\-\-S\-I\-Z\-E)}}\label{queue_8h_aab84e0eb025e6efa2a1393459a56275e}
+\-Length of a super long queue 
+
+\subsection{\-Function \-Documentation}
+\hypertarget{queue_8h_afb62b385faf1a866271d3b175424da8e}{\index{queue.\-h@{queue.\-h}!\-Del\-Queue@{\-Del\-Queue}}
+\index{\-Del\-Queue@{\-Del\-Queue}!queue.h@{queue.\-h}}
+\subsubsection[{\-Del\-Queue}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-Del\-Queue} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Queue} $\ast$}]{q}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{queue_8h_afb62b385faf1a866271d3b175424da8e}
+\-Destroy a queue 
+\begin{DoxyParams}{\-Parameters}
+{\em q} & \hyperlink{structQueue}{\-Queue} to destroy \\
+\hline
+\end{DoxyParams}
+\hypertarget{queue_8h_aea1cf30d68d12ecb1e927a6373f94cb1}{\index{queue.\-h@{queue.\-h}!\-Dequeue@{\-Dequeue}}
+\index{\-Dequeue@{\-Dequeue}!queue.h@{queue.\-h}}
+\subsubsection[{\-Dequeue}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf \-Dequeue} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Queue} $\ast$}]{q}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{queue_8h_aea1cf30d68d12ecb1e927a6373f94cb1}
+\-Dequeueing routine 
+\begin{DoxyParams}{\-Parameters}
+{\em q} & \hyperlink{structQueue}{\-Queue} for dequeue \\
+\hline
+\end{DoxyParams}
+\hypertarget{queue_8h_ae4672103f6dcae22a523a15fa0de32c4}{\index{queue.\-h@{queue.\-h}!\-Enqueue@{\-Enqueue}}
+\index{\-Enqueue@{\-Enqueue}!queue.h@{queue.\-h}}
+\subsubsection[{\-Enqueue}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf \-Enqueue} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Queue} $\ast$}]{q, }
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{queue_8h_ae4672103f6dcae22a523a15fa0de32c4}
+\-Enqueueing routine 
+\begin{DoxyParams}{\-Parameters}
+{\em q} & \hyperlink{structQueue}{\-Queue} for enqueue \\
+\hline
+{\em ptr} & \-Pointer to data (or data s.\-t. sizeof(data) $<$= sizeof(pointer)) to enqueue \\
+\hline
+\end{DoxyParams}
+\hypertarget{queue_8h_a1d0b00e1329198f1107079776895b4fa}{\index{queue.\-h@{queue.\-h}!\-Long\-Queue@{\-Long\-Queue}}
+\index{\-Long\-Queue@{\-Long\-Queue}!queue.h@{queue.\-h}}
+\subsubsection[{\-Long\-Queue}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf \-Queue}$\ast$ {\bf \-Long\-Queue} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{queue_8h_a1d0b00e1329198f1107079776895b4fa}
+\-Create a long queue \begin{DoxyReturn}{\-Returns}
+\hyperlink{structQueue}{\-Queue} 
+\end{DoxyReturn}
+\hypertarget{queue_8h_abd03a15046a94e5baa5e0022b10a0bba}{\index{queue.\-h@{queue.\-h}!\-New\-Queue@{\-New\-Queue}}
+\index{\-New\-Queue@{\-New\-Queue}!queue.h@{queue.\-h}}
+\subsubsection[{\-New\-Queue}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf \-Queue}$\ast$ {\bf \-New\-Queue} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{queue_8h_abd03a15046a94e5baa5e0022b10a0bba}
+\-Create a normal queue \begin{DoxyReturn}{\-Returns}
+\hyperlink{structQueue}{\-Queue} 
+\end{DoxyReturn}
+\hypertarget{queue_8h_ad72e95a03c3f4f68cdc10708af10354c}{\index{queue.\-h@{queue.\-h}!\-Super\-Queue@{\-Super\-Queue}}
+\index{\-Super\-Queue@{\-Super\-Queue}!queue.h@{queue.\-h}}
+\subsubsection[{\-Super\-Queue}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf \-Queue}$\ast$ {\bf \-Super\-Queue} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, static\mbox{]}}}}\label{queue_8h_ad72e95a03c3f4f68cdc10708af10354c}
+\-Create a super long queue \begin{DoxyReturn}{\-Returns}
+\hyperlink{structQueue}{\-Queue} 
+\end{DoxyReturn}

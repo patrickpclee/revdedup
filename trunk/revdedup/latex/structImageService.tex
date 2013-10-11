@@ -1,0 +1,81 @@
+\hypertarget{structImageService}{\section{\-Image\-Service \-Struct \-Reference}
+\label{structImageService}\index{\-Image\-Service@{\-Image\-Service}}
+}
+
+
+{\ttfamily \#include $<$image.\-h$>$}
+
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+pthread\-\_\-t \hyperlink{structImageService_a0b31d241acb4668258a642e25ce757f0}{\-\_\-tid}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structImageService_a64bd56a8275013437625425c4dea8b26}{\-\_\-iq}
+\item 
+\hyperlink{structQueue}{\-Queue} $\ast$ \hyperlink{structImageService_a108f7dbf9ff6ef4af5da79c8a7b4e795}{\-\_\-oq}
+\item 
+\hyperlink{structIMEntry}{\-I\-M\-Entry} $\ast$ \hyperlink{structImageService_aa81ed60d68af977e73501d0de5cc5fa1}{\-\_\-en}
+\item 
+uint32\-\_\-t \hyperlink{structImageService_a206c07b8c49b019da7e2f9458a6ce04d}{\-\_\-ins}
+\item 
+uint32\-\_\-t \hyperlink{structImageService_a2e6bf66e2d6a32fa8f5fa7537baf1f0e}{\-\_\-ver}
+\item 
+int \hyperlink{structImageService_a5f34b2f826168cd5e135942a2f1b0d00}{\-\_\-fd}
+\item 
+int($\ast$ \hyperlink{structImageService_a49b4a4d8bc476972045f98f4cfd4f677}{start} )(\hyperlink{structQueue}{\-Queue} $\ast$iq, \hyperlink{structQueue}{\-Queue} $\ast$oq, uint32\-\_\-t image\-I\-D)
+\item 
+int($\ast$ \hyperlink{structImageService_ae53c4e8e38ce4f9c545d0c0c8cbb22f7}{stop} )()
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Image service control 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{structImageService_aa81ed60d68af977e73501d0de5cc5fa1}{\index{\-Image\-Service@{\-Image\-Service}!\-\_\-en@{\-\_\-en}}
+\index{\-\_\-en@{\-\_\-en}!ImageService@{\-Image\-Service}}
+\subsubsection[{\-\_\-en}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-I\-M\-Entry}$\ast$ {\bf \-Image\-Service\-::\-\_\-en}}}\label{structImageService_aa81ed60d68af977e73501d0de5cc5fa1}
+\-Image entries \hypertarget{structImageService_a5f34b2f826168cd5e135942a2f1b0d00}{\index{\-Image\-Service@{\-Image\-Service}!\-\_\-fd@{\-\_\-fd}}
+\index{\-\_\-fd@{\-\_\-fd}!ImageService@{\-Image\-Service}}
+\subsubsection[{\-\_\-fd}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-Image\-Service\-::\-\_\-fd}}}\label{structImageService_a5f34b2f826168cd5e135942a2f1b0d00}
+\-File descriptor of image recipe \hypertarget{structImageService_a206c07b8c49b019da7e2f9458a6ce04d}{\index{\-Image\-Service@{\-Image\-Service}!\-\_\-ins@{\-\_\-ins}}
+\index{\-\_\-ins@{\-\_\-ins}!ImageService@{\-Image\-Service}}
+\subsubsection[{\-\_\-ins}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-Image\-Service\-::\-\_\-ins}}}\label{structImageService_a206c07b8c49b019da7e2f9458a6ce04d}
+\-Image \-I\-D \hypertarget{structImageService_a64bd56a8275013437625425c4dea8b26}{\index{\-Image\-Service@{\-Image\-Service}!\-\_\-iq@{\-\_\-iq}}
+\index{\-\_\-iq@{\-\_\-iq}!ImageService@{\-Image\-Service}}
+\subsubsection[{\-\_\-iq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Image\-Service\-::\-\_\-iq}}}\label{structImageService_a64bd56a8275013437625425c4dea8b26}
+\hyperlink{structQueue}{\-Queue} for incoming segments \hypertarget{structImageService_a108f7dbf9ff6ef4af5da79c8a7b4e795}{\index{\-Image\-Service@{\-Image\-Service}!\-\_\-oq@{\-\_\-oq}}
+\index{\-\_\-oq@{\-\_\-oq}!ImageService@{\-Image\-Service}}
+\subsubsection[{\-\_\-oq}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Queue}$\ast$ {\bf \-Image\-Service\-::\-\_\-oq}}}\label{structImageService_a108f7dbf9ff6ef4af5da79c8a7b4e795}
+\hyperlink{structQueue}{\-Queue} for outgoing segments \hypertarget{structImageService_a0b31d241acb4668258a642e25ce757f0}{\index{\-Image\-Service@{\-Image\-Service}!\-\_\-tid@{\-\_\-tid}}
+\index{\-\_\-tid@{\-\_\-tid}!ImageService@{\-Image\-Service}}
+\subsubsection[{\-\_\-tid}]{\setlength{\rightskip}{0pt plus 5cm}pthread\-\_\-t {\bf \-Image\-Service\-::\-\_\-tid}}}\label{structImageService_a0b31d241acb4668258a642e25ce757f0}
+\-Thread \-I\-D for processing segments \hypertarget{structImageService_a2e6bf66e2d6a32fa8f5fa7537baf1f0e}{\index{\-Image\-Service@{\-Image\-Service}!\-\_\-ver@{\-\_\-ver}}
+\index{\-\_\-ver@{\-\_\-ver}!ImageService@{\-Image\-Service}}
+\subsubsection[{\-\_\-ver}]{\setlength{\rightskip}{0pt plus 5cm}uint32\-\_\-t {\bf \-Image\-Service\-::\-\_\-ver}}}\label{structImageService_a2e6bf66e2d6a32fa8f5fa7537baf1f0e}
+\-Image version \hypertarget{structImageService_a49b4a4d8bc476972045f98f4cfd4f677}{\index{\-Image\-Service@{\-Image\-Service}!start@{start}}
+\index{start@{start}!ImageService@{\-Image\-Service}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Image\-Service\-::start})({\bf \-Queue} $\ast$iq, {\bf \-Queue} $\ast$oq, uint32\-\_\-t image\-I\-D)}}\label{structImageService_a49b4a4d8bc476972045f98f4cfd4f677}
+\-Starts the image service 
+\begin{DoxyParams}{\-Parameters}
+{\em iq} & \hyperlink{structQueue}{\-Queue} for incoming segments \\
+\hline
+{\em oq} & \hyperlink{structQueue}{\-Queue} for outgoing segments \\
+\hline
+{\em image\-I\-D} & \-Image \-I\-D \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+\hypertarget{structImageService_ae53c4e8e38ce4f9c545d0c0c8cbb22f7}{\index{\-Image\-Service@{\-Image\-Service}!stop@{stop}}
+\index{stop@{stop}!ImageService@{\-Image\-Service}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ {\bf \-Image\-Service\-::stop})()}}\label{structImageService_ae53c4e8e38ce4f9c545d0c0c8cbb22f7}
+\-Stops the image service \begin{DoxyReturn}{\-Returns}
+0 if successful, -\/1 otherwise 
+\end{DoxyReturn}
+
+
+\-The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{image_8h}{image.\-h}\end{DoxyCompactItemize}

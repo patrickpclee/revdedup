@@ -1,0 +1,113 @@
+\hypertarget{compress_8c}{\section{compress.\-c \-File \-Reference}
+\label{compress_8c}\index{compress.\-c@{compress.\-c}}
+}
+
+
+\-Compression \-Service \-Implementation.  
+
+
+{\ttfamily \#include \char`\"{}compress.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}minilzo.\-h\char`\"{}}\*
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static void $\ast$ \hyperlink{compress_8c_a75f4c029c2eb631c3c9b3c78c6cf7d90}{process} (void $\ast$ptr)
+\item 
+static void $\ast$ \hyperlink{compress_8c_a392b2c8f024df1ece5203edca5f1d8cc}{dispatch} (void $\ast$ptr)
+\item 
+static void $\ast$ \hyperlink{compress_8c_a1571353eadf414892552974ac059ffca}{gather} (void $\ast$ptr)
+\item 
+static int \hyperlink{compress_8c_affa842a436c4cded9758cecdeb445aaf}{start} (\hyperlink{structQueue}{\-Queue} $\ast$iq, \hyperlink{structQueue}{\-Queue} $\ast$oq)
+\item 
+static int \hyperlink{compress_8c_af5bef4db921e44f9e7feeb0169f4bcd2}{stop} ()
+\item 
+\hyperlink{structCompressService}{\-Compress\-Service} $\ast$ \hyperlink{compress_8c_a91f53ae97925c28e19d99b560c0d6ee5}{\-Get\-Compress\-Service} ()
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{structCompressService}{\-Compress\-Service} {\bfseries service}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Compression \-Service \-Implementation. \begin{DoxyAuthor}{\-Author}
+\-Ng \-Chun \-Ho 
+\end{DoxyAuthor}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{compress_8c_a392b2c8f024df1ece5203edca5f1d8cc}{\index{compress.\-c@{compress.\-c}!dispatch@{dispatch}}
+\index{dispatch@{dispatch}!compress.c@{compress.\-c}}
+\subsubsection[{dispatch}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf dispatch} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{compress_8c_a392b2c8f024df1ece5203edca5f1d8cc}
+\-Dispatching segments to appropriate thread 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{compress_8c_a1571353eadf414892552974ac059ffca}{\index{compress.\-c@{compress.\-c}!gather@{gather}}
+\index{gather@{gather}!compress.c@{compress.\-c}}
+\subsubsection[{gather}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf gather} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{compress_8c_a1571353eadf414892552974ac059ffca}
+\-Gathering segments from appropriate thread 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{compress_8c_a91f53ae97925c28e19d99b560c0d6ee5}{\index{compress.\-c@{compress.\-c}!\-Get\-Compress\-Service@{\-Get\-Compress\-Service}}
+\index{\-Get\-Compress\-Service@{\-Get\-Compress\-Service}!compress.c@{compress.\-c}}
+\subsubsection[{\-Get\-Compress\-Service}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Compress\-Service}$\ast$ {\bf \-Get\-Compress\-Service} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{compress_8c_a91f53ae97925c28e19d99b560c0d6ee5}
+\-Gets the control of compression service \begin{DoxyReturn}{\-Returns}
+\-The compression service 
+\end{DoxyReturn}
+\hypertarget{compress_8c_a75f4c029c2eb631c3c9b3c78c6cf7d90}{\index{compress.\-c@{compress.\-c}!process@{process}}
+\index{process@{process}!compress.c@{compress.\-c}}
+\subsubsection[{process}]{\setlength{\rightskip}{0pt plus 5cm}static void$\ast$ {\bf process} (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{ptr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{compress_8c_a75f4c029c2eb631c3c9b3c78c6cf7d90}
+\-Main loop for processing segments 
+\begin{DoxyParams}{\-Parameters}
+{\em ptr} & useless \\
+\hline
+\end{DoxyParams}
+\hypertarget{compress_8c_affa842a436c4cded9758cecdeb445aaf}{\index{compress.\-c@{compress.\-c}!start@{start}}
+\index{start@{start}!compress.c@{compress.\-c}}
+\subsubsection[{start}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf start} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Queue} $\ast$}]{iq, }
+\item[{{\bf \-Queue} $\ast$}]{oq}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{compress_8c_affa842a436c4cded9758cecdeb445aaf}
+\-Implements \-Compress\-Service-\/$>$\hyperlink{bucket_8c_affa842a436c4cded9758cecdeb445aaf}{start()} \hypertarget{compress_8c_af5bef4db921e44f9e7feeb0169f4bcd2}{\index{compress.\-c@{compress.\-c}!stop@{stop}}
+\index{stop@{stop}!compress.c@{compress.\-c}}
+\subsubsection[{stop}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf stop} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{compress_8c_af5bef4db921e44f9e7feeb0169f4bcd2}
+\-Implements \-Compress\-Service-\/$>$\hyperlink{bucket_8c_af5bef4db921e44f9e7feeb0169f4bcd2}{stop()} 
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{compress_8c_ad5b11530f7c21a6264c4b2e3b247d179}{\index{compress.\-c@{compress.\-c}!service@{service}}
+\index{service@{service}!compress.c@{compress.\-c}}
+\subsubsection[{service}]{\setlength{\rightskip}{0pt plus 5cm}static {\bf \-Compress\-Service} service\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{compress_8c_ad5b11530f7c21a6264c4b2e3b247d179}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+ {
+                .start = start,
+                .stop = stop,
+}
+\end{DoxyCode}
