@@ -1,8 +1,7 @@
-/*
- * revrbd.c
- *
- *  Created on: 20 Jun, 2013
- *      Author: ngchunho
+/**
+ * @file	revrbd.c
+ * @brief	Reverse Deduplication Reconstruction Service Implementation
+ * @author	Ng Chun Ho
  */
 
 #include "revrbd.h"
@@ -10,11 +9,17 @@
 #include <sys/sendfile.h>
 #include "minilzo.h"
 
+/**
+ * Ties segment metadata with its data
+ */
 typedef struct {
 	SMEntry * sen;
 	uint8_t data[MAX_SEG_SIZE << 1];
 } SimpleSegment;
 
+/**
+ * Ties bucket metadata with its data
+ */
 typedef struct {
 	BMEntry * ben;
 	uint8_t data[BUCKET_SIZE];
@@ -22,6 +27,11 @@ typedef struct {
 
 static RevRbdService service;
 
+/**
+ * Create a new bucket in memory
+ * @param sid		Starting segment ID
+ * @return			Created bucket
+ */
 static Bucket * NewBucket(uint64_t sid) {
 	char buf[64];
 	Bucket * b = malloc(sizeof(Bucket));
@@ -36,6 +46,10 @@ static Bucket * NewBucket(uint64_t sid) {
 	return b;
 }
 
+/**
+ * Seal the bucket on disk
+ * @param b			Bucket to seal
+ */
 static void SaveBucket(Bucket * b) {
 	ssize_t remain = (BLOCK_SIZE - (b->size % BLOCK_SIZE)) % BLOCK_SIZE;
 	assert(write(b->fd, service._padding, remain) == remain);
@@ -49,6 +63,12 @@ static void SaveBucket(Bucket * b) {
 	free(b);
 }
 
+/**
+ * Insert a segment into buckets
+ * @param b			Bucket to insert
+ * @param sseg		Segment to write
+ * @return			Bucket for subsequent insertion
+ */
 static Bucket * BucketInsert(Bucket * b, SimpleSegment * sseg) {
 	SMEntry * sen = sseg->sen;
 	if (b == NULL) {
@@ -69,12 +89,16 @@ static Bucket * BucketInsert(Bucket * b, SimpleSegment * sseg) {
 	return b;
 }
 
+/**
+ * Gather reconstructed segments and writes them to buckets
+ * @param ptr		useless
+ */
 static void * saveSegment(void * ptr) {
 	SimpleSegment * sseg;
 	Bucket * b = NULL;
 	int i = REV_CNT;
 	while (i) {
-		sseg = (SimpleSegment *) Dequeue(service._nbq);
+		sseg = (SimpleSegment *) Dequeue(service._ssq);
 		if (sseg == NULL) {
 			i--;
 			continue;
@@ -88,6 +112,10 @@ static void * saveSegment(void * ptr) {
 	return NULL ;
 }
 
+/**
+ * Removes unreferenced chunks in the segments
+ * @param ptr		useless
+ */
 static void * rebuildSegments(void * ptr) {
 	uint8_t buf[LZO1X_MEM_COMPRESS];
 	SimpleSegment * sseg;
@@ -131,19 +159,23 @@ static void * rebuildSegments(void * ptr) {
 			sen->compressed = 1;
 		}
 #endif
-		Enqueue(service._nbq, sseg);
+		Enqueue(service._ssq, sseg);
 	}
-	Enqueue(service._nbq, NULL);
+	Enqueue(service._ssq, NULL);
 	munmap(temp, MAX_SEG_SIZE);
 	return NULL ;
 }
 
-static void * rebuildBucket(void * ptr) {
+/**
+ * Combines small buckets into a larger one
+ * @param ptr		useless
+ */
+static void * combineBuckets(void * ptr) {
 	SimpleBucket * sbucket = NULL, * lsbucket = NULL;
 	BMEntry * ben, * lben = NULL;
 	uint64_t bid, lbid = 0, i;
 	char buf[128];
-	while ((sbucket = (SimpleBucket *) Dequeue(service._rbq)) != NULL) {
+	while ((sbucket = (SimpleBucket *) Dequeue(service._cbq)) != NULL) {
 		if (lsbucket == NULL) {
 			lsbucket = sbucket;
 			lben = lsbucket->ben;
@@ -168,6 +200,7 @@ static void * rebuildBucket(void * ptr) {
 			sprintf(buf, DATA_DIR "bucket/%08lx", bid);
 			unlink(buf);
 		} else {
+			// Write buckets when it is full
 			sprintf(buf, DATA_DIR "bucket/%08lx", lbid);
 			int fd = creat(buf, 0644);
 			assert(write(fd, lsbucket->data, lben->size) == lben->size);
@@ -186,32 +219,40 @@ static void * rebuildBucket(void * ptr) {
 	return NULL;
 }
 
+/**
+ * Bucket prefetching routine
+ * @param ptr		useless
+ */
 static void * prefetch(void * ptr) {
 	BMEntry * ben;
 	char buf[128];
 	int fd;
 	while ((ben = (BMEntry *)Dequeue(service._pfq)) != NULL) {
 		sprintf(buf, DATA_DIR "bucket/%08lx", ben - service._ben);
-		fd = open(buf, O_RDWR);
-		posix_fadvise(fd, 0, lseek(fd, 0, SEEK_END), POSIX_FADV_WILLNEED);
+		fd = open(buf, O_RDONLY);
+		posix_fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
 		close(fd);
 	}
 
 	return NULL;
 }
 
-
-static void * processBuckets(void * ptr) {
+/**
+ * Packs buckets by removing segment with 0 reference count
+ * @param ptr		useless
+ */
+static void * packBuckets(void * ptr) {
 	BMEntry * ben;
 	uint64_t i, bid;
 	char buf[128];
-	while ((ben = (BMEntry *) Dequeue(service._bq)) != NULL ) {
+	while ((ben = (BMEntry *) Dequeue(service._pbq)) != NULL ) {
 		bid = ben - service._ben;
 
 		sprintf(buf, DATA_DIR "bucket/%08lx", bid);
 		int fd = open(buf, O_RDWR);
-		// Rebuild Buckets
+
 		if (ben->psize > MAX_PUNCH(ben->size)) {
+			// Reconstruct buckets
 			SimpleBucket * sbucket = malloc(sizeof(SimpleBucket));
 			sbucket->ben = ben;
 			int64_t pos = 0, offset = 0;
@@ -233,8 +274,9 @@ static void * processBuckets(void * ptr) {
 			}
 			ben->size = pos;
 			ben->psize = 0;
-			Enqueue(service._rbq, sbucket);
+			Enqueue(service._cbq, sbucket);
 		} else {
+			// Punching holes in buckets
 			uint32_t pos = 0, end = 0;
 			for (i = ben->sid; i < ben->sid + ben->segs; i++) {
 				SMEntry * sen = &service._sen[i];
@@ -262,13 +304,17 @@ static void * processBuckets(void * ptr) {
 
 		close(fd);
 	}
-	Enqueue(service._rbq, NULL);
+	Enqueue(service._cbq, NULL);
 	for (i = 0; i < REV_CNT; i++) {
 		Enqueue(service._rsq, NULL);
 	}
 	return NULL ;
 }
 
+/**
+ * Main loop to scan buckets that contains segments for reconstruction
+ * @param ptr			useless
+ */
 static void * process(void * ptr) {
 	uint64_t i, j;
 	for (i = 1; i <= service._blog->bucketID; i++) {
@@ -285,7 +331,7 @@ static void * process(void * ptr) {
 			if (sen->ref != 0) {
 				continue;
 			}
-			kcdbremove(service.__db, (char *)sen->fp, FP_SIZE);
+			kcdbremove(service._db, (char *)sen->fp, FP_SIZE);
 			psize += sen->len;
 			sen->ref = -1;
 		}
@@ -297,21 +343,24 @@ static void * process(void * ptr) {
 		if (ben->psize > MAX_PUNCH(ben->size)) {
 			Enqueue(service._pfq, ben);
 		}
-		Enqueue(service._bq, ben);
+		Enqueue(service._pbq, ben);
 	}
 	Enqueue(service._pfq, NULL);
-	Enqueue(service._bq, NULL);
+	Enqueue(service._pbq, NULL);
 	return NULL;
 }
 
+/**
+ * Implements RevRbdService->start()
+ */
 static int start(SMEntry * sen, CMEntry * cen, BMEntry * ben, uint32_t ver) {
 	int ret, i;
 
-	service._bq = NewQueue();
+	service._pbq = NewQueue();
 	service._rsq = NewQueue();
-	service._nbq = NewQueue();
+	service._ssq = NewQueue();
 	service._pfq = NewQueue();
-	service._rbq = NewQueue();
+	service._cbq = NewQueue();
 
 	service._sen = sen;
 	service._slog = (SegmentLog *) sen;
@@ -322,23 +371,26 @@ static int start(SMEntry * sen, CMEntry * cen, BMEntry * ben, uint32_t ver) {
 
 	service._ver = ver;
 
-	service.__db = kcdbnew();
-	kcdbopen(service.__db, "-", KCOWRITER | KCOCREATE);
-	kcdbloadsnap(service.__db, DATA_DIR "index");
+	service._db = kcdbnew();
+	kcdbopen(service._db, "-", KCOWRITER | KCOCREATE);
+	kcdbloadsnap(service._db, DATA_DIR "index");
 
 	memset(service._padding, 0, BLOCK_SIZE);
 
 	ret = pthread_create(&service._tid, NULL, process, NULL);
-	ret = pthread_create(&service._pbid, NULL, processBuckets, NULL);
+	ret = pthread_create(&service._pbid, NULL, packBuckets, NULL);
 	for (i = 0; i < REV_CNT; i++) {
 		ret = pthread_create(&service._rsid[i], NULL, rebuildSegments, NULL);
 	}
 	ret = pthread_create(&service._ssid, NULL, saveSegment, NULL);
 	ret = pthread_create(&service._pfid, NULL, prefetch, NULL);
-	ret = pthread_create(&service._rbid, NULL, rebuildBucket, NULL);
+	ret = pthread_create(&service._cbid, NULL, combineBuckets, NULL);
 	return ret;
 }
 
+/**
+ * Implements RevRbdService->stop()
+ */
 static int stop() {
 	int ret = 0, i;
 	pthread_join(service._tid, NULL );
@@ -348,16 +400,17 @@ static int stop() {
 	}
 	pthread_join(service._ssid, NULL );
 	pthread_join(service._pfid, NULL );
-	pthread_join(service._rbid, NULL );
+	pthread_join(service._cbid, NULL );
 
-	kcdbdumpsnap(service.__db, DATA_DIR "index");
-	kcdbdel(service.__db);
+	kcdbdumpsnap(service._db, DATA_DIR "index");
+	kcdbclose(service._db);
+	kcdbdel(service._db);
 
-	free(service._bq);
+	free(service._pbq);
 	free(service._rsq);
-	free(service._nbq);
+	free(service._ssq);
 	free(service._pfq);
-	free(service._rbq);
+	free(service._cbq);
 	return ret;
 }
 

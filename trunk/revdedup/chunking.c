@@ -1,8 +1,7 @@
-/*
- * chunking.c
- *
- *  Created on: Aug 24, 2013
- *      Author: chng
+/**
+ * @file 	chunking.c
+ * @brief	Program that generates metadata file for further processing
+ * @author	Ng Chun Ho
  */
 
 #include <revdedup.h>

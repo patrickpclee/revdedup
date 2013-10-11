@@ -1,12 +1,7 @@
-/*
- * client.c
- *
- *  Created on: Oct 9, 2013
- *      Author: chng
- */
-
 /**
- * Client for upload process
+ * @file 	client.c
+ * @brief	Program that uploads images to server through network
+ * @author	Ng Chun Ho
  */
 
 #include <revdedup.h>
@@ -19,6 +14,14 @@ typedef struct {
 	void * buffer;
 } RespBuffer;
 
+/**
+ * Implements curl WRITEFUNCTION to get response body
+ * @param ptr		Pointer to data
+ * @param size		Size of a block
+ * @param nmemb		Number of memory blocks
+ * @param userdata	Custom data
+ * @return
+ */
 static size_t writeFn(void * ptr, size_t size, size_t nmemb, void * userdata) {
 	RespBuffer * rb = (RespBuffer *) userdata;
 	if (rb) {
@@ -28,6 +31,14 @@ static size_t writeFn(void * ptr, size_t size, size_t nmemb, void * userdata) {
 	return nmemb;
 }
 
+/**
+ * Generates a POST request
+ * @param path		Path of server
+ * @param data		Data to post
+ * @param size		Size of data to post
+ * @param resp		Pointer to store response body
+ * @return			0 if successful, -1 otherwise
+ */
 static int post(char * path, void * data, size_t size, void * resp) {
 	CURL * curl = curl_easy_init();
 	assert(curl != NULL);
@@ -47,6 +58,10 @@ static int post(char * path, void * data, size_t size, void * resp) {
 	return 0;
 }
 
+/**
+ * Routine to put segments to server
+ * @param ptr		Queue for incoming segments
+ */
 void * processSegments(void * ptr) {
 	Queue * q = (Queue *) ptr;
 	Segment * seg;
@@ -61,7 +76,7 @@ void * processSegments(void * ptr) {
 
 int main(int argc, char * argv[]) {
 	if (argc != 4) {
-		fprintf(stderr, "Usage : %s file metafile instanceID\n", argv[0]);
+		fprintf(stderr, "Usage : %s file metafile imageID\n", argv[0]);
 		return 0;
 	}
 	uint8_t buf[128];
@@ -81,12 +96,14 @@ int main(int argc, char * argv[]) {
 
 	struct timeval x;
 	TIMERSTART(x);
+	/// Querying server if the segments are unique
 	uint64_t * resp = malloc(entries * sizeof(uint64_t));
 	RespBuffer rb = { .ptr = 0, .size = entries * sizeof(uint64_t), .buffer =
 			resp };
 	sprintf(buf, "%s:%u/%u", HOST, META_PORT, atoi(argv[3]));
 	post(buf, base_seg, osize, &rb);
 
+	/// Uploads unique segments to server
 	Queue * segq = LongQueue();
 	pthread_t segt[DATA_THREAD_CNT];
 	for (i = 0; i < DATA_THREAD_CNT; i++) {
@@ -102,11 +119,7 @@ int main(int argc, char * argv[]) {
 		seg->id = resp[i];
 		Enqueue(segq, seg);
 	}
-	sprintf(buf, "%s:%u/%s", HOST, META_PORT, "sync");
-	post(buf, NULL, 0, NULL);
 
-	TIMERSTOP(x);
-	printf("%ld.%06ld\n", x.tv_sec, x.tv_usec);
 
 	for (i = 0; i < DATA_THREAD_CNT; i++) {
 		Enqueue(segq, NULL);
@@ -114,6 +127,11 @@ int main(int argc, char * argv[]) {
 	for (i = 0; i < DATA_THREAD_CNT; i++) {
 		pthread_join(segt[i], NULL);
 	}
+	/// Call server to sync data to disk
+	sprintf(buf, "%s:%u/%s", HOST, META_PORT, "sync");
+	post(buf, NULL, 0, NULL);
+	TIMERSTOP(x);
+	printf("%ld.%06ld\n", x.tv_sec, x.tv_usec);
 	DelQueue(segq);
 
 	free(resp);

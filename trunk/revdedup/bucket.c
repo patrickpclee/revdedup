@@ -1,8 +1,7 @@
-/*
- * bucket.c
- *
- *  Created on: May 29, 2013
- *      Author: chng
+/**
+ * @file	bucket.c
+ * @brief	Bucket Service Implementation
+ * @author	Ng Chun Ho
  */
 
 #include "bucket.h"
@@ -12,6 +11,11 @@
 
 static BucketService service;
 
+/**
+ * Create a new bucket in memory
+ * @param sid		Starting segment ID
+ * @return			Created bucket
+ */
 static Bucket * NewBucket(uint64_t sid) {
 	char buf[64];
 	Bucket * b = malloc(sizeof(Bucket));
@@ -26,6 +30,10 @@ static Bucket * NewBucket(uint64_t sid) {
 	return b;
 }
 
+/**
+ * Seal the bucket on disk
+ * @param b			Bucket to seal
+ */
 static void SaveBucket(Bucket * b) {
 	ssize_t remain = (BLOCK_SIZE - (b->size % BLOCK_SIZE)) % BLOCK_SIZE;
 	assert(write(b->fd, service._padding, remain) == remain);
@@ -36,11 +44,15 @@ static void SaveBucket(Bucket * b) {
 	service._en[b->id].size = b->size + remain;
 	service._en[b->id].psize = 0;
 	service._en[b->id].ver = -1;	// Infinity
-	service._en[b->id].inst = service._inst;
-	service._en[b->id].vers = service._ver;
 	free(b);
 }
 
+/**
+ * Insert a segment into buckets
+ * @param b			Bucket to insert
+ * @param seg		Segment to write
+ * @return			Bucket for subsequent insertion
+ */
 static Bucket * BucketInsert(Bucket * b, Segment * seg) {
 	if (b == NULL) {
 		b = NewBucket(seg->id);
@@ -59,6 +71,10 @@ static Bucket * BucketInsert(Bucket * b, Segment * seg) {
 	return b;
 }
 
+/**
+ * Main loop for processing segments
+ * @param ptr		useless
+ */
 static void * process(void * ptr) {
 	Bucket * b = NULL;
 	Segment * seg = NULL;
@@ -76,6 +92,9 @@ static void * process(void * ptr) {
 	return NULL;
 }
 
+/**
+ * Implements BucketService->start()
+ */
 static int start(Queue * iq, Queue * oq) {
 	int ret, fd;
 	service._iq = iq;
@@ -93,6 +112,9 @@ static int start(Queue * iq, Queue * oq) {
 	return ret;
 }
 
+/**
+ * Implements BucketService->stop()
+ */
 static int stop() {
 	int ret, i;
 	ret = pthread_join(service._tid, NULL);

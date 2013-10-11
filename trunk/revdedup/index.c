@@ -1,15 +1,17 @@
-/*
- * index.c
- *
- *  Created on: May 29, 2013
- *      Author: chng
+/**
+ * @file	index.c
+ * @brief	Index Service Implementation
+ * @author	Ng Chun Ho
  */
 
 #include "index.h"
-#include "fingerprint.h"
 
 static IndexService service;
 
+/**
+ * Distribute Segment and Chunk ID, also sets database entry
+ * @param seg		Segment to process
+ */
 static inline void setDatabase(Segment * seg) {
 	seg->unique = 1;
 	seg->id = ++service._slog->segID;
@@ -18,6 +20,10 @@ static inline void setDatabase(Segment * seg) {
 	service._clog->chunkID += seg->chunks;
 }
 
+/**
+ * Main loop for processing segments
+ * @param ptr		useless
+ */
 static void * process(void * ptr) {
 	uint32_t i;
 	Segment * seg;
@@ -41,6 +47,9 @@ static void * process(void * ptr) {
 	return NULL ;
 }
 
+/**
+ * Implements BucketService->start()
+ */
 static int start(Queue * iq, Queue * oq) {
 	int fd, i, ret;
 	service._iq = iq;
@@ -78,12 +87,16 @@ static int start(Queue * iq, Queue * oq) {
 	return ret;
 }
 
+/**
+ * Implements BucketService->stop()
+ */
 static int stop() {
 	int ret = pthread_join(service._tid, NULL );
 #if DISABLE_BLOOM == 0
 	bloom_free(&service._bl);
 #endif
 	kcdbdumpsnap(service._db, DATA_DIR "index");
+	kcdbclose(service._db);
 	kcdbdel(service._db);
 
 	munmap(service._sen, MAX_ENTRIES(sizeof(SMEntry)));
@@ -91,6 +104,9 @@ static int stop() {
 	return ret;
 }
 
+/**
+ * Implements IndexService->putSegment()
+ */
 static int putSegment(Segment * seg, uint64_t bucket) {
 	memcpy(service._sen[seg->id].fp, seg->fp, FP_SIZE);
 	service._sen[seg->id].bucket = bucket;
@@ -104,6 +120,9 @@ static int putSegment(Segment * seg, uint64_t bucket) {
 	return 0;
 }
 
+/**
+ * Implements IndexService->getSegment()
+ */
 static int getSegment(Segment * seg) {
 	memcpy(seg->fp, service._sen[seg->id].fp, FP_SIZE);
 	seg->pos = service._sen[seg->id].pos;

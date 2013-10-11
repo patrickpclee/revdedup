@@ -1,12 +1,11 @@
-/*
- * revmap.c
- *
- *  Created on: Jun 17, 2013
- *      Author: chng
+/**
+ * @file	revmap.c
+ * @brief	Reverse Deduplication Mapping Service Implementation
+ * @author	Ng Chun Ho
  */
 
+
 #include <kclangc.h>
-#include <search.h>
 #include "revmap.h"
 
 
@@ -16,6 +15,10 @@
 
 static RevMapService service;
 
+/**
+ * Main loop for processing images
+ * @param ptr		useless
+ */
 static void * process(void * ptr) {
 	uint64_t start = (uint64_t)ptr;
 	uint32_t cur;
@@ -45,6 +48,8 @@ static void * process(void * ptr) {
 		ocnt = osize / sizeof(Direct);
 		close(fd);
 
+		// Insert all segment and chunk entries of newer version into maps
+		// for subsequent searching
 		for (i = 0; i < icnt; i++) {
 			SMEntry * sen = &service._sen[idir[i].id];
 			Indirect sin = { .ptr = i, .pos = 0, .len = sen->chunks };
@@ -68,6 +73,7 @@ static void * process(void * ptr) {
 			SMEntry * sen = &service._sen[odir[i].id];
 			const char * sin = kcmapget(smap, CH(sen->fp), FP_SIZE, &sz);
 			if (sin != NULL) {
+				// Duplicate segment
 				kcmapadd(imap, CH(&bpos), SZ_U, CH(sin), SZ_I);
 				continue;
 			}
@@ -78,10 +84,13 @@ static void * process(void * ptr) {
 				bpos = htobe64(odir[i].index + j);	// Cannot use cen->pos, chunks may have 0 length
 				const char * cin = kcmapget(cmap, CH(cen->fp), FP_SIZE, &sz);
 				if (cin != NULL) {
+					// Duplicate chunk
 					kcmapadd(imap, CH(&bpos), SZ_U, CH(cin), SZ_I);
 				} else {
+					// Unique chunk
 					Indirect ncin = { .ptr = UNIQ + i, .pos = j, .len = 1 };
 					kcmapadd(imap, CH(&bpos), SZ_U, CH(&ncin), SZ_I);
+					// Increment refence count of the chunk
 					pthread_spin_lock(&service._rlock);
 					cen->ref++;
 					pthread_spin_unlock(&service._rlock);
@@ -89,7 +98,7 @@ static void * process(void * ptr) {
 			}
 		}
 
-		// Generate Indirect from B-tree
+		// Generate indirect recipe from in-memory maps
 		sprintf(buf, DATA_DIR "image/i%u-%u", cur, service._ver);
 		fd = creat(buf, 0644);
 
@@ -97,8 +106,8 @@ static void * process(void * ptr) {
 		const char * bptr;
 		Indirect * in;
 		Indirect prev = { .ptr = 0, .pos = 0, .len = 0 };
+		// Merge indirect entries with its neighbour
 		while ((bptr = kcmapsortget(ismap, &sz, (const char **) &in, &sz2)) != NULL) {
-			// Should merge with the neighbour entries
 			if (in->ptr == prev.ptr && in->pos == prev.pos + prev.len) {
 				prev.len += in->len;
 			} else {
@@ -120,17 +129,19 @@ static void * process(void * ptr) {
 		munmap(idir, isize);
 		munmap(odir, osize);
 	}
-
 	return NULL ;
 }
 
-static int start(SMEntry * sen, CMEntry * cen, uint32_t instances, uint32_t version) {
+/**
+ * Implements RevMapService->start()
+ */
+static int start(SMEntry * sen, CMEntry * cen, uint32_t images, uint32_t version) {
 	uint64_t i;
 	service._sen = sen;
 	service._slog = (SegmentLog *)sen;
 	service._cen = cen;
 	service._clog = (ChunkLog *)cen;
-	service._ins = instances;
+	service._ins = images;
 	service._ver = version;
 	pthread_spin_init(&service._rlock, PTHREAD_PROCESS_SHARED);
 	for (i = 0; i < REV_CNT; i++) {
@@ -139,6 +150,9 @@ static int start(SMEntry * sen, CMEntry * cen, uint32_t instances, uint32_t vers
 	return 0;
 }
 
+/**
+ * Implements RevMapService->stop()
+ */
 static int stop() {
 	int i, ret;
 	for (i = 0; i < REV_CNT; i++) {

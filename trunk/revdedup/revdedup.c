@@ -1,8 +1,7 @@
-/*
- * revdedup.c
- *
- *  Created on: Jun 14, 2013
- *      Author: chng
+/**
+ * @file 	revdedup.c
+ * @brief	Implements reverse deduplication procedures
+ * @author	Ng Chun Ho
  */
 
 #include <sys/time.h>
@@ -39,13 +38,14 @@ int main(int argc, char * argv[]) {
 	int32_t ver = atoi(argv[2]);
 
 	if (ver >= 0) {
+		struct timeval x;
+		TIMERSTART(x);
+		/// Accounting for number of recent and early image
 		for (i = 0; i < ins; i++) {
 			ien[i].recent--;
 			ien[i].old++;
 		}
-
-		struct timeval x;
-		TIMERSTART(x);
+		/// Run services below
 		RevRefService * rrs = GetRevRefService();
 		rrs->start(sen, ins, ver);
 		rrs->stop();

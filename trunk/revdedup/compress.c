@@ -1,8 +1,7 @@
-/*
- * compress.c
- *
- *  Created on: May 29, 2013
- *      Author: chng
+/**
+ * @file	compress.c
+ * @brief	Compression Service Implementation
+ * @author	Ng Chun Ho
  */
 
 #include "compress.h"
@@ -10,9 +9,14 @@
 
 static CompressService service;
 
+/**
+ * Main loop for processing segments
+ * @param ptr		useless
+ */
 static void * process(void * ptr) {
 	uint8_t buf[LZO1X_MEM_COMPRESS];
 	uint8_t * temp = MMAP_MM(MAX_SEG_SIZE);
+	uint8_t * ctemp = MMAP_MM(MAX_SEG_SIZE << 1);
 	uint64_t self = (uint64_t) ptr;
 	uint32_t pos = 0, i;
 	Segment * seg;
@@ -40,22 +44,29 @@ static void * process(void * ptr) {
 		seg->compressed = 0;
 
 #else
-		lzo1x_1_compress(temp, pos, seg->cdata, &seg->clen, buf);
+		lzo1x_1_compress(temp, pos, ctemp, &seg->clen, buf);
+		/* If compressed size is larger, than don't use compressed data */
 		if (seg->clen >= pos) {
 			memcpy(seg->cdata, temp, pos);
 			seg->clen = pos;
 			seg->compressed = 0;
 		} else {
+			memcpy(seg->cdata, ctemp, seg->clen);
 			seg->compressed = 1;
 		}
 #endif
 		Enqueue(service._dq[self], seg);
 	}
 	Enqueue(service._dq[self], NULL);
+	munmap(ctemp, MAX_SEG_SIZE << 1);
 	munmap(temp, MAX_SEG_SIZE);
 	return NULL;
 }
 
+/**
+ * Dispatching segments to appropriate thread
+ * @param ptr	useless
+ */
 static void * dispatch(void * ptr) {
 	Segment * seg;
 	uint64_t turn = 0;
@@ -71,6 +82,10 @@ static void * dispatch(void * ptr) {
 	return NULL;
 }
 
+/**
+ * Gathering segments from appropriate thread
+ * @param ptr	useless
+ */
 static void * gather(void * ptr) {
 	Segment * seg;
 	uint64_t turn = 0;
@@ -84,6 +99,9 @@ static void * gather(void * ptr) {
 	return NULL;
 }
 
+/**
+ * Implements CompressService->start()
+ */
 static int start(Queue * iq, Queue * oq) {
 	int ret, i;
 	service._iq = iq;
@@ -99,6 +117,9 @@ static int start(Queue * iq, Queue * oq) {
 	return ret;
 }
 
+/**
+ * Implements CompressService->stop()
+ */
 static int stop() {
 	int ret, i;
 	ret = pthread_join(service._tid, NULL);

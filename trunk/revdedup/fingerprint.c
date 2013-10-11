@@ -1,8 +1,7 @@
-/*
- * fingerprint.c
- *
- *  Created on: May 29, 2013
- *      Author: chng
+/**
+ * @file	fingerprint.c
+ * @brief	Fingerprint Service Implementation
+ * @author	Ng Chun Ho
  */
 
 #include <openssl/sha.h>
@@ -10,8 +9,13 @@
 
 static FpService service;
 
+/** Define cryptographic function used */
 #define FP_COMPUTE(in, size, out) SHA1(in, size, out)
 
+/**
+ * Main loop for processing segments
+ * @param ptr		useless
+ */
 static void * process(void * ptr) {
 	while (1) {
 		Segment * seg = (Segment *)Dequeue(service._iq);
@@ -29,6 +33,9 @@ static void * process(void * ptr) {
 	return NULL;
 }
 
+/**
+ * Implements FpService->start()
+ */
 static int start(Queue * iq, Queue * oq) {
 	service._iq = iq;
 	service._oq = oq;
@@ -36,6 +43,9 @@ static int start(Queue * iq, Queue * oq) {
 	return ret;
 }
 
+/**
+ * Implements FpService->stop()
+ */
 static int stop() {
 	int ret = pthread_join(service._tid, NULL);
 	return ret;

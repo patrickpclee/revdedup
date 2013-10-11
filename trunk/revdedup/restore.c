@@ -1,8 +1,7 @@
-/*
- * restore.c
- *
- *  Created on: Jun 20, 2013
- *      Author: chng
+/**
+ * @file 	restore.c
+ * @brief	Implements restoration of images without reverse deduplication
+ * @author	Ng Chun Ho
  */
 
 #include <revdedup.h>
@@ -10,33 +9,49 @@
 #include <datatable.h>
 #include "minilzo.h"
 
+/**
+ * Definition of data info for all threads
+ */
 typedef struct {
-	int ifd;
-	int ofd;
-	Direct * dir;
-	uint64_t size;
-	uint64_t cnt;
-	volatile uint64_t cur;
-	pthread_spinlock_t lock;
+	int ifd;					/*!< Direct recipe file descriptor */
+	int ofd;					/*!< File descriptor for sending image data */
+	Direct * dir;				/*!< Direct recipe entries */
+	uint64_t size;				/*!< Size of direct recipe */
+	uint64_t cnt;				/*!< Number of direct recipe entries */
+	volatile uint64_t cur;		/*!< Direct entry currently processed */
+	pthread_spinlock_t lock;	/*!< Lock for modifying cur */
 } DataInfo;
-
-off_t isize;
 
 IMEntry * ien;
 SMEntry * sen;
 CMEntry * cen;
 BMEntry * ben;
 
+/** Data Info for all threads */
 DataInfo dinfo;
+/** Data Table for holding decompressed data that will be later sending out */
 DataTable * dt;
+/** Queue for holding memory blocks for decompression */
 Queue * dq;
 
+/**
+ * Segment prefetching routine
+ * @param ptr		Queue that holds either segment or bucket number
+ */
 void * prefetch(void * ptr) {
 	Queue * q = (Queue *) ptr;
 	uint64_t sid, lsid = 0, bid = 0;
 	uint32_t pos, len;
 	char buf[128];
 	while ((sid = (uint64_t) Dequeue(q)) != 0) {
+#ifdef PREFETCH_WHOLE_BUCKET
+        bid = sen[sid].bucket;
+        sprintf(buf, DATA_DIR "bucket/%08lx", bid);
+        int fd = open(buf, O_RDONLY);
+        posix_fadvise(fd, sen[sid].pos, sen[sid].len, POSIX_FADV_WILLNEED);
+        close(fd);
+	}
+#else
 		if (bid == 0) {
 			bid = sen[sid].bucket;
 			pos = sen[sid].pos;
@@ -56,15 +71,20 @@ void * prefetch(void * ptr) {
 		bid = sen[sid].bucket;
 		pos = sen[sid].pos;
 		len = sen[sid].len;
+
 	}
 	sprintf(buf, DATA_DIR "bucket/%08lx", bid);
 	int fd = open(buf, O_RDONLY);
 	posix_fadvise(fd, pos, len, POSIX_FADV_WILLNEED);
 	close(fd);
-
+#endif
 	return NULL;
 }
 
+/**
+ * Decompression routine
+ * @param ptr		useless
+ */
 void * decompress(void * ptr) {
 	uint8_t * cdata = MMAP_MM(MAX_SEG_SIZE);
 	SMEntry * en;
@@ -80,6 +100,7 @@ void * decompress(void * ptr) {
 		if (unlikely(cur >= dinfo.cnt)) {
 			break;
 		}
+		/// If it is locked, then other threads have decompressed this segment
 		if (pthread_spin_trylock(&dt->en[dinfo.dir[cur].id].lock)) {
 			continue;
 		}
@@ -109,6 +130,10 @@ void * decompress(void * ptr) {
 	return NULL;
 }
 
+/**
+ * Routine for sending out data
+ * @param ptr	useless
+ */
 void * send(void * ptr) {
 	uint8_t * zero = MMAP_MM(ZERO_SIZE);
 	SMEntry * en;
@@ -117,6 +142,8 @@ void * send(void * ptr) {
 	for (i = 0; i < dinfo.cnt; i++) {
 		en = &sen[dinfo.dir[i].id];
 		den = &dt->en[dinfo.dir[i].id];
+
+		/// Ensure that the segment is fully decompressed
 		pthread_mutex_lock(&den->mutex);
 		pthread_mutex_unlock(&den->mutex);
 
@@ -146,16 +173,17 @@ int main(int argc, char * argv[]) {
 	uint32_t i;
 	int32_t fd;
 
-	/* Check if image got reverse deduplicated */
+
 	uint32_t ins = atoi(argv[1]);
 	uint32_t ver = atoi(argv[2]);
+	/// Check whether the image is reversely deduplicated
 	sprintf(buf, DATA_DIR "image/i%u-%u", ins, ver);
 	if (access(buf, F_OK) == 0) {
 		fprintf(stderr, "This version is get revdeduped, try using restoreo\n");
 		return 0;
 	}
 
-	/* Retrieve Metadata */
+	/// Retrieving Metadata
 	fd = open(DATA_DIR "ilog", O_RDONLY);
 	ien = MMAP_FD_RO(fd, INST_MAX(sizeof(IMEntry)));
 	close(fd);
@@ -172,7 +200,7 @@ int main(int argc, char * argv[]) {
 	ben = MMAP_FD_RO(fd, MAX_ENTRIES(sizeof(BMEntry)));
 	close(fd);
 
-	/* Setup DataInfo */
+	/// Setup DataInfo
 	sprintf(buf, DATA_DIR "image/%u-%u", ins, ver);
 	dinfo.ifd = open(buf, O_RDONLY);
 	dinfo.ofd = creat(argv[3], 0644);
@@ -182,15 +210,15 @@ int main(int argc, char * argv[]) {
 	dinfo.cur = 0;
 	pthread_spin_init(&dinfo.lock, PTHREAD_PROCESS_SHARED);
 
-	dt = NewDataTable(((SegmentLog *)sen)->segID + 1);
-
+	/// Setup memory buffer for decompression
 	void * data = MMAP_MM(LONGQUEUE_LENGTH * MAX_SEG_SIZE);
 	dq = LongQueue();
 	for (i = 0; i < LONGQUEUE_LENGTH; i++) {
 		Enqueue(dq, data + i * MAX_SEG_SIZE);
 	}
 
-	/* Setup DataTable and Prefetch */
+	/// Setup DataTable and prefetch
+	dt = NewDataTable(((SegmentLog *)sen)->segID + 1);
 	Queue * pfq = SuperQueue();
 	pthread_t pft;
 	pthread_create(&pft, NULL, prefetch, pfq);
@@ -204,7 +232,7 @@ int main(int argc, char * argv[]) {
 	}
 	Enqueue(pfq, NULL);
 
-	/** setup decompress and send */
+	/// Setup decompress and send
 	pthread_t dct[DPS_CNT];
 	pthread_t sdt;
 	for (i = 0; i < DPS_CNT; i++) {
@@ -212,7 +240,7 @@ int main(int argc, char * argv[]) {
 	}
 	pthread_create(&sdt, NULL, send, NULL);
 
-	/** wait for the outstanding threads */
+	/// wait for the outstanding threads
 	for (i = 0; i < DPS_CNT; i++) {
 		pthread_join(dct[i], NULL);
 	}

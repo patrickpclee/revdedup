@@ -1,8 +1,7 @@
-/*
- * server.c
- *
- *  Created on: Oct 8, 2013
- *      Author: chng
+/**
+ * @file 	server.c
+ * @brief	Implements http server for RevDedup
+ * @author	Ng Chun Ho
  */
 
 #include <microhttpd.h>
@@ -31,6 +30,13 @@ typedef struct {
 	void * data;
 } Request;
 
+/**
+ * Gathers HTTP Request Data
+ * @param req		Request
+ * @param data		Pointer to data
+ * @param size		Data size
+ * @return			Request
+ */
 Request * buildRequest(Request * req, const void * data, size_t size) {
 	if (req == NULL) {
 		req = malloc(sizeof(Request));
@@ -49,14 +55,32 @@ Request * buildRequest(Request * req, const void * data, size_t size) {
 	return req;
 }
 
+/**
+ * Implements read function for sending out data in microhttpd
+ * @param cls		Custom argument
+ * @param pos		Position to read
+ * @param buf		Buffer to fill
+ * @param max		Bytes to read
+ * @return
+ */
 static ssize_t readFn(void *cls, uint64_t pos, char *buf, size_t max) {
 	return read(fileno((FILE *) cls), buf, max);
 }
 
+/**
+ * Implements free function after read in microhttpd
+ * @param cls		Custom argument
+ */
 static void freeFn(void *cls) {
 	pclose((FILE *) cls);
 }
 
+/**
+ * Reply client with no HTTP Response Body
+ * @param conn		HTTP Connection
+ * @param code		HTTP status code
+ * @return			MHD_YES for microhttpd
+ */
 static int replyNone(struct MHD_Connection * conn, int code) {
 	struct MHD_Response * resp = MHD_create_response_from_buffer(0, "",
 			MHD_RESPMEM_PERSISTENT);
@@ -65,6 +89,20 @@ static int replyNone(struct MHD_Connection * conn, int code) {
 	return MHD_YES;
 }
 
+/**
+ * Routine for sending out data through HTTP.
+ * It will be called multiple times when the request has a body.
+ * Copy the body to temporary location, and save its pointer to con_cls
+ * @param cls				Custom argument
+ * @param conn				HTTP Connection
+ * @param url				HTTP request URL
+ * @param method			HTTP request method
+ * @param version			HTTP request version
+ * @param upload_data		HTTP request body (partial)
+ * @param upload_data_size	HTTP request body size (partial)
+ * @param con_cls			Pointer for holding temporary data
+ * @return					MHD_YES for microhttpd
+ */
 static int processSend(void *cls, struct MHD_Connection *conn, const char *url,
 		const char *method, const char *version, const char *upload_data,
 		size_t *upload_data_size, void **con_cls) {
@@ -98,6 +136,20 @@ static int processSend(void *cls, struct MHD_Connection *conn, const char *url,
 	return MHD_YES;
 }
 
+/**
+ * Routine for processing upload metadata through HTTP
+ * It will be called multiple times when the request has a body.
+ * Copy the body to temporary location, and save its pointer to con_cls
+ * @param cls				Custom argument
+ * @param conn				HTTP Connection
+ * @param url				HTTP request URL
+ * @param method			HTTP request method
+ * @param version			HTTP request version
+ * @param upload_data		HTTP request body (partial)
+ * @param upload_data_size	HTTP request body size (partial)
+ * @param con_cls			Pointer for holding temporary data
+ * @return					MHD_YES for microhttpd
+ */
 static int processMeta(void *cls, struct MHD_Connection *conn, const char *url,
 		const char *method, const char *version, const char *upload_data,
 		size_t *upload_data_size, void **con_cls) {
@@ -161,6 +213,20 @@ static int processMeta(void *cls, struct MHD_Connection *conn, const char *url,
 	return MHD_YES;
 }
 
+/**
+ * Routine for processing upload data through HTTP
+ * It will be called multiple times when the request has a body.
+ * Copy the body to temporary location, and save its pointer to con_cls
+ * @param cls				Custom argument
+ * @param conn				HTTP Connection
+ * @param url				HTTP request URL
+ * @param method			HTTP request method
+ * @param version			HTTP request version
+ * @param upload_data		HTTP request body (partial)
+ * @param upload_data_size	HTTP request body size (partial)
+ * @param con_cls			Pointer for holding temporary data
+ * @return					MHD_YES for microhttpd
+ */
 static int processData(void *cls, struct MHD_Connection *conn, const char *url,
 		const char *method, const char *version, const char *upload_data,
 		size_t *upload_data_size, void **con_cls) {
@@ -182,6 +248,7 @@ static int processData(void *cls, struct MHD_Connection *conn, const char *url,
 	}
 	Segment * seg = malloc(sizeof(Segment));
 	seg->id = sid;
+	seg->unique = 1;
 	GetIndexService()->getSegment(seg);
 	seg->data = req->data;
 	seg->cdata = Dequeue(mmq);
@@ -191,6 +258,10 @@ static int processData(void *cls, struct MHD_Connection *conn, const char *url,
 	return replyNone(conn, MHD_HTTP_OK);;
 }
 
+/**
+ * Routine to destroy segment after it is fully processed
+ * @param ptr		useless
+ */
 void * end(void * ptr) {
 	Segment * seg;
 	while ((seg = (Segment *)Dequeue(bdq)) != NULL) {
@@ -201,9 +272,11 @@ void * end(void * ptr) {
 	return NULL;
 }
 
+/** Used to catch SIGINT */
 void sighandler(int signal) {
     return;
 }
+
 
 int main(void) {
 	signal(SIGINT, sighandler);
@@ -235,6 +308,7 @@ int main(void) {
 	pthread_t endt;
 	pthread_create(&endt, NULL, end, NULL);
 
+	/// Start servers at 3 ports
 	struct MHD_Daemon * sendd = MHD_start_daemon(
 			MHD_USE_SELECT_INTERNALLY | MHD_USE_DEBUG, SEND_PORT,
 	            NULL, NULL, processSend, NULL,
@@ -262,14 +336,15 @@ int main(void) {
 	MHD_stop_daemon(metad);
 	MHD_stop_daemon(sendd);
 
-	Enqueue(bdq, NULL);
-	pthread_join(endt, NULL);
-
+	Enqueue(dcq, NULL);
 	cs->stop();
 	bs->stop();
+	pthread_join(endt, NULL);
+
 	DelQueue(dcq);
 	DelQueue(bdq);
 
+	Enqueue(miq, NULL);
 	is->stop();
 	DelQueue(miq);
 	DelQueue(imq);

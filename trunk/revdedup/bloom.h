@@ -4,6 +4,10 @@
  *
  *  This file is under BSD license. See LICENSE file.
  */
+/**
+ * @file bloom.h
+ * @brief Bloom filter implementation
+ */
 
 #ifndef _BLOOM_H
 #define _BLOOM_H
