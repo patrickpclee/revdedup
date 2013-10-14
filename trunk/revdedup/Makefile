@@ -16,7 +16,7 @@ DOOBJ = deleteo.o
 SVOBJ = server.o index.o image.o compress.o bucket.o minilzo.o
 CLOBJ = client.o
 
-all: chunking convdedup revdedup restore restoreo delete server client
+all: chunking convdedup revdedup restore restoreo remove delete deleteo server client
 	
 %.o : %.c $(DEPS)
 	$(CC)  -c -o $@ $< $(CFLAGS)

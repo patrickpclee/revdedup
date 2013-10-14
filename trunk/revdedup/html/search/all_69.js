@@ -15,7 +15,7 @@ var searchData=
   ['indexservice',['IndexService',['../structIndexService.html',1,'']]],
   ['indirect',['Indirect',['../structIndirect.html',1,'']]],
   ['insertchunk',['insertChunk',['../rabin_8c.html#a443198d3e61d0333db2a3a60437438b5',1,'rabin.c']]],
-  ['inst',['inst',['../structBMEntry.html#a49af9e59a07d208b45d4e40815b93488',1,'BMEntry::inst()'],['../structImageInfo.html#a5b94684351d07a24d15d50600dd10c40',1,'ImageInfo::inst()']]],
+  ['inst',['inst',['../structImageInfo.html#a5b94684351d07a24d15d50600dd10c40',1,'ImageInfo']]],
   ['inst_5fmax',['INST_MAX',['../revdedup_8h.html#ad0d7a852ffb0e673297ce479807b2e6d',1,'revdedup.h']]],
   ['iter',['iter',['../structKCMAPITER.html#a63dba08f58d7add3830b49e0ffab47fc',1,'KCMAPITER::iter()'],['../structKCMAPSORT.html#ad61ed6705e01da5916b291e4eef04c8a',1,'KCMAPSORT::iter()']]]
 ];

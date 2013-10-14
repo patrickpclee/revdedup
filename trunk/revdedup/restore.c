@@ -48,7 +48,7 @@ void * prefetch(void * ptr) {
         bid = sen[sid].bucket;
         sprintf(buf, DATA_DIR "bucket/%08lx", bid);
         int fd = open(buf, O_RDONLY);
-        posix_fadvise(fd, sen[sid].pos, sen[sid].len, POSIX_FADV_WILLNEED);
+        posix_fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
         close(fd);
 	}
 #else

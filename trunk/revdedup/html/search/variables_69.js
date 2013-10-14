@@ -5,6 +5,6 @@ var searchData=
   ['idsize',['idsize',['../structImageInfo.html#ab79b5ded9de3743eca4eef16e926aca7',1,'ImageInfo']]],
   ['ifd',['ifd',['../structDataInfo.html#a80e6980a10d0cda89031447bccbc9fbe',1,'DataInfo']]],
   ['index',['index',['../structDirect.html#a9ef6de54021820f3985e7f2eae3de38a',1,'Direct']]],
-  ['inst',['inst',['../structBMEntry.html#a49af9e59a07d208b45d4e40815b93488',1,'BMEntry::inst()'],['../structImageInfo.html#a5b94684351d07a24d15d50600dd10c40',1,'ImageInfo::inst()']]],
+  ['inst',['inst',['../structImageInfo.html#a5b94684351d07a24d15d50600dd10c40',1,'ImageInfo']]],
   ['iter',['iter',['../structKCMAPITER.html#a63dba08f58d7add3830b49e0ffab47fc',1,'KCMAPITER::iter()'],['../structKCMAPSORT.html#ad61ed6705e01da5916b291e4eef04c8a',1,'KCMAPSORT::iter()']]]
 ];

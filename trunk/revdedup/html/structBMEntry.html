@@ -96,26 +96,11 @@ Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBMEntry.html#adf6e7d636ace7973d4219f9cb2230cb5">size</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBMEntry.html#ae3868e1dcdcb708366dc4a23b2f707ef">psize</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBMEntry.html#aa83f08bc3da9de006644e89a3eeb28e8">ver</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBMEntry.html#a49af9e59a07d208b45d4e40815b93488">inst</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBMEntry.html#ae536aed7cbf92693d391fa7ab5c6c073">vers</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBMEntry.html#a01ebfb22eb304f391f4f2b511bf088c5">res</a></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="structBucket.html">Bucket</a> metadata on disk </p>
 </div><hr/><h2>Member Data Documentation</h2>
-<a class="anchor" id="a49af9e59a07d208b45d4e40815b93488"></a><!-- doxytag: member="BMEntry::inst" ref="a49af9e59a07d208b45d4e40815b93488" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t <a class="el" href="structBMEntry.html#a49af9e59a07d208b45d4e40815b93488">BMEntry::inst</a></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>Instance of buckets (not used) </p>
-
-</div>
-</div>
 <a class="anchor" id="ae3868e1dcdcb708366dc4a23b2f707ef"></a><!-- doxytag: member="BMEntry::psize" ref="ae3868e1dcdcb708366dc4a23b2f707ef" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -126,7 +111,21 @@ Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Size to be punched in deletion (not used) </p>
+<p>Size to be removed in deletion </p>
+
+</div>
+</div>
+<a class="anchor" id="a01ebfb22eb304f391f4f2b511bf088c5"></a><!-- doxytag: member="BMEntry::res" ref="a01ebfb22eb304f391f4f2b511bf088c5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t <a class="el" href="structBMEntry.html#a01ebfb22eb304f391f4f2b511bf088c5">BMEntry::res</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Not used </p>
 
 </div>
 </div>
@@ -182,21 +181,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div>
 <div class="memdoc">
-<p>Version of the bucket, -1 for new buckets </p>
-
-</div>
-</div>
-<a class="anchor" id="ae536aed7cbf92693d391fa7ab5c6c073"></a><!-- doxytag: member="BMEntry::vers" ref="ae536aed7cbf92693d391fa7ab5c6c073" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint32_t <a class="el" href="structBMEntry.html#ae536aed7cbf92693d391fa7ab5c6c073">BMEntry::vers</a></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-<p>For optimization (not used) </p>
+<p><a class="el" href="structBucket.html">Bucket</a> version, -1 for ordinary buckets </p>
 
 </div>
 </div>
@@ -221,7 +206,7 @@ Public Attributes</h2></td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Oct 11 2013 19:00:23 for RevDedup by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 14 2013 20:12:37 for RevDedup by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

@@ -118,7 +118,7 @@
 typedef struct {
 	uint8_t fp[FP_SIZE];		/*!< Fingerprint of the chunk */
 	uint32_t ref;				/*!< Reference count */
-	uint32_t pos;				/*!< Position */
+	uint32_t pos;				/*!< Position in segment */
 	uint32_t len;				/*!< Length */
 } CMEntry;
 
@@ -127,7 +127,7 @@ typedef struct {
 	uint8_t fp[FP_SIZE];		/*!< Fingerprint of the segment */
 	uint32_t ref;				/*!< Reference count */
 	uint64_t bucket;			/*!< Bucket ID */
-	uint32_t pos;				/*!< Position */
+	uint32_t pos;				/*!< Position in bucket */
 	uint32_t len;				/*!< Length (after compression) */
 	uint64_t cid;				/*!< Respective starting chunk ID */
 	uint32_t chunks;			/*!< Number of chunks in segment */
@@ -140,10 +140,9 @@ typedef struct {
 	uint64_t sid;				/*!< Starting segment ID */
 	uint32_t segs;				/*!< Number of segment */
 	uint32_t size;				/*!< Size of bucket */
-	uint32_t psize;				/*!< Size to be punched in deletion (not used) */
-	uint32_t ver;				/*!< Version of the bucket, -1 for new buckets */
-	uint32_t inst;				/*!< Instance of buckets (not used) */
-	uint32_t vers;				/*!< For optimization (not used) */
+	uint32_t psize;				/*!< Size to be removed in deletion */
+	uint32_t ver;				/*!< Bucket version, -1 for ordinary buckets */
+	uint64_t res;				/*!< Not used */
 } BMEntry;
 
 /** Image metadata on disk */
@@ -154,9 +153,9 @@ typedef struct {
 	uint64_t recent;			/*!< Number of versions that is considered new */
 	struct {
 		uint64_t size;			/*!< Size of image */
-		uint64_t space;			/*!< Compressed size of image */
-		uint64_t csize;			/*!< Physical space taken (after dedupe.) */
-		uint64_t cspace;		/*!< Physical space taken after compression (after dedupe.) */
+		uint64_t space;			/*!< Space taken by unique segments of that image */
+		uint64_t csize;			/*!< Compressed size of all segments */
+		uint64_t cspace;		/*!< Space taken by unique segment after compression */
 	} vers[255];
 } IMEntry;
 
@@ -217,7 +216,7 @@ typedef struct {
  * from the direct entries.
  */
 typedef struct {
-	uint64_t index;			/*!< Starting byte of the chunk in that image */
+	uint64_t index;			/*!< Starting byte of the segment in that image */
 	uint64_t id;			/*!< Referenced segment ID */
 } Direct;
 
@@ -231,7 +230,7 @@ typedef struct {
  * image that contains the referenced segment.
  */
 typedef struct {
-	uint32_t ptr;			/*!< Entry index in Direct */
+	uint32_t ptr;			/*!< Entry index in direct recipe */
 	uint16_t pos;			/*!< Chunk offset in segment */
 	union {
 		uint16_t len;		/*!< Number of chunks */

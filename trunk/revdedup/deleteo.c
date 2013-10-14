@@ -30,9 +30,9 @@ int main(int argc, char * argv[]) {
 
 	/// Remove direct and indirect recipe
 	for (i = 0; i < insts; i++) {
-		sprintf(buf, DATA_DIR "image/%u-%u", i, version);
+		sprintf(buf, DATA_DIR "image/%lu-%u", i, version);
 		unlink(buf);
-		sprintf(buf, DATA_DIR "image/i%u-%u", i, version);
+		sprintf(buf, DATA_DIR "image/i%lu-%u", i, version);
 		unlink(buf);
 		ien[i].old--;
 		ien[i].deleted++;
@@ -50,6 +50,6 @@ int main(int argc, char * argv[]) {
 	sync();
 
 	munmap(ben, MAX_ENTRIES(sizeof(BMEntry)));
-	munmap(ien, INST_MAX(IMEntry));
+	munmap(ien, INST_MAX(sizeof(IMEntry)));
 	return 0;
 }

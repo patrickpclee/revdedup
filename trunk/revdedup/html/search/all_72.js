@@ -12,7 +12,7 @@ var searchData=
   ['removed',['removed',['../structSMEntry.html#a9c29e41b9d1bc3578c61e5d749a4877a',1,'SMEntry']]],
   ['replynone',['replyNone',['../server_8c.html#a29232f17a66efb3c484b3b17bd91e2b5',1,'server.c']]],
   ['request',['Request',['../structRequest.html',1,'']]],
-  ['res',['res',['../structBucket.html#a857c526f6e8e0a89e2d065ae41da637c',1,'Bucket']]],
+  ['res',['res',['../structBMEntry.html#a01ebfb22eb304f391f4f2b511bf088c5',1,'BMEntry::res()'],['../structBucket.html#a857c526f6e8e0a89e2d065ae41da637c',1,'Bucket::res()']]],
   ['respbuffer',['RespBuffer',['../structRespBuffer.html',1,'']]],
   ['restore_2ec',['restore.c',['../restore_8c.html',1,'']]],
   ['rev_5fcnt',['REV_CNT',['../revdedup_8h.html#a7c4a19f561ae530b98cd1cf1794c6988',1,'revdedup.h']]],
