@@ -12,8 +12,8 @@
 #include "rdservice.h"
 
 
-#define THREAD_MEMORY (16 << 20)	// 64 MB
-#define THREAD_POOL_SIZE 24
+#define THREAD_MEMORY (16ULL << 20)	// 64 MB
+#define THREAD_POOL_SIZE 24ULL
 #define REQUEST_DEFAULT_SIZE	(8 << 20)	// 16MB
 
 typedef struct MHD_Connection Connection;
