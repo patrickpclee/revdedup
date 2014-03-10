@@ -109,6 +109,7 @@ static int stop() {
  */
 static int putSegment(Segment * seg, uint64_t bucket) {
 	memcpy(service._sen[seg->id].fp, seg->fp, FP_SIZE);
+	//fprintf(stderr,"Segment: %ld,%s\n",seg->id,seg->fp);
 	service._sen[seg->id].bucket = bucket;
 	service._sen[seg->id].pos = seg->pos;
 	service._sen[seg->id].len = seg->clen;

@@ -24,11 +24,6 @@ typedef struct {
 	Indirect * id;		/*!< Indirect entries */
 } ImageInfo;
 
-typedef struct {
-	ImageInfo dinfo;
-	int start;
-} SendArgs;
-
 /**
  * Definition of Indirect map for merging multiple indirect recipes
  */
@@ -53,6 +48,13 @@ typedef struct {
 	Queue * pfq;				/*!< Prefetch queue */
 } DataInfo;
 
+typedef struct _BucketCache{
+	int bid;
+	struct _BucketCache* prev;
+	struct _BucketCache* next;
+} BucketCache;
+
+
 IMEntry * ien;
 SMEntry * sen;
 CMEntry * cen;
@@ -65,12 +67,17 @@ DataTable * dt;
 /** Queue for holding memory blocks for decompression */
 Queue * dq;
 
-uint64_t bseeks = 0;
-uint64_t isize=0;
+BucketCache* bcache = NULL;
+BucketCache* tail=NULL;
+uint32_t cache_size = 0;
+uint64_t seg_seeks=0; //unique segments number
+float inf_cache_seeks=0; //all bucket only read once
+uint64_t b1_seeks=0;  //cache size as large as one bucket
+uint64_t b2_seeks=0; //cache size as large as two buckets
 struct timeval pftime;
 uint64_t last_bid;
-uint32_t modes[4]={POSIX_FADV_NORMAL,POSIX_FADV_WILLNEED,POSIX_FADV_DONTNEED,POSIX_FADV_NOREUSE};
-
+uint64_t llast_bid;
+uint64_t restore_size=0;
 
 /**
  * Segment prefetching routine
@@ -88,11 +95,7 @@ void * prefetch(void * ptr) {
         bid = sen[sid].bucket;
         sprintf(buf, DATA_DIR "bucket/%08lx", bid);
         int fd = open(buf, O_RDONLY);
-        posix_fadvise(fd, sen[sid].pos, sen[sid].len, modes[PF_MODE]);
-		if(bid != last_bid){
-			bseeks++;
-			last_bid = bid;
-		}
+        posix_fadvise(fd, sen[sid].pos, sen[sid].len, POSIX_FADV_WILLNEED);
         close(fd);
 	}
 #else
@@ -113,12 +116,42 @@ void * prefetch(void * ptr) {
 
 		sprintf(buf, DATA_DIR "bucket/%08lx", bid);
 		int fd = open(buf, O_RDONLY);
-		//posix_fadvise(fd, pos, len, POSIX_FADV_WILLNEED);
-		posix_fadvise(fd, pos, len, modes[PF_MODE]);
-		if(bid != last_bid){
-			bseeks++;
-			last_bid = bid;
+		posix_fadvise(fd, pos, len, POSIX_FADV_WILLNEED);
+		//posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED);
+		seg_seeks++;
+		if (bid != last_bid){
+			b1_seeks++;
+			if(bid != llast_bid){
+				b2_seeks++;
+				llast_bid = last_bid;
+				last_bid = bid;
+			}
+			//fprintf(stdout,"BID: %d, size: %ld\n",last_bid,tmp_len);
 		}
+		/*
+		if(bcache == NULL){
+			BucketCache* tmp = (BucketCache*)malloc(sizeof(BucketCache));
+			tmp->bid = bid;
+			tmp->next=NULL;
+			bcache = tmp;
+		} else {
+			BucketCache* tmp;
+			int unique = 1;
+			for(tmp=bcache;tmp!=NULL;tmp=tmp->next){
+				if(tmp->bid == bid){
+					unique=0;
+					break;
+				}
+			}
+			if(unique){
+				tmp = (BucketCache*)malloc(sizeof(BucketCache));
+				tmp->bid = bid;
+				tmp->next = bcache->next;
+				bcache->next = tmp;
+				inf_cache_seeks++;
+			}
+		}
+		*/
 		close(fd);
 
 		bid = sen[sid].bucket;
@@ -127,18 +160,55 @@ void * prefetch(void * ptr) {
 	}
 	sprintf(buf, DATA_DIR "bucket/%08lx", bid);
 	int fd = open(buf, O_RDONLY);
-	//posix_fadvise(fd, pos, len, POSIX_FADV_WILLNEED);
-	posix_fadvise(fd, pos, len, modes[PF_MODE]);
-	if(bid != last_bid){
-		bseeks++;
-		last_bid = bid;
-	}
+	posix_fadvise(fd, pos, len, POSIX_FADV_WILLNEED);
+	//posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED);
+	seg_seeks++;
+		if (bid != last_bid){
+			b1_seeks++;
+			if(bid != llast_bid){
+				b2_seeks++;
+				llast_bid = last_bid;
+				last_bid = bid;
+			}
+			//fprintf(stdout,"BID: %d, size: %ld\n",last_bid,tmp_len);
+		}
+		/*
+		if(bcache == NULL){
+			BucketCache* tmp = (BucketCache*)malloc(sizeof(BucketCache));
+			tmp->bid = bid;
+			tmp->next=NULL;
+			bcache = tmp;
+		} else {
+			BucketCache* tmp;
+			int unique = 1;
+			for(tmp=bcache;tmp!=NULL;tmp=tmp->next){
+				if(tmp->bid == bid){
+					unique=0;
+					break;
+				}
+			}
+			if(unique){
+				tmp = (BucketCache*)malloc(sizeof(BucketCache));
+				tmp->bid = bid;
+				tmp->next = bcache->next;
+				bcache->next = tmp;
+				inf_cache_seeks++;
+			}
+		}
+		*/
 	close(fd);
 #endif
 	gettimeofday(&b,NULL);
 	timersub(&b,&a,&c);
 	pftime.tv_sec += c.tv_sec + (int)(c.tv_usec+pftime.tv_usec)/1000000;
 	pftime.tv_usec = (c.tv_usec+pftime.tv_usec)%1000000;
+	/*
+	BucketCache* tmp;
+	for(tmp=bcache;tmp!=NULL;tmp=bcache){
+		bcache = bcache->next;
+		free(tmp);
+	}
+	*/
 	return NULL;
 }
 
@@ -173,8 +243,7 @@ void * buildIndirect(void * ptr) {
 	while (i < idata->dsize / sizeof(Direct)
 			&& index < sen[idata->d[i].id].chunks) {
 		Indirect ien;
-		//assert(read(fd, &ien, sizeof(ien)) == sizeof(ien));
-		if (read(fd, &ien, sizeof(ien)) != sizeof(ien)) break;
+		assert(read(fd, &ien, sizeof(ien)) == sizeof(ien));
 		for (j = 0; j < ien.len; j++) {
 			uint64_t p = index + i * MAX_SEG_CHUNKS;
 			idata->id[p].ptr = ien.ptr & (UNIQ - 1);
@@ -224,6 +293,56 @@ void * mergeIndirects(void * ptr) {
 				pthread_mutex_lock(&dt->en[sid].mutex);
 				Enqueue(pfq, (void *)sid);
 			}
+			if(sid != 0){
+		int bid = sen[sid].bucket;
+		restore_size += cen[sen[sid].cid+map->id[p].pos].len;
+		if(bcache == NULL){
+			BucketCache* tmp = (BucketCache*)malloc(sizeof(BucketCache));
+			tmp->bid = bid;
+			tmp->next=NULL;
+			tmp->prev=NULL;
+			bcache = tmp;
+			tail = tmp;
+			cache_size++;
+		} else {
+			BucketCache* tmp;
+			int unique = 1;
+			for(tmp=bcache;tmp!=NULL;tmp=tmp->next){
+				if(tmp->bid == bid){
+					unique=0;
+					if(tmp != bcache){
+						if(tmp == tail){
+							tail = tmp->prev;
+						} else {
+							tmp->next->prev = tmp->prev;
+						}
+						tmp->prev->next = tmp->next;
+						tmp->next = bcache;
+						tmp->prev = NULL;
+						bcache->prev = tmp;
+						bcache = tmp;
+					}
+					break;
+				}
+			}
+			if(unique){
+				tmp = (BucketCache*)malloc(sizeof(BucketCache));
+				tmp->bid = bid;
+				tmp->next = bcache;
+				tmp->prev = NULL;
+				bcache->prev = tmp;
+				bcache = tmp;
+				cache_size++;
+				if(cache_size > CACHE_BUCKETS){
+					tail = tail->prev;
+					free(tail->next);
+					tail->next = NULL;
+					cache_size--;
+				}
+				inf_cache_seeks++;
+			}
+	}
+		}
 		}
 	}
 	Enqueue(pfq, NULL);
@@ -342,7 +461,6 @@ int main(int argc, char * argv[]) {
 	uint32_t inst = atoi(argv[1]);
 	uint32_t ver = atoi(argv[2]);
 
-
 	lfd = fopen("bucket_seeks.log","a");
 	memset(&pftime,0,sizeof(struct timeval));
 
@@ -359,7 +477,6 @@ int main(int argc, char * argv[]) {
 	/// Retrieving Metadata
 	fd = open(DATA_DIR "ilog", O_RDONLY);
 	ien = MMAP_FD_RO(fd, INST_MAX(sizeof(IMEntry)));
-	//ien = MMAP_FD(fd, INST_MAX(sizeof(IMEntry)));
 	close(fd);
 
 	fd = open(DATA_DIR "slog", O_RDONLY);
@@ -374,7 +491,6 @@ int main(int argc, char * argv[]) {
 	ben = MMAP_FD_RO(fd, MAX_ENTRIES(sizeof(BMEntry)));
 	close(fd);
 
-	//ien[inst].recent = 1;
 	lver = ien[inst].versions - ien[inst].recent;
 	struct timeval t0, t1, elapse1, elapse2, elapse3;	
 	
@@ -406,12 +522,13 @@ int main(int argc, char * argv[]) {
 	pthread_spin_init(&dinfo.lock, PTHREAD_PROCESS_SHARED);
 
 	
-	/// Setup memory buffer for decompression
+	/* Setup memory buffer for decompression
 	void * data = MMAP_MM(LONGQUEUE_LENGTH * MAX_SEG_SIZE);
 	dq = LongQueue();
 	for (i = 0; i < LONGQUEUE_LENGTH; i++) {
 		Enqueue(dq, data + i * MAX_SEG_SIZE);
 	}
+	*/
 
 	/// Setup DataTable and prefetch
 	dt = NewDataTable(((SegmentLog *)sen)->segID + 1);
@@ -440,14 +557,13 @@ int main(int argc, char * argv[]) {
 	gettimeofday(&t1,NULL);
 	timersub(&t1,&t0,&elapse3);
 
-	/// Setup decompress and send
+	/* Setup decompress and send
 	pthread_t dct[DPS_CNT];
 	pthread_t sdt;
-	for (i = 0; i < DPS_CNT; i++){ 
-		pthread_create(dct + i, NULL, decompress,&dinfo);
+	for (i = 0; i < DPS_CNT; i++) {
+		pthread_create(dct + i, NULL, decompress, &dinfo);
 	}
-	//for(i=0;i<SEND_THREAD_CNT;i++){
-		//SendArgs args = {.dinfo=dinfo,.start=i};
+	//for (i=0;i<SEND_THREAD_CNT;i++){
 	pthread_create(&sdt, NULL, send, &dinfo);
 	//}
 
@@ -456,18 +572,20 @@ int main(int argc, char * argv[]) {
 		pthread_join(dct[i], NULL);
 	}
 	 //for (i = 0; i < SEND_THREAD_CNT; i++) {
-	//	         pthread_join(sdt[i], NULL);
+		         pthread_join(sdt, NULL);
 	//			     }
-	pthread_join(sdt, NULL);
+	//pthread_join(sdt, NULL);
+	*/
+
 	pthread_cancel(pft);
 
 	gettimeofday(&b,NULL);
 	timersub(&b,&a,&c);
-	fprintf(lfd,"Inst: %d, Ver: %d, Seeks: %ld, Prefetch: %ld.%06ld ,ImageInfoSetup:%ld.%06ld , ImageInfoBuild:%ld.%06ld , IndirectMerge:%ld.%06ld, TotalTime: %ld.%06ld \n",inst, ver,bseeks, pftime.tv_sec, pftime.tv_usec,elapse1.tv_sec, elapse1.tv_usec, elapse2.tv_sec, elapse2.tv_usec, elapse3.tv_sec, elapse3.tv_usec, c.tv_sec, c.tv_usec);
+	fprintf(stdout,"Inst: %d, Ver: %d, SegSeeks: %ld, InfBucSeeks: %.4f, 1BSeeks: %ld, 2BSeeks: %ld\n", inst, ver, seg_seeks,inf_cache_seeks/(restore_size/(1024*1024)),b1_seeks,b2_seeks);
 
 	DelQueue(dinfo.pfq);
-	DelQueue(dq);
-	munmap(data, LONGQUEUE_LENGTH * MAX_SEG_SIZE);
+	//DelQueue(dq);
+	//munmap(data, LONGQUEUE_LENGTH * MAX_SEG_SIZE);
 
 	DelDataTable(dt);
 

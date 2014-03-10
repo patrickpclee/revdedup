@@ -8,8 +8,8 @@
 #include <revdedup.h>
 #include "index.h"
 #include "image.h"
-#include "compress.h"
-#include "bucket.h"
+#include "compress_meta.h"
+#include "bucket_meta.h"
 
 #define CH(x) ((char *)x)
 #define SZ_U	sizeof(uint64_t)
@@ -23,6 +23,7 @@ Queue * imq;
 
 Queue * dcq;
 Queue * bdq;
+
 
 typedef struct {
     size_t size;
@@ -137,6 +138,27 @@ static int processSend(void *cls, struct MHD_Connection *conn, const char *url,
 }
 
 /**
+ * Utility to print out number of unique chunks at server side
+ */
+static uint64_t print_accuChunks(){
+	int fd,i;
+	uint64_t chunks=0;
+	fd = open(DATA_DIR "slog", O_RDONLY);
+	//assert(!ftruncate(fd, MAX_ENTRIES(sizeof(SMEntry))));
+	SMEntry* sen = (SMEntry*)MMAP_FD_RO(fd, MAX_ENTRIES(sizeof(SMEntry)));
+	SegmentLog* slog = (SegmentLog*)sen;
+	close(fd);
+	
+	//printf("Global Unique Chunks: %ld\n",clog->chunkID);	
+	for(i=1;i<slog->segID;i++){
+		//if(cen[i].ref >= 0)
+		chunks += sen[i].len/BLOCK_SIZE;
+	}
+	munmap(sen,MAX_ENTRIES(sizeof(SMEntry)));
+	return chunks;
+}
+
+/**
  * Routine for processing upload metadata through HTTP
  * It will be called multiple times when the request has a body.
  * Copy the body to temporary location, and save its pointer to con_cls
@@ -155,11 +177,23 @@ static int processMeta(void *cls, struct MHD_Connection *conn, const char *url,
 		size_t *upload_data_size, void **con_cls) {
 	uint8_t buf[128];
 	uint32_t inst, ver;
-	uint64_t i;
+	uint64_t i,chunks;
 
 	if (!strcmp(url, "/sync")) {
 		sync();
-		return replyNone(conn, MHD_HTTP_OK);
+
+		/* Print out accumulative number of unique chunks right after each
+		 * upload*/
+		chunks = print_accuChunks();
+		uint64_t* chks = (uint64_t*)malloc(sizeof(uint64_t));
+		chks[0] = chunks;
+		struct MHD_Response * chk_qry = MHD_create_response_from_buffer(
+			sizeof(uint64_t), chks, MHD_RESPMEM_MUST_FREE);
+		MHD_queue_response(conn, MHD_HTTP_OK, chk_qry);
+		MHD_destroy_response(chk_qry);
+
+		//return replyNone(conn, MHD_HTTP_OK);
+		return MHD_YES;
 	}
 
 	Request * req = *(Request **) con_cls;
@@ -193,10 +227,18 @@ static int processMeta(void *cls, struct MHD_Connection *conn, const char *url,
 	for (i = 0; i < segcnt; i++) {
 		Dequeue(imq);
 		if (segs[i].unique) {
+			Segment * seg = (Segment*)malloc(sizeof(Segment));
 			resp_c[i] = segs[i].id;
 			ien[inst].vers[ver].space += segs[i].len;
 			GetIndexService()->putSegment(&segs[i], 0);
-			//fprintf(stderr,"CID:%ld\n",segs[i].cid);
+			//For bucket metadata processing
+			seg->id = segs[i].id;
+			seg->unique = 1;
+			GetIndexService()->getSegment(seg);
+			seg->data = NULL;
+			seg->cdata = NULL; //Dequeue(mmq);
+			Enqueue(dcq, seg);
+			//fprintf(stderr,"CID:%ld\n",seg->cid);
 		} else {
 			resp_c[i] = 0;
 		}
@@ -268,8 +310,8 @@ static int processData(void *cls, struct MHD_Connection *conn, const char *url,
 void * end(void * ptr) {
 	Segment * seg;
 	while ((seg = (Segment *)Dequeue(bdq)) != NULL) {
-		Enqueue(mmq, seg->cdata);
-		free(seg->data);
+		//Enqueue(mmq, seg->cdata);
+		//free(seg->data);
 		free(seg);
 	}
 	return NULL;

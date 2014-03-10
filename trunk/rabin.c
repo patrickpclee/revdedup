@@ -11,7 +11,8 @@
 
 static const uint64_t d = 587;				// base
 static const uint64_t m = 32;				// window size
-static const uint64_t mv = 0x87;			// Matching value
+//static const uint64_t mv = 0x87;			// Matching value
+static const uint64_t mv = 0x0;			// Matching value
 static const uint64_t lq = AVG_CHUNK_SIZE;	// average size of chunks
 static const uint64_t uq = AVG_SEG_SIZE;	// average size of segments
 
@@ -42,6 +43,7 @@ static inline Segment * newSegment(uint64_t offset, uint8_t * ptr) {
  * @param len			Length of the chunk
  */
 static inline void insertChunk(Segment * seg, uint32_t pos, uint32_t len) {
+	//printf("Chunk Size: %d\n",len);
 	seg->en[seg->chunks].pos = pos;
 	seg->en[seg->chunks].len = len;
 	seg->en[seg->chunks].ref = 0;
@@ -67,6 +69,21 @@ void * process(void * ptr) {
 	}
 
 	Segment * seg = newSegment(index, _b + index);
+	/*
+#ifdef FIX_SIZE_CHUNKING
+	while(index < service._size) {
+		insertChunk(seg, index % AVG_SEG_SIZE, AVG_CHUNK_SIZE);
+		index += AVG_CHUNK_SIZE;	
+		if(seg->len == AVG_SEG_SIZE){
+			Enqueue(service._q,seg);
+			if(index < service._size)
+				seg = newSegment(index, _b + index);
+		}
+	}
+	Enqueue(service._q,NULL);
+	return NULL;
+#endif
+	*/
 	while (1) {
 		v = UQ((d * v) - _t[_b[r_ptr - m]] + _b[r_ptr]);
 		r_ptr++;
@@ -77,13 +94,17 @@ void * process(void * ptr) {
 			Enqueue(service._q, seg);
 			break;
 		}
+		//printf("rp: %d bp: %d sl: %d\n",r_ptr,b_ptr,seg->len);
 		// Only outputs segment when it is larger than MIN_SEG_SIZE
-		if (seg->len >= MIN_SEG_SIZE) {
+		if (seg->len + r_ptr - b_ptr >= MIN_SEG_SIZE) {
 			// outputs segment if the current byte creates a segment cut
 			// or segment length equals MAX_SEG_SIZE
 			if (v == mv || unlikely(seg->len + r_ptr - b_ptr == MAX_SEG_SIZE)) {
 				// A segment cut must be a chunk cut
 				insertChunk(seg, b_ptr - index, r_ptr - b_ptr);
+				//printf("New Segment\n");
+				//printf("Chunk Count: %d\n",seg->chunks);
+				//printf("Segment Size: %d\n",seg->len);
 				b_ptr = r_ptr;
 				Enqueue(service._q, seg);
 				index = b_ptr;
@@ -98,6 +119,7 @@ void * process(void * ptr) {
 			if ((r_ptr - b_ptr) < MIN_CHUNK_SIZE) {
 				continue;
 			}
+			//printf("Create Chunk %d %d\n",LQ(v) == mv, (r_ptr - b_ptr) == MAX_CHUNK_SIZE);
 			insertChunk(seg, b_ptr - index, r_ptr - b_ptr);
 			b_ptr = r_ptr;
 		}
