@@ -14,7 +14,7 @@
 #define SZ_I	sizeof(Indirect)
 
 static RevMapService service;
-
+//SMEntry * _sen;
 /**
  * Main loop for processing images
  * @param ptr		useless
@@ -32,11 +32,14 @@ static void * process(void * ptr) {
 
 	for (cur = start; cur < service._ins; cur += REV_CNT) {
 		KCMAP * smap = kcmapnew(131072);
+		//KCMAP * smap = kcmapnew(MAX_ENTRIES(28)/REV_CNT);
 		KCMAP * cmap = kcmapnew(131072);
 		KCMAP * imap = kcmapnew(131072);
 
+		fprintf(stderr,"Inst: %d\n",cur);
 		sprintf(buf, DATA_DIR "image/%u-%u", cur, service._ver + 1);
 		fd = open(buf, O_RDONLY);
+		//if(fd == -1) fprintf(stderr,"Fail to open image\/%u-%u\n",cur,service._ver+1);
 		isize = lseek(fd, 0, SEEK_END);
 		idir = MMAP_FD_RO(fd, isize);
 		icnt = isize / sizeof(Direct);
@@ -48,28 +51,34 @@ static void * process(void * ptr) {
 		ocnt = osize / sizeof(Direct);
 		close(fd);
 
+		//fprintf(stderr,"inst: %d, icnt: %ld\n",cur,icnt);
 		// Insert all segment and chunk entries of newer version into maps
 		// for subsequent searching
 		for (i = 0; i < icnt; i++) {
 			SMEntry * sen = &service._sen[idir[i].id];
-			Indirect sin = { .ptr = i, .pos = 0, .len = sen->chunks };
-			kcmapadd(smap, CH(sen->fp), FP_SIZE, CH(&sin), SZ_I);
+			//SMEntry * sen = &_sen[idir[i].id];
+			//Indirect sin = { .ptr = i, .pos = 0, .len = sen->chunks};
+			//fprintf(stderr,"Count of SMAP: %ld, count of cmap: %ld, cid:%ld\n",kcmapcount(smap),kcmapcount(cmap),_sen[12].cid);
+			Indirect sin = { .ptr = i, .pos = 0, .len = sen->chunks};
+			kcmapadd(smap, CH(&sen->fp[0]), FP_SIZE, CH(&sin), SZ_I);
 
 			for (j = 0; j < service._sen[idir[i].id].chunks; j++) {
 				CMEntry * cen = &service._cen[service._sen[idir[i].id].cid + j];
+				//CMEntry * cen = &service._cen[_sen[idir[i].id].cid+j];
 #ifndef ADD_ZERO_FP
 				if (!memcmp(cen->fp, ZERO_FP, FP_SIZE)) {
 					continue;
 				}
 #endif
 				Indirect cin = { .ptr = i, .pos = j, .len = 1 };
-				kcmapadd(cmap, CH(cen->fp), FP_SIZE, CH(&cin), SZ_I);
+				kcmapadd(cmap, CH(&cen->fp[0]), FP_SIZE, CH(&cin), SZ_I);
 			}
 		}
 
 		for (i = 0; i < ocnt; i++) {
 			uint64_t bpos = htobe64(odir[i].index);
 			// Segment Deduplication
+			//SMEntry * sen = &_sen[odir[i].id];
 			SMEntry * sen = &service._sen[odir[i].id];
 			const char * sin = kcmapget(smap, CH(sen->fp), FP_SIZE, &sz);
 			if (sin != NULL) {
@@ -101,7 +110,7 @@ static void * process(void * ptr) {
 		// Generate indirect recipe from in-memory maps
 		sprintf(buf, DATA_DIR "image/i%u-%u", cur, service._ver);
 		fd = creat(buf, 0644);
-
+		
 		KCMAPSORT * ismap = kcmapsorter(imap);
 		const char * bptr;
 		Indirect * in;
@@ -138,6 +147,7 @@ static void * process(void * ptr) {
 static int start(SMEntry * sen, CMEntry * cen, uint32_t images, uint32_t version) {
 	uint64_t i;
 	service._sen = sen;
+	//_sen = sen;
 	service._slog = (SegmentLog *)sen;
 	service._cen = cen;
 	service._clog = (ChunkLog *)cen;

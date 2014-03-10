@@ -4,11 +4,13 @@
  * @author	Ng Chun Ho
  */
 
+#include <sys/time.h>
 #include <revdedup.h>
 #include <queue.h>
 
 typedef struct {
 	SMEntry * en;
+	uint64_t id;	
 	uint8_t data[MAX_SEG_SIZE];
 } SimpleSegment;
 
@@ -21,11 +23,12 @@ uint8_t padding[BLOCK_SIZE];
  * Create a new bucket in memory
  * @return			Created bucket
  */
-static Bucket * NewBucket() {
+static Bucket * NewBucket(uint64_t sid) {
 	char buf[64];
 	Bucket * b = malloc(sizeof(Bucket));
 	b->id = ++((BucketLog *) ben)->bucketID;
-	b->sid = ((SegmentLog *) sen)->segID;
+	//b->sid = ((SegmentLog *) sen)->segID;
+	b->sid = sid;
 	b->segs = 0;
 	b->size = 0;
 
@@ -58,6 +61,7 @@ static void SaveBucket(Bucket * b) {
  * @param sseg		Segment to write
  * @return			Bucket for subsequent insertion
  */
+/*
 static Bucket * BucketInsert(Bucket * b, SimpleSegment * sseg) {
 	if (b == NULL) {
 		b = NewBucket();
@@ -75,6 +79,32 @@ static Bucket * BucketInsert(Bucket * b, SimpleSegment * sseg) {
 
 	assert(write(b->fd, sseg->data, sseg->en->len) == sseg->en->len);
 	b->segs++;
+	b->size += sseg->en->len;
+
+	return b;
+}
+*/
+static Bucket * BucketInsert(Bucket * b, SimpleSegment * sseg) {
+	if (b == NULL) {
+		b = NewBucket(sseg->id);
+	}
+	if (b->size + sseg->en->len > BUCKET_SIZE) {
+		SaveBucket(b);
+		b = NewBucket(sseg->id);
+	}
+
+	sseg->en->bucket = b->id;
+	sseg->en->pos = b->size;
+	assert(write(b->fd, sseg->data, sseg->en->len) == sseg->en->len);
+	//Fix bucket->segs
+	if(sseg->id < b->sid) {
+		b->segs = b->sid + b->segs - sseg->id;
+		b->sid = sseg->id;
+	}
+	if(sseg->id >= (b->sid + b->segs)) {
+		b->segs = sseg->id - b->sid + 1;
+	}
+	//b->segs++;
 	b->size += sseg->en->len;
 
 	return b;
@@ -106,13 +136,17 @@ int main(int argc, char * argv[]) {
 	}
 	char buf[128];
 	int fd;
-	fd = open(DATA_DIR "clog", O_RDWR);
+	fd = open(DATA_DIR "slog", O_RDWR);
 	sen = MMAP_FD(fd, MAX_ENTRIES(sizeof(SMEntry)));
 	close(fd);
 
 	fd = open(DATA_DIR "blog", O_RDWR);
 	ben = MMAP_FD(fd, MAX_ENTRIES(sizeof(BMEntry)));
 	close(fd);
+
+	uint64_t dsize = 0;
+	struct timeval x;
+	TIMERSTART(x);
 
 	Queue * cq = LongQueue();
 	pthread_t wid, pid;
@@ -127,21 +161,25 @@ int main(int argc, char * argv[]) {
 		sprintf(buf, DATA_DIR "bucket/%08lx", i);
 		fd = open(buf, O_RDONLY);
 		posix_fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
-		for (j = 0, ptr = ben[i].sid; j < ben[i].segs; ptr++) {
+		//ptr = ben[i].sid;
+		for (j = 0; j < ben[i].segs; j++) {
+			ptr = ben[i].sid + j;
 			if (sen[ptr].bucket != i) {
 				continue;
 			}
 			/// Rewrites segments with positive reference count
 			if (sen[ptr].ref > 0) {
 				SimpleSegment * sseg = malloc(sizeof(SimpleSegment));
+				sseg->id = ptr;
 				sseg->en = &sen[ptr];
 				assert(pread(fd, sseg->data, sseg->en->len, sseg->en->pos) == sseg->en->len);
 				Enqueue(cq, sseg);
 			}
-			j++;
+			//j++;
 		}
 		close(fd);
 		unlink(buf);
+		dsize += ben[i].psize;
 		memset(ben + i, 0, sizeof(BMEntry));
 	}
 
@@ -149,6 +187,9 @@ int main(int argc, char * argv[]) {
 	pthread_join(wid, NULL);
 	DelQueue(cq);
 	sync();
+	TIMERSTOP(x);
+	printf("%ld.%06ld\n", x.tv_sec, x.tv_usec);
+	printf("Delete Size: %ld\n",dsize);
 
 	munmap(ben, MAX_ENTRIES(sizeof(BMEntry)));
 	munmap(sen, MAX_ENTRIES(sizeof(SMEntry)));

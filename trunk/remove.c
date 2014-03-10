@@ -4,13 +4,14 @@
  * @author	Ng Chun Ho
  */
 
+#include <sys/time.h>
 #include <revdedup.h>
 
 SMEntry * sen;
 BMEntry * ben;
 
 int main(int argc, char * argv[]) {
-	if (argc != 2) {
+	if (argc != 3) {
 		fprintf(stderr, "Usage : %s image version\n", argv[0]);
 		return 0;
 	}
@@ -29,16 +30,21 @@ int main(int argc, char * argv[]) {
 	sprintf(buf, DATA_DIR "image/%u-%u", ins, ver);
 	ifd = open(buf, O_RDONLY);
 
+	struct timeval x;
+	TIMERSTART(x);
+
 	Direct dir;
-	while (read(fd, &dir, sizeof(dir)) > 0) {
+	while (read(ifd, &dir, sizeof(dir)) > 0) {
 		/// Decrements reference count of each direct reference
-		if (--sen[dir.id].ref == 0) {
+		if (--sen[dir.id].ref <= 0) {
 			ben[sen[dir.id].bucket].psize += sen[dir.id].len;
+			//printf("Seg: %llu, size: %u, bucket: %llu\n",dir.id,sen[dir.id].len,sen[dir.id].bucket);
 		}
 	}
 	close(ifd);
 	unlink(buf);
-
+	TIMERSTOP(x);
+	printf("%ld.%06ld\n", x.tv_sec, x.tv_usec);
 	munmap(ben, MAX_ENTRIES(sizeof(BMEntry)));
 	munmap(sen, MAX_ENTRIES(sizeof(SMEntry)));
 

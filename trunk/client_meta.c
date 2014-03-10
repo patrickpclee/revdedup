@@ -65,9 +65,14 @@ static int post(char * path, void * data, size_t size, void * resp) {
 void * processSegments(void * ptr) {
 	Queue * q = (Queue *) ptr;
 	Segment * seg;
-	uint8_t buf[128];
+	uint8_t buf[1024];
+	int cnt=0;
+	int len=0;
+ 	//fprintf(stderr,"Update Segment Data.\n");
 	while ((seg = (Segment *)Dequeue(q)) != NULL) {
-		sprintf(buf, "%s:%u/%lu", HOST, DATA_PORT, seg->id);
+		if(cnt == 0){
+			sprintf(buf, "%s:%u/%lu", HOST, DATA_PORT,seg->id);
+		}
 		post(buf, seg->data, seg->len, NULL);
 	}
 	return NULL;
@@ -104,46 +109,52 @@ int main(int argc, char * argv[]) {
 			resp };
 	sprintf(buf, "%s:%u/%u", HOST, META_PORT, atoi(argv[3]));
 	post(buf, base_seg, osize, &rb);
-	printf("Lookup %ld segments\n",entries);
+	//printf("Lookup %ld segments, %ld\n",entries,osize);
 
-	/// Uploads unique segments to server
-	Queue * segq = LongQueue();
+	/* Uploads unique segments to server
+	/Queue * segq = LongQueue();
 	pthread_t segt[DATA_THREAD_CNT];
 	for (i = 0; i < DATA_THREAD_CNT; i++) {
 		pthread_create(segt + i, NULL, processSegments, segq);
 	}
 	TIMERSTOP(t);
+	*/
 	printf("Lookup time:%ld.%06ld\n", t.tv_sec, t.tv_usec);
 	TIMERSTART(t);
 	for (i = 0; i < entries; i++) {
 		if (resp[i] == 0) {
 			continue;
 		}
-		Segment * seg = base_seg + i;
-		seg->data = data + seg->offset;
-		seg->id = resp[i];
-		Enqueue(segq, seg);
+		//Segment * seg = base_seg + i;
+		//seg->data = data + seg->offset;
+		//seg->id = resp[i];
+		//Enqueue(segq, seg);
 		new_segs++;
 	}
 
 
+	/*
 	for (i = 0; i < DATA_THREAD_CNT; i++) {
 		Enqueue(segq, NULL);
 	}
 	for (i = 0; i < DATA_THREAD_CNT; i++) {
 		pthread_join(segt[i], NULL);
 	}
+	*/
 	TIMERSTOP(t);
-	printf("Transmission time:%ld.%06ld\n", t.tv_sec, t.tv_usec);
-	/// Call server to sync data to disk
+	printf("Segments transmission time:%ld.%06ld\n", t.tv_sec, t.tv_usec);
+	// Call server to sync data to disk
+	uint64_t* value = (uint64_t*)malloc(sizeof(uint64_t));
+	RespBuffer gChunks = {.ptr = 0, .size=sizeof(uint64_t), .buffer=value};
 	sprintf(buf, "%s:%u/%s", HOST, META_PORT, "sync");
-	post(buf, NULL, 0, NULL);
+	post(buf, NULL, 0, &gChunks);
 	TIMERSTOP(x);
 	printf("%ld.%06ld\n", x.tv_sec, x.tv_usec);
-	printf("New Segments: %ld\n",new_segs);
-	DelQueue(segq);
+	printf("New Segments: %ld, %ld\n",new_segs,value[0]);
+	//DelQueue(segq);
 
 	free(resp);
+	free(value);
 	munmap(data, isize);
 	munmap(base_seg, osize);
 	close(ifd);

@@ -21,6 +21,7 @@ static void * process(void * ptr) {
 		int fd = open(buf, O_RDONLY);
 		while (read(fd, &en, sizeof(Direct)) > 0) {
 			service._sen[en.id].ref--;
+			//fprintf(stderr,"CID:%ld\n",service._sen[12].cid);
 		}
 		close(fd);
 	}

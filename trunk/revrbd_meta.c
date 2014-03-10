@@ -4,15 +4,11 @@
  * @author	Ng Chun Ho
  */
 
-#include "revrbd.h"
+#include "revrbd_meta.h"
 #include <linux/falloc.h>
 #include <sys/sendfile.h>
 #include "minilzo.h"
 
-long long packSegmentRead = 0;
-long long reconBucketRead = 0;
-long long bucketInsertWrite = 0;
-long long reconBucketWrite = 0;
 /**
  * Ties segment metadata with its data
  */
@@ -44,9 +40,11 @@ static Bucket * NewBucket(uint64_t sid) {
 	b->segs = 0;
 	b->size = 0;
 
+	/*
 	sprintf(buf, DATA_DIR "bucket/%08lx", b->id);
 	b->fd = open(buf, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	assert(b->fd != -1);
+	*/
 	return b;
 }
 
@@ -55,13 +53,15 @@ static Bucket * NewBucket(uint64_t sid) {
  * @param b			Bucket to seal
  */
 static void SaveBucket(Bucket * b) {
+	/*
 	ssize_t remain = (BLOCK_SIZE - (b->size % BLOCK_SIZE)) % BLOCK_SIZE;
 	assert(write(b->fd, service._padding, remain) == remain);
 	close(b->fd);
+	*/
 
 	service._ben[b->id].sid = b->sid;
 	service._ben[b->id].segs = b->segs;
-	service._ben[b->id].size = b->size + remain;
+	service._ben[b->id].size = b->size;// + remain;
 	service._ben[b->id].psize = 0;
 	service._ben[b->id].ver = service._ver;
 	free(b);
@@ -86,8 +86,8 @@ static Bucket * BucketInsert(Bucket * b, SimpleSegment * sseg) {
 	sen->pos = b->size;
 	sen->bucket = b->id;
 
-	bucketInsertWrite += sen->len;
-	assert(write(b->fd, sseg->data, sen->len) == sen->len);
+	
+	//assert(write(b->fd, sseg->data, sen->len) == sen->len);
 	//Fix bucket->segs
 	uint32_t sid = sen - service._sen;
 	if(sid < b->sid) {
@@ -139,7 +139,7 @@ static void * rebuildSegments(void * ptr) {
 		SMEntry * sen = sseg->sen;
 		uint64_t pos = 0, len;
 #ifdef DISABLE_COMPRESSION
-		memcpy(temp, sseg->data, sen->len);
+		//memcpy(temp, sseg->data, sen->len);
 
 #else
 		if (sen->compressed) {
@@ -154,13 +154,13 @@ static void * rebuildSegments(void * ptr) {
 				cen->pos = pos;
 				cen->len = 0;
 			} else {
-				memmove(temp + pos, temp + cen->pos, cen->len);
+				//memmove(temp + pos, temp + cen->pos, cen->len);
 				cen->pos = pos;
 				pos += cen->len;
 			}
 		}
 #ifdef DISABLE_COMPRESSION
-		memcpy(sseg->data, temp, pos);
+		//memcpy(sseg->data, temp, pos);
 		sen->len = pos;
 #else
 		lzo1x_1_compress(temp, pos, sseg->data, &len, buf);
@@ -204,7 +204,7 @@ static void * combineBuckets(void * ptr) {
 		if ((ben->sid == lben->sid + lben->segs)
 				&& ben->size + lben->size <= BUCKET_SIZE) {
 			// Combine two adjacent buckets
-			memcpy(lsbucket->data + lben->size, sbucket->data, ben->size);
+			//memcpy(lsbucket->data + lben->size, sbucket->data, ben->size);
 			for (i = ben->sid; i < ben->sid + ben->segs; i++) {
 				if (service._sen[i].bucket == bid) {
 					service._sen[i].bucket = lbid;
@@ -214,30 +214,32 @@ static void * combineBuckets(void * ptr) {
 			lben->segs += ben->segs;
 			lben->size += ben->size;
 			
-			ben->size = 0;
+			/*
 			sprintf(buf, DATA_DIR "bucket/%08lx", bid);
 			int tmp_fd = open(buf, O_RDONLY);
 			fprintf(bfd,"Bucket: %08lx, %ld; ", bid,lseek(tmp_fd,0,SEEK_END));
 			close(tmp_fd);
 			unlink(buf);
+			*/
 		} else {
-			// Write buckets when it is full
+			/* Write buckets when it is full
 			sprintf(buf, DATA_DIR "bucket/%08lx", lbid);
 			int fd = creat(buf, 0644);
-			reconBucketWrite += lben->size;
 			assert(write(fd, lsbucket->data, lben->size) == lben->size);
 			close(fd);
+			*/
 			lsbucket = sbucket;
 			lben = lsbucket->ben;
 			lbid = lben - service._ben;
 		}
 	}
 	if (lsbucket) {
+		/*
 		sprintf(buf, DATA_DIR "bucket/%08lx", lbid);
 		int fd = creat(buf, 0644);
-		reconBucketWrite += lben->size;
 		assert(write(fd, lsbucket->data, lben->size) == lben->size);
 		close(fd);
+		*/
 	}
 	fprintf(bfd,"\n");
 	//close(bfd);
@@ -253,10 +255,12 @@ static void * prefetch(void * ptr) {
 	char buf[128];
 	int fd;
 	while ((ben = (BMEntry *)Dequeue(service._pfq)) != NULL) {
+		/*
 		sprintf(buf, DATA_DIR "bucket/%08lx", ben - service._ben);
 		fd = open(buf, O_RDONLY);
 		posix_fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
 		close(fd);
+		*/
 	}
 
 	return NULL;
@@ -273,10 +277,11 @@ static void * packBuckets(void * ptr) {
 	while ((ben = (BMEntry *) Dequeue(service._pbq)) != NULL ) {
 		bid = ben - service._ben;
 
+		/*
 		sprintf(buf, DATA_DIR "bucket/%08lx", bid);
 		int fd = open(buf, O_RDWR);
 		int fsize = lseek(fd,0,SEEK_END);
-
+		*/
 		if (ben->psize > MAX_PUNCH(ben->size)) {
 			// Reconstruct buckets
 			SimpleBucket * sbucket = malloc(sizeof(SimpleBucket));
@@ -291,8 +296,8 @@ static void * packBuckets(void * ptr) {
 				if (sen->ref == -1) {
 					SimpleSegment * sseg = malloc(sizeof(SimpleSegment));
 					sseg->sen = sen;
-					packSegmentRead += sen->len;
-					assert(pread(fd, sseg->data, sen->len, sen->pos) == sen->len);
+					//assert(pread(fd, sseg->data, sen->len, sen->pos) == sen->len);
+
 					/*int tmp = pread(fd, sseg->data, sen->len, sen->pos);
 					if (tmp != sen->len){
 						fprintf(stderr,"REVRBD: %d, %p, %ld, %ld, %d,%d, %d\n",fd,sseg->data, sen->len, sen->pos,service._ben[sen->bucket].size,fsize,tmp);
@@ -302,8 +307,8 @@ static void * packBuckets(void * ptr) {
 					sen->bucket = -1;
 					Enqueue(service._rsq, sseg);
 				} else {
-					reconBucketRead += sen->len;
-					assert(pread(fd, sbucket->data + pos, sen->len, sen->pos) == sen->len);
+					//assert(pread(fd, sbucket->data + pos, sen->len, sen->pos) == sen->len);
+
 					/*int tmp = pread(fd, sbucket->data + pos, sen->len, sen->pos);
 					if (tmp != sen->len){
 						fprintf(stderr,"REVRBD: %d, %p, %ld, %ld,%d,%d,%d\n",fd,sbucket->data+pos, sen->len, sen->pos,service._ben[sen->bucket].size,fsize,tmp);
@@ -327,23 +332,26 @@ static void * packBuckets(void * ptr) {
 				if (sen->ref == -1) {
 					SimpleSegment * sseg = malloc(sizeof(SimpleSegment));
 					sseg->sen = sen;
-					assert(pread(fd, sseg->data, sen->len, sen->pos) == sen->len);
+					//assert(pread(fd, sseg->data, sen->len, sen->pos) == sen->len);
 					Enqueue(service._rsq, sseg);
 				} else {
 					end = sen->pos / BLOCK_SIZE * BLOCK_SIZE;
+					/*
 					if (end > pos) {
 						fallocate(fd, 0x03, pos, end - pos);
-					}
+					}*/
 					pos = (sen->pos + sen->len + BLOCK_SIZE - 1) / BLOCK_SIZE * BLOCK_SIZE;
 				}
 			}
 			end = ben->size / BLOCK_SIZE * BLOCK_SIZE;
+			/*
 			if (end > pos) {
 				fallocate(fd, 0x03, pos, end - pos);
 			}
+			*/
 		}
 
-		close(fd);
+		//close(fd);
 	}
 	Enqueue(service._cbq, NULL);
 	for (i = 0; i < REV_CNT; i++) {
@@ -446,11 +454,6 @@ static int stop() {
 	kcdbdumpsnap(service._db, DATA_DIR "index");
 	kcdbclose(service._db);
 	kcdbdel(service._db);
-
-	printf("Pack Segment Read: %lld\n",packSegmentRead);
-	printf("Reconstruct Bucket Read: %lld\n",reconBucketRead);
-	printf("New Bucket Write: %lld\n",bucketInsertWrite);
-	printf("Reconstruct Bucket Write: %lld\n",reconBucketWrite); 
 
 	free(service._pbq);
 	free(service._rsq);

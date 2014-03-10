@@ -4,7 +4,7 @@
  * @author	Ng Chun Ho
  */
 
-#include "bucket.h"
+#include "bucket_meta.h"
 #include "fingerprint.h"
 #include "index.h"
 #include "image.h"
@@ -24,14 +24,15 @@ static Bucket * NewBucket(uint64_t sid) {
 	b->segs = 0;
 	b->size = 0;
 
+	/*
 	sprintf(buf, DATA_DIR "bucket/%08lx", b->id);
 	b->fd = creat(buf, 0644);
-	//printf("create bucket %s\n",buf);
 	//assert(b->fd != -1);
 	if(b->fd == -1){
 		fprintf(stderr,"New Bucket Error: %s",strerror(errno));
 		exit(0);
 	}
+	*/
 	return b;
 }
 
@@ -40,14 +41,13 @@ static Bucket * NewBucket(uint64_t sid) {
  * @param b			Bucket to seal
  */
 static void SaveBucket(Bucket * b) {
-	ssize_t remain = (BLOCK_SIZE - (b->size % BLOCK_SIZE)) % BLOCK_SIZE;
-	assert(write(b->fd, service._padding, remain) == remain);
-	close(b->fd);
+	//ssize_t remain = (BLOCK_SIZE - (b->size % BLOCK_SIZE)) % BLOCK_SIZE;
+	//assert(write(b->fd, service._padding, remain) == remain);
+	//close(b->fd);
 
 	service._en[b->id].sid = b->sid;
 	service._en[b->id].segs = b->segs;
-	service._en[b->id].size = b->size + remain;
-	//fprintf(stderr,"Bucket%08lx:%d");
+	service._en[b->id].size = b->size;
 	service._en[b->id].psize = 0;
 	service._en[b->id].ver = -1;	// Infinity
 	free(b);
@@ -63,23 +63,15 @@ static Bucket * BucketInsert(Bucket * b, Segment * seg) {
 	if (b == NULL) {
 		b = NewBucket(seg->id);
 	}
-	if (b->size + seg->clen >= BUCKET_SIZE) {
+	if (b->size + seg->clen > BUCKET_SIZE) {
 		SaveBucket(b);
 		b = NewBucket(seg->id);
 	}
 
 	seg->pos = b->size;
 	GetIndexService()->putSegment(seg, b->id);
-	assert(write(b->fd, seg->cdata, seg->clen) == seg->clen);
-	//Fix bucket->segs
-	if(seg->id < b->sid) {
-		b->segs = b->sid + b->segs - seg->id;
-		b->sid = seg->id;
-	}
-	if(seg->id >= (b->sid + b->segs)) {
-		b->segs = seg->id - b->sid + 1;
-	}
-	//b->segs++;
+	//assert(write(b->fd, seg->cdata, seg->clen) == seg->clen);
+	b->segs++;
 	b->size += seg->clen;
 
 	return b;

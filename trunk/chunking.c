@@ -21,6 +21,7 @@ int main(int argc, char * argv[]) {
 	int ofd = creat(out, 0644);
 #ifdef WITH_REAL_DATA
 	uint64_t size = lseek(ifd, 0, SEEK_END);
+	posix_fadvise(ifd,0,size,POSIX_FADV_WILLNEED);
 	uint8_t * data = MMAP_FD_RO(ifd, size);
 	Queue * eq = NewQueue();
 	Queue * rfq = NewQueue();
@@ -38,6 +39,7 @@ int main(int argc, char * argv[]) {
 
 	rs->stop();
 	fs->stop();
+
 	free(rfq);
 	free(eq);
 	munmap(data, size);
@@ -46,10 +48,12 @@ int main(int argc, char * argv[]) {
 	uint64_t size, i;
 	uint8_t * fps = malloc(MAX_SEG_CHUNKS * FP_SIZE);
 	Segment * seg = malloc(sizeof(Segment));
+	//uint64_t ccid = 0;
 	while ((size = read(ifd, fps, MAX_SEG_CHUNKS * FP_SIZE)) > 0) {
 		seg->offset = offset;
 		seg->chunks = size / FP_SIZE;
 		seg->len = seg->chunks * AVG_CHUNK_SIZE;
+		//seg->cid = ccid;
 
 		for (i = 0; i < seg->chunks; i++) {
 			memcpy(seg->en[i].fp, fps + i * FP_SIZE, FP_SIZE);
@@ -60,6 +64,7 @@ int main(int argc, char * argv[]) {
 		SHA1(fps, size, seg->fp);
 		offset += AVG_SEG_SIZE;
 		assert(write(ofd, seg, sizeof(Segment)) == sizeof(Segment));
+		//ccid += seg->chunks;
 	}
 
 	free(seg);

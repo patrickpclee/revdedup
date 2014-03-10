@@ -28,8 +28,11 @@
  * 	since revdedup use ftruncate() to create space in the log file, and
  * 	most file systems treats it as a sparse file
  */
-#define MAX_ENTRIES(x) ((256ULL << 20) * x)
+#define MAX_ENTRIES(x) ((1024ULL << 20) * x)
 
+
+#define PF_MODE 0
+ 
 /**
  * 	Max number of images. Can set to larger values.
  */
@@ -57,7 +60,10 @@
 /**
  * Bucket size. Change according to performance
  */
-#define BUCKET_SIZE 16777216
+//#define BUCKET_SIZE 16777216
+#define BUCKET_SIZE 33554432
+
+#define CACHE_BUCKETS 268435456/BUCKET_SIZE
 
 /**
  * Determining the max. bytes that hole punching should be used
@@ -65,18 +71,27 @@
  */
 #define MAX_PUNCH(size) (0) //(size * 2 / 10)
 
-// #define WITH_REAL_DATA		/*!< Comment if there is only fingerprint */
+//#define WITH_REAL_DATA		/*!< Comment if there is only fingerprint */
+
+//#define FIX_SIZE_CHUNKING
 
 #ifdef WITH_REAL_DATA
 #define CHUNK_SHIFT 1			/*!< 0 to switch to fixed size chunking */
-// #define DISABLE_COMPRESSION	/*!< Comment to enable compression */
-#define AVG_CHUNK_SIZE 8192ULL	/*!< Average chunk size */
-#define AVG_SEG_BLOCKS 1024		/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
+//#define CHUNK_SHIFT 0			/*!< 0 to switch to fixed size chunking */
+#define DISABLE_COMPRESSION		/*!< Comment to enable compression */
+#define AVG_CHUNK_SIZE 4096ULL	/*!< Average chunk size */
+//#define AVG_SEG_BLOCKS 1	 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
+//#define AVG_SEG_BLOCKS 256	 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
+#define AVG_SEG_BLOCKS 1024 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
+//#define AVG_SEG_BLOCKS 2048 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
 #else
 #define CHUNK_SHIFT 0			/*!< 0 to switch to fixed size chunking */
 #define DISABLE_COMPRESSION		/*!< Comment to enable compression */
 #define AVG_CHUNK_SIZE 4096ULL	/*!< Average chunk size */
-#define AVG_SEG_BLOCKS 1024		/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
+//#define AVG_SEG_BLOCKS 1		/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
+//#define AVG_SEG_BLOCKS 256	 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
+#define AVG_SEG_BLOCKS 1024 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
+//#define AVG_SEG_BLOCKS 2048 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
 #endif
 
 #define MIN_CHUNK_SIZE (AVG_CHUNK_SIZE >> CHUNK_SHIFT)
@@ -90,12 +105,12 @@
 #define MAX_SEG_CHUNKS (MAX_SEG_SIZE / MIN_CHUNK_SIZE)
 
 #define CPS_CNT 4				/*!< Compression thread count */
-#define DPS_CNT 2				/*!< Decompression thread count */
+#define DPS_CNT 4				/*!< Decompression thread count */
 #define REV_CNT 8				/*!< Reverse deduplication thread count */
 
 #define DISABLE_BLOOM 1			/*!< 1 to disable bloom filter in indexing, 0 otherwise */
 
-// #define PREFETCH_WHOLE_BUCKET	/*!< Comment to prefetch segments specifically */
+// #define PREFETCH_WHOLE_BUCKET                                                    	/*!< Comment to prefetch segments specifically */
 
 /**
  * ZERO_FP determines the fingerprint of zero chunk
@@ -106,6 +121,8 @@
  */
 #if ZERO_SIZE == 4096
 #define ZERO_FP "\x1c\xea\xf7\x3d\xf4\x0e\x53\x1d\xf3\xbf\xb2\x6b\x4f\xb7\xcd\x95\xfb\x7b\xff\x1d"
+#elif ZERO_SIZE == 8192
+#define ZERO_FP "\x06\x31\x45\x72\x64\xff\x7f\x8d\x5f\xb1\xed\xc2\xc0\x21\x19\x92\xa6\x7c\x73\xe6"
 #elif ZERO_SIZE == 16384
 #define ZERO_FP "\x89\x72\x56\xb6\x70\x9e\x1a\x4d\xa9\xda\xba\x92\xb6\xbd\xe3\x9c\xcf\xcc\xd8\xc1"
 #endif
@@ -270,7 +287,8 @@ typedef struct {
 /** thread count for receiving data in network mode */
 #define DATA_THREAD_CNT 16ULL
 /** thread memory for receiving data in network mode */
-#define DATA_THREAD_MEM (MAX_SEG_SIZE * 2)
+//#define DATA_THREAD_MEM (MAX_SEG_SIZE * 2)
+#define DATA_THREAD_MEM (128ULL << 18)
 
 /** thread count for sending images in network mode */
 #define SEND_THREAD_CNT 4ULL
