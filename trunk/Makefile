@@ -21,16 +21,12 @@ SMOBJ = server_meta.o index.o image.o compress_meta.o bucket_meta.o minilzo.o
 CLOBJ = client.o
 CMOBJ = client_meta.o
 BSOBJ = count_bucketsize.o 
-RDMOBJ = readmeta.o 
 
-all: chunking convdedup revdedup restore restoreo remove delete deleteo server client client_meta server_meta restore_meta restoreo_meta revdedup_meta count_bucketsize readmeta
+all: chunking convdedup revdedup restore restoreo remove delete deleteo server client client_meta server_meta restore_meta restoreo_meta revdedup_meta count_bucketsize
 	
 %.o : %.c $(DEPS)
 	$(CC)  -c -o $@ $< $(CFLAGS)
 
-readmeata: $(RDMOBJ)
-	$(CC) $(CFLAGS) -L$(LDIR) -o readmeta $^ $(LIB)
-	
 count_bucketsize: $(BSOBJ)
 	$(CC) $(CFLAGS) -L$(LDIR) -o count_bucketsize $^ $(LIB)
 		
