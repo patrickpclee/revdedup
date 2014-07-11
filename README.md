@@ -12,8 +12,8 @@ that users need to download separately. Brackets denote the package names in
 Debian and Ubuntu platforms. Users can use apt-get to install the required
 libraries.
 
-	*openssl (libssl-dev)
-	*libcurl (libcurl4-openssl-dev)
-	*Kyoto Cabinet (libkyotocabinet-dev)
-	*Libmicrohttpd (libmicrohttpd-dev)
+	openssl (libssl-dev)
+	libcurl (libcurl4-openssl-dev)
+	Kyoto Cabinet (libkyotocabinet-dev)
+	Libmicrohttpd (libmicrohttpd-dev)
 
