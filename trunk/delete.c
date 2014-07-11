@@ -1,6 +1,6 @@
 /**
  * @file 	delete.c
- * @brief	Implements bucket deletion with version tagged
+ * @brief	Implements the sweep phase of conventional deduplication deletion
  * @author	Ng Chun Ho
  */
 

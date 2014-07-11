@@ -1,6 +1,6 @@
 /**
  * @file 	remove.c
- * @brief	Remove images without reverse deduplication
+ * @brief	Remove images without reverse deduplication (Mark Phase)
  * @author	Ng Chun Ho
  */
 
