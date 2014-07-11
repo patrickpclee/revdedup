@@ -207,7 +207,8 @@ int main(int argc, char * argv[]) {
 	}
 	char buf[128];
 	uint32_t i;
-	int32_t fd,lfd;
+	int32_t fd;
+	FILE* lfd;
 
 	lfd = fopen("bucket_seeks.log","a");
 	memset(&pftime,0,sizeof(struct timeval));

@@ -71,27 +71,24 @@
  */
 #define MAX_PUNCH(size) (0) //(size * 2 / 10)
 
-//#define WITH_REAL_DATA		/*!< Comment if there is only fingerprint */
+#define WITH_REAL_DATA			/*!< Comment if there is only fingerprint */
 
-//#define FIX_SIZE_CHUNKING
+#define FIX_SIZE_CHUNKING
 
 #ifdef WITH_REAL_DATA
-#define CHUNK_SHIFT 1			/*!< 0 to switch to fixed size chunking */
-//#define CHUNK_SHIFT 0			/*!< 0 to switch to fixed size chunking */
+#ifdef FIX_SIZE_CHUNKING
+#define CHUNK_SHIFT 0			/*!< 0 to switch to fixed size chunking */
+#else
+#define CHUNK_SHIFT 1
+#endif
 #define DISABLE_COMPRESSION		/*!< Comment to enable compression */
 #define AVG_CHUNK_SIZE 4096ULL	/*!< Average chunk size */
-//#define AVG_SEG_BLOCKS 1	 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
-//#define AVG_SEG_BLOCKS 256	 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
 #define AVG_SEG_BLOCKS 1024 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
-//#define AVG_SEG_BLOCKS 2048 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
 #else
 #define CHUNK_SHIFT 0			/*!< 0 to switch to fixed size chunking */
 #define DISABLE_COMPRESSION		/*!< Comment to enable compression */
 #define AVG_CHUNK_SIZE 4096ULL	/*!< Average chunk size */
-//#define AVG_SEG_BLOCKS 1		/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
-//#define AVG_SEG_BLOCKS 256	 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
 #define AVG_SEG_BLOCKS 1024 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
-//#define AVG_SEG_BLOCKS 2048 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
 #endif
 
 #define MIN_CHUNK_SIZE (AVG_CHUNK_SIZE >> CHUNK_SHIFT)

@@ -457,7 +457,8 @@ int main(int argc, char * argv[]) {
 	struct timeval a, b,c;
 	gettimeofday(&a,NULL);
 	char buf[128];
-	int32_t fd,lfd;
+	int32_t fd;
+	FILE* lfd;
 	uint32_t inst = atoi(argv[1]);
 	uint32_t ver = atoi(argv[2]);
 
