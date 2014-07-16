@@ -43,6 +43,8 @@ int main(int argc, char * argv[]) {
 	uint8_t * data = MMAP_FD_RO(ifd, isize);
 	Segment * base_seg = MMAP_FD_PV(ofd, osize);
 
+	printf("Number of Segments: %d\n",entries);
+
 	mmq = LongQueue();
 	void * cdata = MMAP_MM(MAX_SEG_SIZE * LONGQUEUE_LENGTH);
 	for (i = 0; i < LONGQUEUE_LENGTH; i++) {

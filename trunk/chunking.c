@@ -25,23 +25,26 @@ int main(int argc, char * argv[]) {
 	uint8_t * data = MMAP_FD_RO(ifd, size);
 
 #if (CHUNK_SHIFT == 0) // Fixed Size Chunking
+//	printf("Fixed Size Chunking\n");
 	uint64_t count = size / AVG_SEG_SIZE;
 	Segment * seg = malloc(sizeof(Segment));
 
 	uint64_t offset = 0;
-	for (uint64_t i = 0; i < count; ++i) {
-		memset(seg, 0, sizeof(Segent));
+	int j = 0;
+	uint64_t i = 0;
+	for (i = 0; i < count; ++i) {
+		memset(seg, 0, sizeof(Segment));
 		seg->data = data + offset;
 		seg->offset = offset;
-		seg->chunks = AVG_SEG_CHUNKS;
+		seg->chunks = AVG_SEG_BLOCKS;
 		seg->len = AVG_SEG_SIZE;
 
-		for (int j = 0; j < AVG_SEG_CHUNKS; ++j) {
-			uint8_t chunk_data = seg->data + AVG_CHUNK_SIZE * j;
-			seg->en[i].pos = i * AVG_CHUNK_SIZE;
-			seg->en[i].len = AVG_CHUNK_SIZE;
-			seg->en[i].ref = 0;
-			SHA1(chunk_data, AVG_CHUNK_SIZE, seg->en[i].fp);
+		for (j = 0; j < AVG_SEG_BLOCKS; ++j) {
+			uint8_t* chunk_data = seg->data + AVG_CHUNK_SIZE * j;
+			seg->en[j].pos = j * AVG_CHUNK_SIZE;
+			seg->en[j].len = AVG_CHUNK_SIZE;
+			seg->en[j].ref = 0;
+			SHA1(chunk_data, AVG_CHUNK_SIZE, seg->en[j].fp);
 		}
 
 		SHA1(seg->data, seg->len, seg->fp);
