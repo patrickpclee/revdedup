@@ -75,12 +75,13 @@
 
 #define FIX_SIZE_CHUNKING
 
-#ifdef WITH_REAL_DATA
 #ifdef FIX_SIZE_CHUNKING
 #define CHUNK_SHIFT 0			/*!< 0 to switch to fixed size chunking */
 #else
 #define CHUNK_SHIFT 1
 #endif
+
+#ifdef WITH_REAL_DATA
 #define DISABLE_COMPRESSION		/*!< Comment to enable compression */
 #define AVG_CHUNK_SIZE 4096ULL	/*!< Average chunk size */
 #define AVG_SEG_BLOCKS 1024 	/*!< Segment size = AVG_SEG_BLOCKS * BLOCK_SIZE */
@@ -95,7 +96,8 @@
 #define MAX_CHUNK_SIZE (AVG_CHUNK_SIZE << CHUNK_SHIFT)
 #define ZERO_SIZE MAX_CHUNK_SIZE
 
-#define AVG_SEG_SIZE (AVG_SEG_BLOCKS * BLOCK_SIZE)
+//#define AVG_SEG_SIZE (AVG_SEG_BLOCKS * BLOCK_SIZE)
+#define AVG_SEG_SIZE (AVG_SEG_SIZE * AVG_CHUNK_SIZE)
 #define MIN_SEG_SIZE (AVG_SEG_SIZE >> CHUNK_SHIFT)
 #define MAX_SEG_SIZE (AVG_SEG_SIZE << CHUNK_SHIFT)
 

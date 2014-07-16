@@ -23,6 +23,37 @@ int main(int argc, char * argv[]) {
 	uint64_t size = lseek(ifd, 0, SEEK_END);
 	posix_fadvise(ifd,0,size,POSIX_FADV_WILLNEED);
 	uint8_t * data = MMAP_FD_RO(ifd, size);
+
+#if (CHUNK_SHIFT == 0) // Fixed Size Chunking
+	uint64_t count = size / AVG_SEG_SIZE;
+	Segment * seg = malloc(sizeof(Segment));
+
+	uint64_t offset = 0;
+	for (uint64_t i = 0; i < count; ++i) {
+		memset(seg, 0, sizeof(Segent));
+		seg->data = data + offset;
+		seg->offset = offset;
+		seg->chunks = AVG_SEG_CHUNKS;
+		seg->len = AVG_SEG_SIZE;
+
+		for (int j = 0; j < AVG_SEG_CHUNKS; ++j) {
+			uint8_t chunk_data = seg->data + AVG_CHUNK_SIZE * j;
+			seg->en[i].pos = i * AVG_CHUNK_SIZE;
+			seg->en[i].len = AVG_CHUNK_SIZE;
+			seg->en[i].ref = 0;
+			SHA1(chunk_data, AVG_CHUNK_SIZE, seg->en[i].fp);
+		}
+
+		SHA1(seg->data, seg->len, seg->fp);
+
+		offset += AVG_SEG_SIZE;
+		assert(write(ofd, seg, sizeof(Segment)) == sizeof(Segment));
+	}
+	free(seg);
+
+	// Last Segment
+	
+#else // Variable Size Chunking
 	Queue * eq = NewQueue();
 	Queue * rfq = NewQueue();
 
@@ -33,6 +64,7 @@ int main(int argc, char * argv[]) {
 
 	Segment * seg;
 	while ((seg = (Segment *)Dequeue(eq)) != NULL) {
+		SHA1(seg->data, seg->len, seg->fp);
 		assert(write(ofd, seg, sizeof(Segment)) == sizeof(Segment));
 		free(seg);
 	}
@@ -42,6 +74,7 @@ int main(int argc, char * argv[]) {
 
 	free(rfq);
 	free(eq);
+#endif
 	munmap(data, size);
 #else
 	uint64_t offset = 0;
