@@ -14,22 +14,22 @@
  *  * Utility to print out number of unique chunks at server side
  *   */
 static uint64_t print_accuChunks(){
-	    int fd,i;
-		    uint64_t chunks=0;
-fd = open(DATA_DIR "slog", O_RDONLY);
-	    SMEntry* sen = (SMEntry*)MMAP_FD_RO(fd, MAX_ENTRIES(sizeof(SMEntry)));
-	        SegmentLog* slog = (SegmentLog*)sen;
-	            close(fd);
-	
-	                    for(i=1;i<slog->segID;i++){
-	                                            chunks += sen[i].len/BLOCK_SIZE;
-	                                            }
-	                                                    munmap(sen,MAX_ENTRIES(sizeof(SMEntry)));								            return chunks;
-								            }
+	int fd,i;
+	uint64_t chunks=0;
+	fd = open(DATA_DIR "slog", O_RDONLY);
+	SMEntry* sen = (SMEntry*)MMAP_FD_RO(fd, MAX_ENTRIES(sizeof(SMEntry)));
+	SegmentLog* slog = (SegmentLog*)sen;
+	close(fd);
+
+	for(i=1;i<slog->segID;i++){
+		chunks += sen[i].len/BLOCK_SIZE;
+	}
+	munmap(sen,MAX_ENTRIES(sizeof(SMEntry)));								            return chunks;
+}
 
 int main(int argc, char * argv[]) {
 	if (argc != 3) {
-		fprintf(stderr, "Usage : %s insts version\n", argv[0]);
+		fprintf(stderr, "Usage : %s <number of instances> <version number>\n", argv[0]);
 		return 0;
 	}
 
@@ -70,8 +70,8 @@ int main(int argc, char * argv[]) {
 		RevMapService * rms = GetRevMapService();
 		rms->start(sen, cen, ins, ver);
 		rms->stop();
-		
-		
+
+
 		RevRbdService * rbs = GetRevRbdService();
 		rbs->start(sen, cen, ben, ver);
 		rbs->stop();

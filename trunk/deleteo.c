@@ -9,7 +9,7 @@
 
 int main(int argc, char * argv[]) {
 	if (argc != 3) {
-		fprintf(stderr, "Usage: %s images version\n", argv[0]);
+		fprintf(stderr, "Usage : %s <number of instances> <version number>\n", argv[0]);
 		return 0;
 	}
 	char buf[128];
@@ -53,8 +53,8 @@ int main(int argc, char * argv[]) {
 
 	/// Remove buckets tagged with earlier verions
 	for (i = 1; i <= blog->bucketID; i++) {
-		if ((ben[i].size > 0) && (ben[i].ver <= version)) {
-		//if ((ben[i].size > 0) && (ben[i].ver == version)) {
+		//if ((ben[i].size > 0) && (ben[i].ver <= version)) {
+		if ((ben[i].size > 0) && (ben[i].ver == version)) {
 			dsize += ben[i].size;
 			sprintf(buf, DATA_DIR "bucket/%08lx", i);
 			unlink(buf);

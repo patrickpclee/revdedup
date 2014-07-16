@@ -12,7 +12,7 @@ BMEntry * ben;
 
 int main(int argc, char * argv[]) {
 	if (argc != 3) {
-		fprintf(stderr, "Usage : %s image version\n", argv[0]);
+		fprintf(stderr, "Usage : %s <instanceID> <version number>\n", argv[0]);
 		return 0;
 	}
 	char buf[128];

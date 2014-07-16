@@ -12,7 +12,7 @@
 
 int main(int argc, char * argv[]) {
 	if (argc != 3) {
-		fprintf(stderr, "Usage : %s insts version\n", argv[0]);
+		fprintf(stderr, "Usage : %s <number of instances> <version number>\n", argv[0]);
 		return 0;
 	}
 

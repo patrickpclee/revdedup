@@ -11,7 +11,7 @@
 
 int main(int argc, char * argv[]) {
 	if (argc != 3) {
-		fprintf(stderr, "Usage : %s filename out\n", argv[0]);
+		fprintf(stderr, "Usage : %s <input file> <output chunking metafile>\n", argv[0]);
 		return 0;
 	}
 	char * in = argv[1];

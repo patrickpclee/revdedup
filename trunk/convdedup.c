@@ -26,7 +26,7 @@ void * end(void * ptr) {
 
 int main(int argc, char * argv[]) {
 	if (argc != 4) {
-		fprintf(stderr, "Usage : %s  file metafile instanceID\n", argv[0]);
+		fprintf(stderr, "Usage : %s <input file> <input chunking metafile> <instanceID>\n", argv[0]);
 		return 0;
 	}
 	uint64_t i;

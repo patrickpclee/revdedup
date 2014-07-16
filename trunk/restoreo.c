@@ -332,7 +332,7 @@ void * send(void * ptr) {
 
 int main(int argc, char * argv[]) {
 	if (argc != 4) {
-		fprintf(stderr, "Usage: %s instance version file\n", argv[0]);
+		fprintf(stderr, "Usage : %s <instanceID> <version number> <output file>\n", argv[0]);
 		return 0;
 	}
 	struct timeval a, b,c;
