@@ -55,6 +55,29 @@ Perform deletion with conventional deduplication (Mark & Sweep)
 	./remove <instanceID> <version number>
 	./delete
 
+## Usage Example
+Assuming there are three versions of one VM image series, named vm0-0, vm0-1, vm0-2
+
+#### 1. Chunking ####
+	./chunking vm0-0 meta0-0
+  	./chunking vm0-1 meta0-1
+  	./chunking vm0-2 meta0-2
+#### 2. Segment Level Deduplication ####
+	./convdedup vm0-0 meta0-0 0
+	./convdedup vm0-1 meta0-1 0
+	./convdedup vm0-2 meta0-2 0
+#### 3. Chunk Level Reverse Deduplication ####
+	./revdedup 1 0
+	./revdedup 1 1
+#### 4. Restore ####
+	./restoreo 0 0 restore0-0
+	./restoreo 0 1 restore0-1
+	./restore 0 2 restore0-2
+#### 5. Delete ####
+	./deleteo 1 0
+	./deleteo 1 1
+	./remove 0 2; ./delete
+
 ## Configuration
 Parameters are set in include/revdedup.h
 Queue Length (Memory Usage) are set in include/queue.h
