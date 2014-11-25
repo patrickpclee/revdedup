@@ -52,9 +52,33 @@ int main(int argc, char * argv[]) {
 		offset += AVG_SEG_SIZE;
 		assert(write(ofd, seg, sizeof(Segment)) == sizeof(Segment));
 	}
-	free(seg);
 
 	// Last Segment
+	if (offset < size) {
+		memset(seg, 0, sizeof(Segment));
+		seg->data = data + offset;
+		seg->offset = offset;
+		seg->len = size - offset;
+		seg->chunks = seg->len / AVG_CHUNK_SIZE;
+		if (seg->len % AVG_CHUNK_SIZE != 0)
+			seg->chunks++;
+
+		for (j = 0; j < seg->chunks; ++j) {
+			uint8_t * chunk_data = seg->data + AVG_CHUNK_SIZE * j;
+			seg->en[j].pos = j * AVG_CHUNK_SIZE;
+			seg->en[j].ref = 0;
+			int chunkSize = AVG_CHUNK_SIZE;
+			if(j == (seg->chunks - 1)) 
+				chunkSize = (size - offset) % AVG_CHUNK_SIZE;
+			seg->en[j].len = chunkSize;
+
+			SHA1(chunk_data,chunkSize, seg->en[j].fp);
+		}
+		assert(write(ofd, seg, sizeof(Segment)) == sizeof(Segment));
+	}
+
+	free(seg);
+
 	
 #else // Variable Size Chunking
 	Queue * eq = NewQueue();
