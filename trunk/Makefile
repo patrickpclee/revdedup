@@ -3,7 +3,7 @@ CFLAGS=-g -O0 -I$(IDIR) $(DSIZE)
 IDIR=include
 LDIR=lib
 DEPS=include/revdedup.h include/queue.h include/datatable.h
-LIB=-lpthread -lcrypto -lm -lkyotocabinet -lmicrohttpd -lcurl
+LIB=-lpthread -lcrypto -lm -lkyotocabinet -lcurl
 
 CHOBJ = chunking.o fingerprint.o rabin.o
 CDOBJ = bloom.o bucket.o compress.o image.o index.o convdedup.o minilzo.o
@@ -22,7 +22,7 @@ CLOBJ = client.o
 CMOBJ = client_meta.o
 BSOBJ = count_bucketsize.o 
 
-all: chunking convdedup revdedup restore restoreo remove delete deleteo server client client_meta server_meta restore_meta restoreo_meta revdedup_meta count_bucketsize
+all: chunking convdedup revdedup restore restoreo remove delete deleteo restore_meta restoreo_meta revdedup_meta count_bucketsize
 	
 %.o : %.c $(DEPS)
 	$(CC)  -c -o $@ $< $(CFLAGS)
