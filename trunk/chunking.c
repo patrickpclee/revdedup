@@ -74,6 +74,8 @@ int main(int argc, char * argv[]) {
 
 			SHA1(chunk_data,chunkSize, seg->en[j].fp);
 		}
+
+		SHA1(seg->data, seg->len, seg->fp);
 		assert(write(ofd, seg, sizeof(Segment)) == sizeof(Segment));
 	}
 
