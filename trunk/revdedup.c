@@ -37,6 +37,27 @@ int main(int argc, char * argv[]) {
 	uint32_t ins = atoi(argv[1]);
 	int32_t ver = atoi(argv[2]);
 
+	char buf[256];
+	sprintf(buf, DATA_DIR "image/%u-%u", ins - 1, ver);
+	if (access(buf, F_OK) == -1) {
+		fprintf(stderr, "This version does not exist\n");
+		return -1;
+	}
+
+	sprintf(buf, DATA_DIR "image/%u-%u", ins - 1, ver + 1);
+	if (access(buf, F_OK) == -1) {
+		fprintf(stderr, "This is the newest version, cannot be revdeduped\n");
+		return -1;
+	}
+
+	if (ver > 0) {
+		sprintf(buf, DATA_DIR "image/i%u-%u", ins - 1, ver - 1);
+		if (access(buf, F_OK) == -1) {
+			fprintf(stderr, "You have to revdedup earlier versions first\n");
+			return -1;
+		}
+	}
+
 	if (ver >= 0) {
 		struct timeval x;
 		TIMERSTART(x);

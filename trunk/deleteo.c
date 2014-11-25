@@ -39,10 +39,10 @@ int main(int argc, char * argv[]) {
 	//for (j = version; j <= version; j++) {
 	/// Remove direct and indirect recipe
 		for (i = 0; i < insts; i++) {
-			sprintf(buf, DATA_DIR "image/%lu-%u", i, j);
+			sprintf(buf, DATA_DIR "image/%lu-%lu", i, j);
 			ret = unlink(buf);
 			if(ret == 0) {
-				sprintf(buf, DATA_DIR "image/i%lu-%u", i, j);
+				sprintf(buf, DATA_DIR "image/i%lu-%lu", i, j);
 				unlink(buf);
 				ien[i].old--;
 				ien[i].deleted++;
