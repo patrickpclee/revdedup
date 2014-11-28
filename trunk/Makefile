@@ -76,4 +76,4 @@ revdedup_meta: $(RDMOBJ)
 	$(CC) $(CFLAGS) -L$(LDIR) -o revdedup_meta $^ $(LIB)
 
 clean:
-	rm -rf chunking convdedup revdedup restore restoreo remove delete deleteo server client client_meta server_meta restore_meta restoreo_meta revdedup_meta *.o
+	rm -rf chunking convdedup revdedup restore restoreo remove delete deleteo count_bucketsize server_meta restore_meta restoreo_meta revdedup_meta *.o
