@@ -1,0 +1,502 @@
+#!/bin/bash
+
+conv="/home/ldfs/min/revdedup_2.0_test/branches/conv_2.0"
+rev="/home/ldfs/min/revdedup_2.0_test/branches/2.0"
+data="/vmhash"
+raw_data="$rev_4M/data/raw_image"
+buckets="/home/ldfs/storage/data/bucket/"
+metadata="/home/ldfs/storage/data/"
+
+datasets=$1
+retention=(0)
+deletion_vers=(4 64)
+inst=$2
+vers=$3
+size=('4M' '8M' '16M' '32M')
+bsize=('_32M')
+ssize=('256' '1024' '2048')
+conv_size=('_4K')
+runs=1
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${rev}_4M/lib/:${conv}_128K/lib/
+
+
+for ds in ${datasets[@]}; do
+data_set=$data$ds
+echo "Testing with dataset $data_set"
+
+
+#
+# Conventional deduplication backup/restore 
+#
+for ((run=0;run<$runs;run++)); do
+#Conventional dedup baseline, 4KB segment, 16MB bucket
+cd /home/ldfs/min/rev2.0_test/
+mkdir conv_synthetic_$ds
+for cs in ${conv_size[@]}; do
+cd "$conv$cs"
+./prepare.sh
+
+for ((ver=1;ver<$(echo "$vers+1"|bc);ver++)); do
+	for ((i=0;i<$inst;i++)); do
+		./chunking $data_set/vm$(echo "$i+1"|bc)-$ver inst$i.meta
+		dropcache
+		duration=`./convdedup $raw_data inst$i.meta $i | awk '{print $1}'`
+	done
+	rm -rf inst*
+done
+bucket_size=`du -s data/bucket/ | awk '{print $1}'`
+echo "$bucket_size" >> /home/ldfs/min/rev2.0_test/conv_synthetic_$ds/conv_space$cs.log
+
+if [ $run -eq $(echo "$runs-1"|bc) ]; then
+for ((j=0;j<$vers;j++)); do
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restore $i $j /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$j: $duration" >> /home/ldfs/min/rev2.0_test/conv_synthetic_$ds/conv_read$cs.log
+	done
+done
+fi
+./prepare.sh
+sleep 5
+done
+done
+
+#
+# Revdedup bucket size
+#
+for ((run=0;run<$runs;run++)); do
+#test revdedup on bucket size
+mkdir -p /home/ldfs/min/rev2.0_test/rev_synthetic_$ds
+mkdir -p /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket
+for bs in ${bsize[@]}; do
+cd $rev$bs
+./prepare.sh
+
+#initialize segment size and pf mode
+sed -i.bak "s/\#define AVG_SEG_BLOCKS/\#define AVG_SEG_BLOCKS 1024 \/\//g" include/revdedup.h
+sed -i.bak "s/\#define PF_MODE/\#define PF_MODE 1 \/\//g" include/revdedup.h
+sed -i.bak "s/^\#define PREFETCH_WHOLE_BUCKET/\/\/ \#define PREFETCH_WHOLE_BUCKET /g" include/revdedup.h
+
+make clean
+make
+
+./server & 
+p=`ps aux | grep server | grep -v grep | awk '{print $2}'`
+sleep 5
+for ((ver=0;ver<$vers;ver++)); do
+	for ((i=0;i<$inst;i++)); do
+		./chunking $data_set/vm$(echo "$i+1"|bc)-$(echo "$ver+1"|bc) inst$i.meta
+		dropcache
+		duration=`./convdedup $raw_data inst$i.meta $i | awk '{print $1}'`	
+		echo "vm$(echo "$i+1"|bc)-$ver: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket/rev_write$bs.log
+
+	done
+	t0=$(date '+%s.%N')
+	if [ $ver -gt ${retention[0]} ]; then
+		./revdedup $inst $(echo "$ver-1-${retention[0]}"|bc)
+	fi
+	t1=$(date '+%s.%N')
+	echo "vm$(echo "$i+1"|bc)-$ver: $(echo "$t1-$t0"|bc)" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket/rev_overhead$bs.log
+	rm -rf inst*
+done
+
+if [ $run -eq $(echo "$runs-1"|bc) ]; then
+for ((j=0;j<$(echo "$vers-1"|bc);j++)); do
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restoreo $i $j /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$j: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket/rev_read$bs.log
+	done
+done
+for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restore $i $(echo "$vers-1"|bc) /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$(echo "$vers-1"|bc): $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket/rev_read$bs.log
+	done
+
+fi
+kill $p
+mv bucket_seeks.log /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket/rev_bucket_seeks$bs.log
+./prepare.sh
+done
+done
+
+
+for ((run=0;run<$runs;run++)); do
+#test revdedup on reverse deduplication after all upload
+mkdir -p /home/ldfs/min/rev2.0_test/rev_synthetic_$ds
+mkdir -p /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket
+for bs in ${bsize[@]}; do
+cd $rev$bs
+./prepare.sh
+
+#initialize segment size and pf mode
+sed -i.bak "s/\#define AVG_SEG_BLOCKS/\#define AVG_SEG_BLOCKS 1024 \/\//g" include/revdedup.h
+sed -i.bak "s/\#define PF_MODE/\#define PF_MODE 2 \/\//g" include/revdedup.h
+sed -i.bak "s/^\#define PREFETCH_WHOLE_BUCKET/\/\/ \#define PREFETCH_WHOLE_BUCKET /g" include/revdedup.h
+
+make clean
+make
+
+./server & 
+p=`ps aux | grep server | grep -v grep | awk '{print $2}'`
+sleep 5
+for ((ver=0;ver<$vers;ver++)); do
+#for ((j=0;j<l;j++)); do
+	for ((i=0;i<$inst;i++)); do
+		./chunking $data_set/vm$(echo "$i+1"|bc)-$(echo "$ver+1"|bc) inst$i.meta
+		dropcache
+		duration=`./convdedup $raw_data inst$i.meta $i | awk '{print $1}'`	
+		echo "vm$(echo "$i+1"|bc)-$ver: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket/rev_write_all_upload$bs.log
+
+	done
+	rm -rf inst*
+done
+
+#Reverse Deduplicate All Versions
+for ((ver=0;ver<$(echo "$vers-1"|bc);ver++)); do
+	./revdedup $inst $ver
+done
+
+for ((j=0;j<$(echo "$vers-1"|bc);j++)); do
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restoreo $i $j /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$j: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket/rev_read_all_upload$bs.log
+	done
+done
+for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restore $i $(echo "$vers-1"|bc) /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$(echo "$vers-1"|bc): $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket/rev_read_all_upload$bs.log
+	done
+kill $p
+mv bucket_seeks.log /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/bucket/rev_bucket_seeks_all_upload$bs.log
+./prepare.sh
+done
+done
+
+
+for ((run=0;run<$runs;run++)); do
+#test revdedup on whole bucket prefetch
+mkdir /home/ldfs/min/rev2.0_test/rev_synthetic
+mkdir /home/ldfs/min/rev2.0_test/rev_synthetic/whole_bucket
+for bs in ${bsize[@]}; do
+cd $rev$bs
+./prepare.sh
+
+#initialize segment size and pf mode
+sed -i.bak "s/\#define AVG_SEG_BLOCKS/\#define AVG_SEG_BLOCKS 1024 \/\//g" include/revdedup.h
+sed -i.bak "s/\#define PF_MODE/\#define PF_MODE 1 \/\//g" include/revdedup.h
+sed -i.bak "s/\/\/ \#define PREFETCH_WHOLE_BUCKET/\#define PREFETCH_WHOLE_BUCKET /g" include/revdedup.h
+
+make clean
+make
+
+./server & 
+p=`ps aux | grep server | grep -v grep | awk '{print $2}'`
+sleep 5
+for ((ver=0;ver<$vers;ver++)); do
+	for ((i=0;i<$inst;i++)); do
+		./chunking $data/vm$(echo "$i+1"|bc)-$(echo "$ver+1"|bc) inst$i.meta
+		dropcache
+		duration=`./convdedup $raw_data inst$i.meta $i | awk '{print $1}'`	
+		echo "VM$(echo "$i+1"|bc)-$ver: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic/whole_bucket/rev_write$bs.log
+
+	done
+	if [ $ver -gt ${retention[0]} ]; then
+		./revdedup $inst $(echo "$ver-1-${retention[0]}"|bc)
+	fi
+	rm -rf inst*
+done
+
+for ((j=0;j<$(echo "$vers-1"|bc);j++)); do
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restoreo $i $j /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$j: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic/whole_bucket/rev_read$bs.log
+	done
+done
+for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restore $i $(echo "$vers-1"|bc) /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$(echo "$vers-1"|bc): $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic/whole_bucket/rev_read$bs.log
+	done
+kill $p
+mv bucket_seeks.log /home/ldfs/min/rev2.0_test/rev_synthetic/whole_bucket/rev_bucket_seeks$bs.log
+./prepare.sh
+done
+done
+
+#
+# Revdedup various segment sizes
+#
+for ((run=0;run<$runs;run++)); do
+#Test revdedup on segment size
+mkdir -p /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/segment
+for ss in ${ssize[@]}; do
+cd $rev${bsize[2]}
+./prepare.sh
+
+#configure segment size
+sed -i.bak "s/\#define AVG_SEG_BLOCKS/\#define AVG_SEG_BLOCKS $ss \/\//g" include/revdedup.h
+sed -i.bak "s/\#define PF_MODE/\#define PF_MODE 1 \/\//g" include/revdedup.h
+sed -i.bak "s/^\#define PREFETCH_WHOLE_BUCKET/\/\/ \#define PREFETCH_WHOLE_BUCKET /g" include/revdedup.h
+
+make clean
+make
+
+sleep 5
+for ((ver=0;ver<$vers;ver++)); do
+	for ((i=0;i<$inst;i++)); do
+		./chunking $data_set/vm$(echo "$i+1"|bc)-$(echo "$ver+1"|bc) inst$i.meta
+		duration=`./convdedup $raw_data inst$i.meta $i | awk '{print $1}'`	
+	done
+	rm -rf inst*
+	
+done
+
+#### MEASURE Overall Disk Consumption w/o Reverse Deduplication #########
+bucket_size=`du -s data/bucket/ | awk '{print $1}'`
+echo "$bucket_size" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/segment/rev_global_$ss.log
+
+
+#### Do Batch Reverse Deduplication #######
+for ((ver=0;ver<$vers;ver++)); do
+	for ((i=0;i<$inst;i++)); do
+	t0=$(date '+%s.%N')
+	if [ $ver -gt ${retention[0]} ]; then
+		./revdedup $inst $(echo "$ver-1-${retention[0]}"|bc)
+	fi
+	t1=$(date '+%s.%N')
+	echo "VM$(echo "$i+1"|bc)-$ver: $(echo "$t1-$t0"|bc)" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/segment/rev_overhead_$ss.log
+
+done
+done
+
+
+#### MEASURE Overall Disk Consumption After Reverse Deduplication #########
+bucket_size=`du -s data/bucket/ | awk '{print $1}'`
+echo "$bucket_size" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/segment/rev_reverse_$ss.log
+
+if [ $run -eq $(echo "$runs-1"|bc) ]; then
+for ((j=0;j<$(echo "$vers-1"|bc);j++)); do
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restoreo $i $j /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$j: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/segment/rev_read_$ss.log
+	done
+done
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restore $i $(echo "$vers-1"|bc) /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$(echo "$vers-1"|bc): $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/segment/rev_read_$ss.log
+	done
+fi
+./prepare.sh
+done
+done
+
+#
+# Revdedup prefetch mode
+#
+for ((run=0;run<$runs;run++)); do
+#Test revdedup on prefetch mode
+mkdir /home/ldfs/min/rev2.0_test/rev_synthetic/prefetch
+for pfm in ${pfmodes[@]}; do
+cd $rev${bsize[1]}
+
+#configure segment size
+sed -i.bak "s/\#define AVG_SEG_BLOCKS/\#define AVG_SEG_BLOCKS 1024 \/\//g" include/revdedup.h
+sed -i.bak "s/\#define PF_MODE/\#define PF_MODE $pfm \/\//g" include/revdedup.h
+sed -i.bak "s/^\#define PREFETCH_WHOLE_BUCKET/\/\/ \#define PREFETCH_WHOLE_BUCKET /g" include/revdedup.h
+
+make clean
+make
+
+./server & 
+p=`ps aux | grep server | grep -v grep | awk '{print $2}'`
+sleep 5
+for ((ver=0;ver<$vers;ver++)); do
+	for ((i=0;i<$inst;i++)); do
+		./chunking $data/vm$(echo "$i+1"|bc)-$(echo "$ver+1"|bc) inst$i.meta
+		duration=`./convdedup $raw_data inst$i.meta $i | awk '{print $1}'`	
+		echo "VM$(echo "$i+1"|bc)-$ver: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic/prefetch/rev_write_$pfm.log
+	done
+	if [ $ver -gt ${retention[0]} ]; then
+		./revdedup $inst $(echo "$ver-1-${retention[0]}"|bc)
+	fi
+	rm -rf inst*
+done
+
+for ((j=0;j<$(echo "$vers-1"|bc);j++)); do
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restoreo $i $j /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$j: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic/prefetch/rev_read_$pfm.log
+	done
+done
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restore $i $(echo "$vers-1"|bc) /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$(echo "$vers-1"|bc): $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic/prefetch/rev_read_$pfm.log
+	done
+
+kill $p
+mv bucket_seeks.log /home/ldfs/min/rev2.0_test/rev_synthetic/prefetch/rev_bucket_seeks_$pfm.log
+./prepare.sh
+done
+done
+
+#
+# Revdedup retention window size
+#
+for ((run=0;run<$runs;run++)); do
+
+#Test revdedup on retention window
+mkdir -p /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/retention
+for rt in ${retention[@]}; do
+cd $rev${bsize[1]}
+./prepare.sh
+
+#configure segment size
+sed -i.bak "s/\#define AVG_SEG_BLOCKS/\#define AVG_SEG_BLOCKS 1024 \/\//g" include/revdedup.h
+sed -i.bak "s/\#define PF_MODE/\#define PF_MODE $4 \/\//g" include/revdedup.h
+sed -i.bak "s/^\#define PREFETCH_WHOLE_BUCKET/\/\/ \#define PREFETCH_WHOLE_BUCKET /g" include/revdedup.h
+
+make clean
+make
+
+./server & 
+p=`ps aux | grep server | grep -v grep | awk '{print $2}'`
+sleep 5
+for ((ver=0;ver<$vers;ver++)); do
+	for ((i=0;i<$inst;i++)); do
+		./chunking $data_set/vm$(echo "$i+1"|bc)-$(echo "$ver+1"|bc) inst$i.meta
+		dropcache
+		duration=`./convdedup $raw_data inst$i.meta $i | awk '{print $1}'`	
+		echo "VM$(echo "$i+1"|bc)-$ver: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/retention/rev_write_$rt.log
+	done
+	if [ $ver -gt $rt ]; then
+		./revdedup $inst $(echo "$ver-1-$rt"|bc)
+	fi
+	rm -rf inst*
+done
+
+for ((j=0;j<$(echo "$vers-1-$rt"|bc);j++)); do
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restoreo $i $j /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$j: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/retention/rev_read_$rt.log
+	done
+done
+for ((j=$(echo "$vers-1-$rt"|bc);j<$vers;j++)); do
+	for ((i=0;i<$inst;i++)); do
+		dropcache
+		t0=$(date '+%s.%N')
+		./restore $i $j /dev/null
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0" | bc)
+		echo "VM$i-$j: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/retention/rev_read_$rt.log
+	done
+done
+
+# Test deletion
+#for ((i=0;i<$retention2;i++));do
+#	for ((j=0;j<$inst;j++));do
+#		dropcache
+#		t0=$(date '+%s.%N')
+#		./deleteo $inst $retention2
+#		t1=$(date '+%s.%N')
+#		duration=$(echo "$t1-$t0"|bc)
+#		echo "Delete1-$retention2: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic/retention/rev_remove_$rt.log
+#	done
+#done
+kill $p
+mv bucket_seeks.log /home/ldfs/min/rev2.0_test/rev_synthetic_$ds/retention/rev_bucket_seeks_$rt.log
+./prepare.sh
+done
+done
+
+#
+# Revdedup deletion
+#
+for ((run=0;run<$runs;run++)); do
+
+#Test revdedup on deletion overhead
+mkdir -p /home/ldfs/min/rev2.0_test/rev_synthetic/deletion
+for dv in ${deletion_vers[@]}; do
+cd $rev${bsize[1]}
+./prepare.sh
+
+#configure segment size
+sed -i.bak "s/\#define AVG_SEG_BLOCKS/\#define AVG_SEG_BLOCKS 1 \/\//g" include/revdedup.h
+sed -i.bak "s/\#define PF_MODE/\#define PF_MODE 2 \/\//g" include/revdedup.h
+sed -i.bak "s/^\#define PREFETCH_WHOLE_BUCKET/\/\/ \#define PREFETCH_WHOLE_BUCKET /g" include/revdedup.h
+
+make clean
+make
+
+./server & 
+p=`ps aux | grep server | grep -v grep | awk '{print $2}'`
+sleep 5
+for ((ver=0;ver<$vers;ver++)); do
+	for ((i=0;i<$inst;i++)); do
+		./chunking $data/vm$(echo "$i+1"|bc)-$(echo "$ver+1"|bc) inst$i.meta
+		duration=`./convdedup $raw_data inst$i.meta $i | awk '{print $1}'`	
+	done
+	rm -rf inst*
+done
+
+		dropcache
+		t0=$(date '+%s.%N')
+for ((j=0;j<$inst;j++)); do
+	for ((i=0;i<$dv;i++)); do
+		./remove $j $i
+	done
+done
+		./delete
+		t1=$(date '+%s.%N')
+		duration=$(echo "$t1-$t0"|bc)
+		echo "Delete1-$dv: $duration" >> /home/ldfs/min/rev2.0_test/rev_synthetic/deletion/rev_deletion_refcnt.log
+kill $p
+done
+done
+done
