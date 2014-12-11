@@ -102,10 +102,10 @@ those have been only deduplicated in segment level, ./restore is used.
 #### 5. Delete ####
 	./deleteo 2 0
 	./deleteo 2 1
-	./remove 1 2; ./remove 0 2; ./delete
+	./remove 0 2; ./remove 1 2; ./delete
 
 Reverse deduplicated backups could be batch deleted with the program ./deleteo.
-It would delete all instances having version number at or before the specified
+It would delete all backups having version number at or before the specified
 one. For those only undergone segment deduplication, a mark-and-sweep approach
 is used.
 
