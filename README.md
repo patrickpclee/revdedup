@@ -56,27 +56,58 @@ Perform deletion with conventional deduplication (Mark & Sweep)
 	./delete
 
 ## Usage Example
-Assuming there are three versions of one VM image series, named vm0-0, vm0-1, vm0-2
+Assuming there are three versions of two VM image series, named vm0-0, vm0-1, vm0-2 and vm1-0, vm1-1, vm1-2
 
 #### 1. Chunking ####
 	./chunking vm0-0 meta0-0
+	./chunking vm1-0 meta1-0
   	./chunking vm0-1 meta0-1
+  	./chunking vm1-1 meta1-1
   	./chunking vm0-2 meta0-2
+  	./chunking vm1-2 meta1-2
+
+Perform chunking on the VM images, result in a metadata file for each image.
+
 #### 2. Segment Level Deduplication ####
 	./convdedup vm0-0 meta0-0 0
+	./convdedup vm1-0 meta1-0 1
 	./convdedup vm0-1 meta0-1 0
+	./convdedup vm1-1 meta1-1 1
 	./convdedup vm0-2 meta0-2 0
+	./convdedup vm1-2 meta1-2 1
+
+Perform segment level global deduplication on the VM images. Images are stored
+in RevDedup as two backup instance series 0 and 1
+
 #### 3. Chunk Level Reverse Deduplication ####
-	./revdedup 1 0
-	./revdedup 1 1
+	./revdedup 2 0
+	./revdedup 2 1
+
+Perform chunk level reverse deduplcation on the two series, the process is
+triggered in a batch, images having the specified version number from the both
+series are reverse deduplicated against corrsponding next version one.
+
 #### 4. Restore ####
 	./restoreo 0 0 restore0-0
+	./restoreo 1 0 restore1-0
 	./restoreo 0 1 restore0-1
+	./restoreo 1 1 restore1-1
 	./restore 0 2 restore0-2
+	./restore 1 2 restore1-2
+
+To restore backups those have been reverse deduplicated, ./restoreo is used. For
+those have been only deduplicated in segment level, ./restore is used.
+
+
 #### 5. Delete ####
-	./deleteo 1 0
-	./deleteo 1 1
-	./remove 0 2; ./delete
+	./deleteo 2 0
+	./deleteo 2 1
+	./remove 1 2; ./remove 0 2; ./delete
+
+Reverse deduplicated backups could be batch deleted with the program ./deleteo.
+It would delete all instances having version number at or before the specified
+one. For those only undergone segment deduplication, a mark-and-sweep approach
+is used.
 
 ## Configuration
 Parameters are set in include/revdedup.h
