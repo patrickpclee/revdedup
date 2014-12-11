@@ -3,7 +3,7 @@
 ## Welcome
 
 This is the source code for RevDedup described in our paper presented in TOS.
-The system is tested on Ubuntu 12.04 64 bit.  - July 2014
+The system is tested on Ubuntu 12.04 64 bit.  - Dec 2014
 
 ## Setup
 
